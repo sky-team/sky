@@ -89,7 +89,7 @@ public class SkyUMLRequestDispatcher extends HttpServlet {
 
     private void handleError(HttpServletRequest request,HttpServletResponse response)
             throws ServletException,IOException{
-      RequestDispatcher dispatcher = request.getRequestDispatcher("/view/error.jsp");
+      RequestDispatcher dispatcher = request.getRequestDispatcher("/views/error.jsp");
       dispatcher.forward(request, response);
     }
     
