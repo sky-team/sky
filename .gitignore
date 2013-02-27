@@ -1,0 +1,6 @@
+#this file used to ignore tracking of some file or folder  
+
+#Folders
+/nbproject/private/
+/dist/
+/build/
