@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.skyuml.controller;
+package com.skyuml.umlcollaboration;
 
 import com.skyuml.business.User;
 import com.skyuml.umlcollaboration.CollaborationUML;

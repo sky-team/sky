@@ -10,7 +10,7 @@
     </servlet>
     <servlet>
         <servlet-name>SkyUMLWSDispatcher</servlet-name>
-        <servlet-class>com.skyuml.controller.WSHandler</servlet-class>
+        <servlet-class>com.skyuml.umlcollaboration.WSHandler</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>SkyUMLRequestDispatcher</servlet-name>
