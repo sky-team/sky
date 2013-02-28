@@ -21,4 +21,10 @@ public final class Keys {
         private RequestParams(){}
         public static final String USER_ID = "USER_ID";
     }
+    public static final class SessionAttribute{
+        private SessionAttribute(){}
+        
+        public static final String USER = "USER";
+        
+    }
 }

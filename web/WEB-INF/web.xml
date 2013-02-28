@@ -8,6 +8,10 @@
         <servlet-name>ModelConfigrationServlet</servlet-name>
         <servlet-class>com.skyuml.logic.ModelConfigrationServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>SkyUMLWSDispatcher</servlet-name>
+        <servlet-class>com.skyuml.controller.WSHandler</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>SkyUMLRequestDispatcher</servlet-name>
         <url-pattern>/main</url-pattern>
@@ -15,6 +19,10 @@
     <servlet-mapping>
         <servlet-name>ModelConfigrationServlet</servlet-name>
         <url-pattern>/modconfig</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SkyUMLWSDispatcher</servlet-name>
+        <url-pattern>/wsmain</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
