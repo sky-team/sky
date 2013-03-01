@@ -15,11 +15,14 @@ public final class Keys {
         private AttributeNames(){}
         public static final String USER_ATTRIBUTE_NAME = "USER_DATA";
         public static final String PROJECT_ATTRIBUTE_NAME = "PROJECT_DATA";
+        
     }
     
     public static final class RequestParams{
         private RequestParams(){}
         public static final String USER_ID = "USER_ID";
+        public static final String PROJECT_NAME = "PROJECT_NAME";
+        public static final String PROJECT_OWNER_ID = "PROJECT_OWNER_ID";
     }
     public static final class SessionAttribute{
         private SessionAttribute(){}

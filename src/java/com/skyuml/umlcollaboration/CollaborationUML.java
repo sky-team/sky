@@ -4,6 +4,7 @@
  */
 package com.skyuml.umlcollaboration;
 
+import com.skyuml.business.Project;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
@@ -37,6 +38,10 @@ public class CollaborationUML {
     
     public void onClose(int status ,WSUser sender){
         
+    }
+    
+    public Project getProject(String prog_name,int owner_id){
+        return pManager.openProject(prog_name, owner_id);
     }
     
 }

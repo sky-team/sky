@@ -22,6 +22,9 @@ public class WSUser extends MessageInbound{
     public WSUser(User usInf,CollaborationUML app){
         userInfo = usInf;
         application = app;
+        
+        application.addUser(this);
+        
     }
     
     @Override

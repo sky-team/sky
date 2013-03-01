@@ -15,9 +15,12 @@ import java.util.ArrayList;
  *
  * @author Yazan
  */
+
+// What to Do ,,, Yazan read all the diagrams name from the folder of the project 
 public class Project {
     private int userId;
     private String projectName;
+    private String[] diagramsName; 
     
     public static String userIdColumnName = "user_id";
     public static String projectNameColumnName = "projectName";
@@ -41,6 +44,10 @@ public class Project {
 
     public String getProjectName() {
         return projectName;
+    }
+    
+    public String[] getDiagramsName(){
+        return diagramsName;
     }
 
     public void setProjectName(String projectName) {

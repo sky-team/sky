@@ -34,7 +34,11 @@ public class WSHandler extends WebSocketServlet {
     protected StreamInbound createWebSocketInbound(String string, HttpServletRequest hsr) {
         User us = (User)hsr.getSession().getAttribute(Keys.SessionAttribute.USER);
         WSUser user = new WSUser(us, app);
-        app.addUser(user);
+        
+        hsr.setAttribute(
+                Keys.AttributeNames.PROJECT_ATTRIBUTE_NAME,
+                app.getProject(hsr.getParameter(Keys.RequestParams.PROJECT_NAME),
+                Integer.parseInt(hsr.getParameter(Keys.RequestParams.PROJECT_OWNER_ID))));
         
         return user;
         

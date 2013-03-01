@@ -15,26 +15,27 @@ import java.util.HashMap;
  */
 public class DiagramManager {
     
-    private HashMap<Integer,Diagram> diagrams;
-    private HashMap<Integer,ArrayList<WSUser>> users;
+    private HashMap<String,Diagram> diagrams;
+    private HashMap<String,ArrayList<WSUser>> users;
     
-    public DiagramManager(Diagram diagram){
-        diagrams = new HashMap<Integer,Diagram>();
-        users = new HashMap<Integer,ArrayList<WSUser>>();
+    
+    public DiagramManager(){
+        diagrams = new HashMap<String,Diagram>();
+        users = new HashMap<String,ArrayList<WSUser>>();
     }
     
-    private boolean addObserver(int diaID,WSUser user){
-        if(users.get(diaID).indexOf(user) != -1){
-            users.get(diaID).add(user);
+    private boolean addObserver(String diagram_name,WSUser user){
+        if(users.get(diagram_name).indexOf(user) != -1){
+            users.get(diagram_name).add(user);
             return true;
         }
         return false;
         
     }
     
-    private boolean removeObserver(int diaId,WSUser user){
-        if(getNumberOfUsersInDiagram(diaId) > 0){
-            if(users.get(diaId).indexOf(user) != -1){
+    private boolean removeObserver(String diagram_name,WSUser user){
+        if(getNumberOfUsersInDiagram(diagram_name) > 0){
+            if(users.get(diagram_name).indexOf(user) != -1){
                 users.remove(user);
                 return true;
             }
@@ -43,14 +44,14 @@ public class DiagramManager {
                 
     }
     
-    public void broadcastTextMessage(int diagramId,String msg, WSUser sender,boolean includeSender){
-        int numOfUsers = getNumberOfUsersInDiagram(diagramId);
+    public void broadcastTextMessage(String diagram_name,String msg, WSUser sender,boolean includeSender){
+        int numOfUsers = getNumberOfUsersInDiagram(diagram_name);
         
         if(numOfUsers == -1 || numOfUsers == 0)
             return;
         
         if(includeSender){
-            for (WSUser user : users.get(diagramId)) {
+            for (WSUser user : users.get(diagram_name)) {
                 try{
                     user.sendTextMessage(msg);
                 }catch(IOException exp){
@@ -58,7 +59,7 @@ public class DiagramManager {
                 }
             }
         }else{
-            for (WSUser user : users.get(diagramId)) {
+            for (WSUser user : users.get(diagram_name)) {
                 try{
                     if(!user.equals(sender)){
                         user.sendTextMessage(msg);
@@ -71,14 +72,14 @@ public class DiagramManager {
         
     }
     
-    public void broadcastBinatyMessage(int diagramId,ByteBuffer buf, WSUser sender,boolean includeSender){
-        int numOfUsers = getNumberOfUsersInDiagram(diagramId);
+    public void broadcastBinatyMessage(String diagram_name,ByteBuffer buf, WSUser sender,boolean includeSender){
+        int numOfUsers = getNumberOfUsersInDiagram(diagram_name);
         
         if(numOfUsers == -1 || numOfUsers == 0)
             return;
         
         if(includeSender){
-            for (WSUser user : users.get(diagramId)) {
+            for (WSUser user : users.get(diagram_name)) {
                 try{
                     user.sendBinaryMessage(buf);
                 }catch(IOException exp){
@@ -86,7 +87,7 @@ public class DiagramManager {
                 }
             }
         }else{
-            for (WSUser user : users.get(diagramId)) {
+            for (WSUser user : users.get(diagram_name)) {
                 try{
                     if(!user.equals(sender)){
                         user.sendBinaryMessage(buf);
@@ -99,35 +100,35 @@ public class DiagramManager {
         
     }
     
-    public boolean isDiagramOpened(int diagramID){
+    public boolean isDiagramOpened(String diagram_name){
         
-        return (diagrams.get(diagramID) == null) ? false : true;
+        return (diagrams.get(diagram_name) == null) ? false : true;
     }
     
-    public int getNumberOfUsersInDiagram(int diaID){
+    public int getNumberOfUsersInDiagram(String diaID){
         return (users.get(diaID) == null)? -1 : users.get(diaID).size();
     }
     
     // when so one join diagram notify other users in the same diagram
-    public boolean openDiagram(int diaId,WSUser user){
+    public boolean openDiagram(String dia_name,WSUser user){
         
-        if(!isDiagramOpened(diaId)){
+        if(!isDiagramOpened(dia_name)){
             Diagram dia = null;//Diagram.load(diaId);
             if(dia != null)
-                diagrams.put(diaId, dia);
+                diagrams.put(dia_name, dia);
             else
                 return false;//fail to load
                     
         }
         
-        if(getNumberOfUsersInDiagram(diaId) == -1){
-            users.put(diaId, new ArrayList<WSUser>());
+        if(getNumberOfUsersInDiagram(dia_name) == -1){
+            users.put(dia_name, new ArrayList<WSUser>());
             
         }
         
-        if(addObserver(diaId, user)){
+        if(addObserver(dia_name, user)){
             try{
-                user.sendTextMessage(diagrams.get(diaId).toString());
+                user.sendTextMessage(diagrams.get(dia_name).toString());
             }catch(IOException exp){
             
                 exp.printStackTrace();
@@ -140,9 +141,9 @@ public class DiagramManager {
     }
     
     // when so one leave diagram notify other users in the same diagram
-    public boolean closeDiagram(int diaId,WSUser user){
-        if(isDiagramOpened(diaId) && getNumberOfUsersInDiagram(diaId) > 0 ){
-            return removeObserver(diaId, user);
+    public boolean closeDiagram(String diagram_name,WSUser user){
+        if(isDiagramOpened(diagram_name) && getNumberOfUsersInDiagram(diagram_name) > 0 ){
+            return removeObserver(diagram_name, user);
         }else{
             return false;
         }
