@@ -5,6 +5,8 @@
 package com.skyuml.business;
 
 import com.skyuml.datamanagement.Utils;
+import com.skyuml.utils.DgrFilter;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,9 +20,8 @@ import java.util.ArrayList;
 
 // What to Do ,,, Yazan read all the diagrams name from the folder of the project 
 public class Project {
-    private int userId;
-    private String projectName;
-    private String[] diagramsName; 
+    private int userId = -1;
+    private String projectName; 
     
     public static String userIdColumnName = "user_id";
     public static String projectNameColumnName = "projectName";
@@ -47,7 +48,17 @@ public class Project {
     }
     
     public String[] getDiagramsName(){
-        return diagramsName;
+        ArrayList<String> diagrams = new ArrayList<String>();
+        
+        File dir = new File(userId + File.pathSeparatorChar + projectName+File.pathSeparatorChar);
+        
+        File [] files = dir.listFiles(new DgrFilter());
+        
+        for (File file : files) {
+            diagrams.add(file.getName());
+        }
+        
+        return (String[])diagrams.toArray();
     }
 
     public void setProjectName(String projectName) {

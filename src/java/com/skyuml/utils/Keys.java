@@ -26,8 +26,13 @@ public final class Keys {
     }
     public static final class SessionAttribute{
         private SessionAttribute(){}
-        
         public static final String USER = "USER";
         
+        
+    }
+    
+    public static final class Extensions{
+        private Extensions(){}
+        public static final String DIAGRAM_EXTENSION = ".dgr"; 
     }
 }
