@@ -13,7 +13,8 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author Hamza
  */
-public interface Modelable {
-    void executGet(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException;
-    void executPost(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException;
+public interface Authinticatalbe {
+    boolean isAuthenticateAction(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException;
+    void onUnAuthenticateAction(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException;
+    
 }

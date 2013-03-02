@@ -6,7 +6,9 @@ package com.skyuml.umlcollaboration;
 
 import com.skyuml.business.User;
 import com.skyuml.umlcollaboration.CollaborationUML;
+import com.skyuml.umlcollaboration.CollaborationUML;
 import com.skyuml.umlcollaboration.ProjectManager;
+import com.skyuml.umlcollaboration.WSUser;
 import com.skyuml.umlcollaboration.WSUser;
 import com.skyuml.utils.Keys;
 import java.io.IOException;
@@ -32,13 +34,9 @@ public class WSHandler extends WebSocketServlet {
     
     @Override
     protected StreamInbound createWebSocketInbound(String string, HttpServletRequest hsr) {
-        User us = (User)hsr.getSession().getAttribute(Keys.SessionAttribute.USER);
+        User us = null;//(User)hsr.getSession().getAttribute(Keys.SessionAttribute.USER);
         WSUser user = new WSUser(us, app);
         
-        hsr.setAttribute(
-                Keys.AttributeNames.PROJECT_ATTRIBUTE_NAME,
-                app.getProject(hsr.getParameter(Keys.RequestParams.PROJECT_NAME),
-                Integer.parseInt(hsr.getParameter(Keys.RequestParams.PROJECT_OWNER_ID))));
         
         return user;
         

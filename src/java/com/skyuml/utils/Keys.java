@@ -23,6 +23,7 @@ public final class Keys {
         public static final String USER_ID = "USER_ID";
         public static final String PROJECT_NAME = "PROJECT_NAME";
         public static final String PROJECT_OWNER_ID = "PROJECT_OWNER_ID";
+        public static final String DIAGRAM_NAME = "DIAGRAM_NAME";
     }
     public static final class SessionAttribute{
         private SessionAttribute(){}
