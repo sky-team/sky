@@ -23,8 +23,6 @@ public class WSUser extends MessageInbound{
         userInfo = usInf;
         application = app;
         
-        application.addUser(this);
-        
     }
     
     @Override

@@ -6,11 +6,7 @@ package com.skyuml.umlcollaboration;
 
 import com.skyuml.business.Project;
 import com.skyuml.datamanagement.DefaultDatabase;
-import com.skyuml.diagrams.Diagram;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -23,7 +19,6 @@ public class ProjectManager {
     
     public ProjectManager(){
         projects = new HashMap<Project,DiagramManager>();
-        
     }
     
     public Project getProject(String prog_name,int owner_id){
@@ -53,4 +48,7 @@ public class ProjectManager {
         return prog;
     }
     
+    public void closeProject(WSUser user){
+        
+    }
 }
