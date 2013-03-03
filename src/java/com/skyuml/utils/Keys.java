@@ -36,4 +36,23 @@ public final class Keys {
         private Extensions(){}
         public static final String DIAGRAM_EXTENSION = ".dgr"; 
     }
+    
+    public static final class ViewMapping {
+    private ViewMapping(){}
+    
+    public static String INDEX_ERROR_VIEW = "/views/error.jsp";
+    public static String OPEN_PROJECT_VIEW = "/views/openProjectView.jsp";
+    
+    }
+    
+    public static final class ServletMapping {
+    private ServletMapping(){}
+    
+    public static String WS_REQUEST_HANNDLER = "/wsmain";
+    
+    }
+    
+    
+
+
 }

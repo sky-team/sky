@@ -6,8 +6,6 @@ package com.skyuml.logic;
 
 import com.skyuml.utils.Keys;
 import com.skyuml.utils.RequestTools;
-import com.skyuml.utils.ServletMapping;
-import com.skyuml.utils.ViewMapping;
 import java.io.IOException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -24,7 +22,7 @@ public class OpenWSConnectionModel extends AuthenticateModel {
     @Override
     public void performGet(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException{
         
-        RequestDispatcher disp = request.getRequestDispatcher(ServletMapping.WS_REQUEST_HANNDLER);
+        RequestDispatcher disp = request.getRequestDispatcher(Keys.ServletMapping.WS_REQUEST_HANNDLER);
         disp.forward(request, response);
             
     }
@@ -48,7 +46,7 @@ public class OpenWSConnectionModel extends AuthenticateModel {
 
     @Override
     public void onUnAuthenticateAction(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
-        request.getRequestDispatcher(ViewMapping.INDEX_ERROR_VIEW).forward(request, response);
+        request.getRequestDispatcher(Keys.ViewMapping.INDEX_ERROR_VIEW).forward(request, response);
     }
     
     

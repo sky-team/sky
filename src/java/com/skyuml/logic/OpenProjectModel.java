@@ -8,7 +8,6 @@ import com.skyuml.business.Project;
 import com.skyuml.utils.Keys;
 import com.skyuml.datamanagement.DefaultDatabase;
 import com.skyuml.utils.RequestTools;
-import com.skyuml.utils.ViewMapping;
 import java.io.IOException;
 import java.sql.SQLException;
 import javax.servlet.RequestDispatcher;
@@ -41,12 +40,12 @@ public class OpenProjectModel extends AuthenticateModel{
             }catch(SQLException exp){
                 exp.printStackTrace();
                 
-                request.getRequestDispatcher(ViewMapping.INDEX_ERROR_VIEW).forward(request, response);
+                request.getRequestDispatcher(Keys.ViewMapping.INDEX_ERROR_VIEW).forward(request, response);
                 return;
             } 
             
             
-            request.getRequestDispatcher(ViewMapping.OPEN_PROJECT_VIEW).forward(request, response);
+            request.getRequestDispatcher(Keys.ViewMapping.OPEN_PROJECT_VIEW).forward(request, response);
         
     }
 
@@ -69,7 +68,7 @@ public class OpenProjectModel extends AuthenticateModel{
 
     @Override
     public void onUnAuthenticateAction(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        RequestDispatcher disp = request.getRequestDispatcher(ViewMapping.INDEX_ERROR_VIEW);
+        RequestDispatcher disp = request.getRequestDispatcher(Keys.ViewMapping.INDEX_ERROR_VIEW);
         disp.forward(request, response);
     }
     
