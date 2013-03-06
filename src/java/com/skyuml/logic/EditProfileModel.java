@@ -19,24 +19,26 @@ import javax.servlet.http.HttpSession;
  *
  * @author Yazan
  */
-public class EditProfileModel implements Modelable{
+public class EditProfileModel extends AuthenticateModel{
 
     @Override
-    public void executGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int user_id = Integer.parseInt(request.getParameter(com.skyuml.utils.Keys.RequestParams.USER_ID));
+    public void performGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+                int user_id = Integer.parseInt(request.getParameter(com.skyuml.utils.Keys.RequestParams.USER_ID));
         try {
             User user = User.selectByUserId(com.skyuml.datamanagement.DefaultDatabase.getInstance().getConnection(), user_id);
+            request.setAttribute(com.skyuml.utils.Keys.AttributeNames.USER_ATTRIBUTE_NAME, user);
         } catch (SQLException ex) {
             Logger.getLogger(EditProfileModel.class.getName()).log(Level.SEVERE, null, ex);
              //TODO : Error Handle Machanisem
         }
+        
         RequestDispatcher dispatcher = request.getRequestDispatcher("/views/editProfile.jsp");
         dispatcher.forward(request, response);
     }
 
     @Override
-    public void executPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
+    public void performPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+                
                
         HttpSession session = request.getSession(false);
         
@@ -56,7 +58,15 @@ public class EditProfileModel implements Modelable{
             Logger.getLogger(EditProfileModel.class.getName()).log(Level.SEVERE, null, ex);
              //TODO : Error Handle Machanisem
         }
+    }
 
+    @Override
+    public boolean isAuthenticateAction(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        return request.getSession(false) != null;
+    }
+
+    @Override
+    public void onUnAuthenticateAction(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         
     }
     
