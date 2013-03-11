@@ -1,7 +1,7 @@
 <%-- 
     Document   : index
     Created on : Feb 21, 2013, 7:17:10 PM
-    Author     : Hamza 00
+    Author     : Hamza 
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
