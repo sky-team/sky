@@ -1,6 +1,7 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * This abstract class represent the structure of a secure model.
+ * it take care of the incoming requests to this model also check if they have permission to 
+ * access this model.
  */
 package com.skyuml.logic;
 
@@ -33,8 +34,14 @@ public abstract class AuthenticateModel implements Modelable,Authinticatalbe {
         }
     }
     
+    //what action to do when a Get request recived
+    //here you must get all data you need, then dispatch them to appropriate view(jsp)
     public abstract void performGet(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException;
+    
+    //what action to do when a Post request recived
+    //here you must get all data you need, then dispatch them to appropriate view(jsp)
     public abstract void performPost(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException;
+    
 
 
     
