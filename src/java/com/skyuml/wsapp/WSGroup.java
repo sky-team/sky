@@ -40,16 +40,15 @@ public class WSGroup {
             @Override
             public void run() {
                 while(true){
-                    if(!textMessages.isEmpty()){
-                        for (Tuple<String, WSUser> tuple : textMessages) {
-                            broadcastTextMessage(tuple.getItem1(), tuple.getItem2());
-                        }
+                    while(!textMessages.isEmpty()){
+                        Tuple<String, WSUser> tuple = textMessages.remove();
+                        broadcastTextMessage(tuple.getItem1(), tuple.getItem2());
                     }
                     
-                    if(!binaryMessages.isEmpty()){
-                        for (Tuple<ByteBuffer, WSUser> tuple : binaryMessages) {
-                            broadcastBinatyMessage(tuple.getItem1(), tuple.getItem2());
-                        }
+                    while(!binaryMessages.isEmpty()){
+                        Tuple<ByteBuffer, WSUser> tuple = binaryMessages.remove();
+                        broadcastBinatyMessage(tuple.getItem1(), tuple.getItem2());
+                        
                     }
                     
                     try {
@@ -84,7 +83,7 @@ public class WSGroup {
     
     public void removeMember(WSUser member){
         synchronized(lock){
-            members.add(member);
+            members.remove(member);
         }
     }
     

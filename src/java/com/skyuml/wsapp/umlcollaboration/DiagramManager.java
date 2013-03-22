@@ -7,6 +7,8 @@ import com.skyuml.wsapp.WSUser;
 import com.skyuml.diagrams.Diagram;
 import com.skyuml.wsapp.WSGroup;
 import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,7 +62,7 @@ public class DiagramManager {
             Diagram di = getDiagramByName(diagram_name);
             if(di == null)
                 return false;
-            
+            System.out.println("Remove : "+user.toString());
             diagrams.get(di).removeMember(user);
         }
         return true;
@@ -87,7 +89,7 @@ public class DiagramManager {
             return false;
         
         if(!isDiagramOpened(dia_name)){
-            Diagram dia = null;//Diagram.load(diaId);
+            Diagram dia =null;//Diagram.load(diaId);
             if(dia != null){
                 diagrams.put(dia, new WSGroup(false));
             }
@@ -113,6 +115,7 @@ public class DiagramManager {
     
     // when so one leave diagram notify other users in the same diagram
     public boolean closeDiagram(String diagram_name,WSUser user){
+        System.out.println("Try to close : "+user.toString());
         if(isDiagramOpened(diagram_name) && getNumberOfUsersInDiagram(diagram_name) > 0 ){
             return removeObserver(diagram_name, user);
         }else{
@@ -120,6 +123,13 @@ public class DiagramManager {
         }
     }
     
+    /*public boolean createDiagram(Diagram di){
+        if(!isDiagramExist(di.getName())){
+            diagramsName.add(di.getName());
+        }
+        
+        
+    }*/
     public void closeAllDiagrams(WSUser sender){
         for (String string : diagramsName) {
             closeDiagram(string, sender);

@@ -58,7 +58,7 @@ public class ProjectManager {
         String progName = requestInfo.getString(Keys.JSONMapping.RequestInfo.PROJECT_NAME);
         String diaName = requestInfo.getString(Keys.JSONMapping.RequestInfo.DIAGRAM_NAME);
         int progOwnerId = requestInfo.getInt(Keys.JSONMapping.RequestInfo.PROJECT_OWNER);
-        
+
         Project prog = openProject(progName, progOwnerId);
         
         if(prog != null){
@@ -70,7 +70,7 @@ public class ProjectManager {
         String progName = requestInfo.getString(Keys.JSONMapping.RequestInfo.PROJECT_NAME);
         String diaName = requestInfo.getString(Keys.JSONMapping.RequestInfo.DIAGRAM_NAME);
         int progOwnerId = requestInfo.getInt(Keys.JSONMapping.RequestInfo.PROJECT_OWNER);
-        
+        System.out.println("Close f step");
         Project prog = getProject(progName, progOwnerId);
         
         if(prog != null){
@@ -97,7 +97,7 @@ public class ProjectManager {
         String progN = reqeustInfo.getString(Keys.JSONMapping.RequestInfo.PROJECT_NAME);
         String diaName = reqeustInfo.getString(Keys.JSONMapping.RequestInfo.DIAGRAM_NAME);
         int ownerid = reqeustInfo.getInt(Keys.JSONMapping.RequestInfo.PROJECT_OWNER);
-        
+        System.out.println("content changed");
         Project prog = getProject(progN, ownerid);
         if(prog != null){
             projects.get(prog).notifyContentChanged(jo.toString(), diaName, sender);

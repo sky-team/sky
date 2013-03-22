@@ -23,6 +23,7 @@ public class CollaborationUML implements WSApp {
     
     public CollaborationUML(int appId){
         this.appId = appId;
+        pManager = new ProjectManager();
     }
     
 

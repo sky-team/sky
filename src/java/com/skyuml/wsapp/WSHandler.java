@@ -34,8 +34,8 @@ public class WSHandler extends WebSocketServlet {
         WSUser user = new WSUser(us);
         
         user.registerWSApplication(umlApp);
-        user.registerWSApplication(autoSaveApp);
-        user.registerWSApplication(chatApp);
+        //user.registerWSApplication(autoSaveApp);
+        //user.registerWSApplication(chatApp);
         
         return user;
         
