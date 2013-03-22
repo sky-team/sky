@@ -51,6 +51,28 @@ public final class Keys {
     public static String WS_REQUEST_HANNDLER = "/wsmain";
     
     }
+    public static final class WSAppMapping{
+        private WSAppMapping(){}
+        public final static int UML_COLLAPORATION_ID = 1;
+        public final static int TEAM_CHAT_ID = 2;
+        public final static int AUTO_SAVE_ID = 3;
+        
+    }
+    public static final class JSONMapping{
+        private JSONMapping(){}
+        
+        public final static String APP_ID = "app-id";
+        public final static String REQUEST_INFO = "request-info";
+        
+        public static final class RequestInfo{
+            private RequestInfo(){}
+            public final static String REQUEST_TYPE = "request-type";
+            public final static String PROJECT_NAME = "project-name";
+            public final static String PROJECT_OWNER = "project-owner";
+            public final static String DIAGRAM_NAME ="diagram-name";
+            
+        }
+    }
     
     
 

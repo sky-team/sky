@@ -68,7 +68,8 @@ public class Project {
     public User getUser(Connection connection) throws SQLException{
         return User.selectByUserId(connection, userId); 
     }
-
+    
+    //what about the diagrams !!
     public static Project select(Connection connection , int user_id , String project_name)throws SQLException{
         Project pr = null;
         

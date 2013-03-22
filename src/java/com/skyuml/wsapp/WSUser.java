@@ -2,12 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.skyuml.umlcollaboration;
+package com.skyuml.wsapp;
 
 import com.skyuml.business.User;
+import com.skyuml.wsapp.umlcollaboration.CollaborationUML;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.util.ArrayList;
 import org.apache.catalina.websocket.MessageInbound;
 
 /**
@@ -17,28 +19,39 @@ import org.apache.catalina.websocket.MessageInbound;
 public class WSUser extends MessageInbound{
 
     User userInfo;
-    CollaborationUML application;
+    ArrayList<WSApp> applications;
     
-    public WSUser(User usInf,CollaborationUML app){
+    public WSUser(User usInf){
         userInfo = usInf;
-        application = app;
+        applications = new ArrayList<WSApp>();
+        
         
     }
     
     @Override
     protected void onBinaryMessage(ByteBuffer bb) throws IOException {
-        application.onBinaryMessage(bb, this);
+        
+        for (WSApp wsApp : applications) {
+            wsApp.onBinaryMessage(bb, this);          
+        }
     }
 
     @Override
     protected void onTextMessage(CharBuffer cb) throws IOException {
-        application.onTextMessage(cb.toString(), this);
+        
+        String msg = cb.toString();
+        for (WSApp wsApp : applications) {
+            wsApp.onTextMessage(msg, this);          
+        }
     }
 
     @Override
     protected void onClose(int status) {
         super.onClose(status);
-        application.onClose(status, this);
+        
+        for (WSApp wsApp : applications) {
+            wsApp.onClose(status, this);          
+        }
     }
     
     public User getUserInformation(){
@@ -51,6 +64,14 @@ public class WSUser extends MessageInbound{
     
     public void sendBinaryMessage(ByteBuffer bf)throws IOException{
         getWsOutbound().writeBinaryMessage(bf);
+    }
+    
+    public void registerWSApplication(WSApp app){
+        applications.add(app);
+    }
+    
+    public void removeWSApplication(WSApp app){
+        applications.remove(app);
     }
     
 }

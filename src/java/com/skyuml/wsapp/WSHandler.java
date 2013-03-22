@@ -2,22 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.skyuml.umlcollaboration;
+package com.skyuml.wsapp;
 
 import com.skyuml.business.User;
-import com.skyuml.umlcollaboration.CollaborationUML;
-import com.skyuml.umlcollaboration.CollaborationUML;
-import com.skyuml.umlcollaboration.ProjectManager;
-import com.skyuml.umlcollaboration.WSUser;
-import com.skyuml.umlcollaboration.WSUser;
+import com.skyuml.wsapp.umlcollaboration.CollaborationUML;
 import com.skyuml.utils.Keys;
-import java.io.IOException;
-import java.io.PrintWriter;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
+import com.skyuml.wsapp.autosave.UMLAutoSave;
+import com.skyuml.wsapp.teamchat.TeamChat;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
 
@@ -26,17 +18,24 @@ import org.apache.catalina.websocket.WebSocketServlet;
  * @author Hamza
  */
 public class WSHandler extends WebSocketServlet {
-    CollaborationUML app;
+    CollaborationUML umlApp;
+    UMLAutoSave autoSaveApp;
+    TeamChat chatApp;
     
     public WSHandler(){
-        app = new CollaborationUML();
+        umlApp = new CollaborationUML(Keys.WSAppMapping.UML_COLLAPORATION_ID);
+        autoSaveApp = new UMLAutoSave(Keys.WSAppMapping.AUTO_SAVE_ID);
+        chatApp = new TeamChat(Keys.WSAppMapping.AUTO_SAVE_ID);
     }
     
     @Override
     protected StreamInbound createWebSocketInbound(String string, HttpServletRequest hsr) {
         User us = null;//(User)hsr.getSession().getAttribute(Keys.SessionAttribute.USER);
-        WSUser user = new WSUser(us, app);
+        WSUser user = new WSUser(us);
         
+        user.registerWSApplication(umlApp);
+        user.registerWSApplication(autoSaveApp);
+        user.registerWSApplication(chatApp);
         
         return user;
         
