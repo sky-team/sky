@@ -4,6 +4,7 @@
  */
 package com.skyuml.wsapp;
 
+import com.skyuml.utils.Tuple;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class WSGroup {
     boolean includeSender;
     Thread broadcastMessages;
     final int SLEEP_TIME = 100;
+    Object lock;
     
     public WSGroup(boolean inCludeSender){
         this.includeSender = inCludeSender;
@@ -31,6 +33,7 @@ public class WSGroup {
         
         textMessages = new ConcurrentLinkedQueue<Tuple<String,WSUser>>();
         binaryMessages = new ConcurrentLinkedQueue<Tuple<ByteBuffer, WSUser>>();
+        lock = new Object();
         
         broadcastMessages = new Thread(new Runnable() {
 
@@ -61,11 +64,7 @@ public class WSGroup {
         broadcastMessages.start();
     }
     
-    public void addMember(WSUser member){
-        if(members.indexOf(member) == -1){
-            members.add(member);
-        }
-    }
+
     
     public int numberOfMembers(){
         return members.size();
@@ -74,8 +73,19 @@ public class WSGroup {
     public boolean isMemberExist(WSUser user){
         return (members.indexOf(user) == -1)?false:true;
     }
+    
+    public void addMember(WSUser member){
+        synchronized(lock){
+            if(members.indexOf(member) == -1){
+                members.add(member);
+            }
+        }
+    }
+    
     public void removeMember(WSUser member){
-        members.add(member);
+        synchronized(lock){
+            members.add(member);
+        }
     }
     
     public void pushTextMessage(String msg, WSUser sender){
@@ -88,7 +98,7 @@ public class WSGroup {
     
     private void broadcastTextMessage(String msg, WSUser sender){
         
-        
+        synchronized(lock){
         if(members.size() <= 0)
             return;
         
@@ -116,12 +126,12 @@ public class WSGroup {
                 }
             }
         }
-        
+        }
     }
     
     private void broadcastBinatyMessage(ByteBuffer buf, WSUser sender){
         
-        
+        synchronized(lock){
         if(members.size() <= 0)
             return;
         
@@ -150,7 +160,7 @@ public class WSGroup {
                 }
             }
         }
-        
+        }   
     }
     
 }

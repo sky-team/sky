@@ -9,6 +9,8 @@ import com.skyuml.logic.IndexModel;
 import com.skyuml.logic.ModelManager;
 import com.skyuml.logic.Modelable;
 import com.skyuml.logic.OpenProjectModel;
+import com.skyuml.logic.OpenWSConnectionModel;
+import com.skyuml.logic.TestWSModel;
 import java.io.IOException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -28,7 +30,8 @@ public class SkyUMLRequestDispatcher extends HttpServlet {
         manager = ModelManager.getInstance();
         
         //here setup the models
-        //manager.put(1,new OpenProjectModel());
+        manager.put(1,new TestWSModel());
+        manager.put(2, new OpenWSConnectionModel());
         
     }
     

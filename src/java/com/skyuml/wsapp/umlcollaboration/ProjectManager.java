@@ -66,7 +66,53 @@ public class ProjectManager {
         }
     }
     
-    public void closeProject(WSUser user){
+    public void closeDiagram(JSONObject requestInfo,WSUser sender)throws JSONException{
+        String progName = requestInfo.getString(Keys.JSONMapping.RequestInfo.PROJECT_NAME);
+        String diaName = requestInfo.getString(Keys.JSONMapping.RequestInfo.DIAGRAM_NAME);
+        int progOwnerId = requestInfo.getInt(Keys.JSONMapping.RequestInfo.PROJECT_OWNER);
         
+        Project prog = getProject(progName, progOwnerId);
+        
+        if(prog != null){
+            projects.get(prog).closeDiagram(diaName, sender);
+            
+        }
+        
+    }
+    
+    public void closeProject(JSONObject requestInfo,WSUser sender)throws JSONException{
+        String progName = requestInfo.getString(Keys.JSONMapping.RequestInfo.PROJECT_NAME);
+        int progOwnerId = requestInfo.getInt(Keys.JSONMapping.RequestInfo.PROJECT_OWNER);
+        
+        Project prog = getProject(progName, progOwnerId);
+        
+        if(prog != null){
+            projects.get(prog).closeAllDiagrams(sender);
+            
+        }
+    }
+    
+    public void notifyDiagramContentChanged(JSONObject jo ,WSUser sender) throws JSONException{
+        JSONObject reqeustInfo = jo.getJSONObject(Keys.JSONMapping.REQUEST_INFO);
+        String progN = reqeustInfo.getString(Keys.JSONMapping.RequestInfo.PROJECT_NAME);
+        String diaName = reqeustInfo.getString(Keys.JSONMapping.RequestInfo.DIAGRAM_NAME);
+        int ownerid = reqeustInfo.getInt(Keys.JSONMapping.RequestInfo.PROJECT_OWNER);
+        
+        Project prog = getProject(progN, ownerid);
+        if(prog != null){
+            projects.get(prog).notifyContentChanged(jo.toString(), diaName, sender);
+        }
+    }
+    
+    public void notifyDiagranInformationChanged(JSONObject jo,WSUser sender) throws JSONException{
+        JSONObject reqeustInfo = jo.getJSONObject(Keys.JSONMapping.REQUEST_INFO);
+        String progN = reqeustInfo.getString(Keys.JSONMapping.RequestInfo.PROJECT_NAME);
+        String diaName = reqeustInfo.getString(Keys.JSONMapping.RequestInfo.DIAGRAM_NAME);
+        int ownerid = reqeustInfo.getInt(Keys.JSONMapping.RequestInfo.PROJECT_OWNER);
+        
+        Project prog = getProject(progN, ownerid);
+        if(prog != null){
+            projects.get(prog).notifyInformationChanged(jo.toString(), diaName, sender);
+        }
     }
 }

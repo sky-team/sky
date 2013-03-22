@@ -120,5 +120,25 @@ public class DiagramManager {
         }
     }
     
+    public void closeAllDiagrams(WSUser sender){
+        for (String string : diagramsName) {
+            closeDiagram(string, sender);
+        }
+    }
+    
+    public void notifyContentChanged(String msg,String dianame, WSUser sender){
+        Diagram dia = getDiagramByName(dianame);
+        if(dia != null){
+            diagrams.get(dia).pushTextMessage(msg, sender);
+        }
+    }
+    
+    public void notifyInformationChanged(String msg,String dianame, WSUser sender){
+        Diagram dia = getDiagramByName(dianame);
+        if(dia != null){
+            diagrams.get(dia).pushTextMessage(msg, sender);
+        }
+    }
+    
     
 }

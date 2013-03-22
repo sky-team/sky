@@ -42,6 +42,7 @@ public final class Keys {
     
     public static String INDEX_ERROR_VIEW = "/views/error.jsp";
     public static String OPEN_PROJECT_VIEW = "/views/openProjectView.jsp";
+    public static String TEST_WS_VIEW = "/views/testws.jsp";
     
     }
     
