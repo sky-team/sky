@@ -18,7 +18,7 @@ import org.apache.catalina.websocket.MessageInbound;
  */
 public class WSUser extends MessageInbound{
 
-    User userInfo;
+    protected User userInfo;
     ArrayList<WSApp> applications;
     
     public WSUser(User usInf){
@@ -72,6 +72,11 @@ public class WSUser extends MessageInbound{
     
     public void removeWSApplication(WSApp app){
         applications.remove(app);
+    }
+    
+    public String getFullName(){
+        //String fullName = String.format("%s %s", userInfo.getFirstName(),userInfo.getLastName());
+        return "test1 test2";//fullName;
     }
     
 }

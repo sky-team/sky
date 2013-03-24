@@ -25,7 +25,7 @@ public class WSHandler extends WebSocketServlet {
     public WSHandler(){
         umlApp = new CollaborationUML(Keys.WSAppMapping.UML_COLLAPORATION_ID);
         autoSaveApp = new UMLAutoSave(Keys.WSAppMapping.AUTO_SAVE_ID);
-        chatApp = new TeamChat(Keys.WSAppMapping.AUTO_SAVE_ID);
+        chatApp = new TeamChat(Keys.WSAppMapping.TEAM_CHAT_ID);
     }
     
     @Override
@@ -35,7 +35,7 @@ public class WSHandler extends WebSocketServlet {
         
         user.registerWSApplication(umlApp);
         //user.registerWSApplication(autoSaveApp);
-        //user.registerWSApplication(chatApp);
+        user.registerWSApplication(chatApp);
         
         return user;
         

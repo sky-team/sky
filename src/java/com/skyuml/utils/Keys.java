@@ -71,6 +71,8 @@ public final class Keys {
             public final static String PROJECT_NAME = "project-name";
             public final static String PROJECT_OWNER = "project-owner";
             public final static String DIAGRAM_NAME ="diagram-name";
+            public final static String USER_COLOR ="user-color";
+            public final static String USER_FULL_NAME ="user-full-name";
             
         }
     }

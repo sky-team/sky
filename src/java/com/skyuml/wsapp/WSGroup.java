@@ -103,26 +103,27 @@ public class WSGroup {
         
         if(includeSender){
             for (WSUser user : members) {
-                try{
+ 
                     synchronized(user){
-                        user.sendTextMessage(msg);
-                    }
-                }catch(IOException exp){
-                    exp.printStackTrace();
-                }
+                        try{
+                            user.sendTextMessage(msg);
+                        }catch(IOException ex){
+                           members.remove(user);
+                        }
+                        }
             }
         }else{
             for (WSUser user : members) {
-                try{
+                synchronized(user){
                     if(!user.equals(sender)){
-                        
-                        synchronized(user){
+                         try{
                             user.sendTextMessage(msg);
+                        }catch(IOException ex){
+                           members.remove(user);
+                        }
                         }
                     }
-                }catch(IOException exp){
-                    exp.printStackTrace();
-                }
+                
             }
         }
         }
