@@ -89,7 +89,17 @@ public class DiagramManager {
             return false;
         
         if(!isDiagramOpened(dia_name)){
-            Diagram dia =null;//Diagram.load(diaId);
+            Diagram dia =new Diagram("b") {
+                @Override
+                public void writeExternal(ObjectOutput out) throws IOException {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+                
+                @Override
+                public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+            };//null;//Diagram.load(diaId);
             if(dia != null){
                 diagrams.put(dia, new WSGroup(false));
             }

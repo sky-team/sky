@@ -81,14 +81,14 @@ public class CollaborationUML implements WSApp {
             case  1 :pManager.openDiagram(requestInfo, sender);//i sent only the request-info [sub JSON]
                 break;
                 
-            case  2 :pManager.closeDiagram(requestInfo, sender);
+            case  2 :pManager.closeDiagram(requestInfo, sender);//i sent only the request-info [sub JSON]
                 break;
-            case -2 :pManager.closeProject(requestInfo, sender);
+            case -2 :pManager.closeProject(requestInfo, sender);//i sent only the request-info [sub JSON]
                 break;
                 
-            case  3 :pManager.notifyDiagramContentChanged(jo, sender);
+            case  3 :pManager.notifyDiagramContentChanged(jo, sender);//i sent all the request
                 break;
-            case -3 :pManager.notifyDiagranInformationChanged(jo, sender);
+            case -3 :pManager.notifyDiagranInformationChanged(jo, sender);//i sent all the request
                 break;
                 
             case  4 :break;

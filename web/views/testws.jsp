@@ -14,8 +14,8 @@
         <script type="text/javascript">
             var ws;
             function startConnection() {
-                var ip = "192.168.3.104";
-                var port = "8080";
+                var ip = "localhost";
+                var port = "8084";
                 
                 var url = "ws://"+ip+":"+port+"/SkyUML/main?id=2"
                 

@@ -42,12 +42,12 @@ public class ProjectManager {
         
         if(prog == null){
             
-            try{
-                prog = Project.select(DefaultDatabase.getInstance().getConnection(), owner_id, prog_name);
-                projects.put(prog, new DiagramManager(prog.getDiagramsName()));
-            }catch(SQLException exp){
+            //try{
+                prog = new Project(1, "a");//Project.select(DefaultDatabase.getInstance().getConnection(), owner_id, prog_name);
+                projects.put(prog, new DiagramManager(new String[]{"b"}));//prog.getDiagramsName()));
+            /*}catch(SQLException exp){
                 exp.printStackTrace();
-            }
+            }*/
         }
         
         return prog;
