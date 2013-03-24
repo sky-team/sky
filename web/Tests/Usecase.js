@@ -10,7 +10,7 @@ function Usecase(){
     
     this.methods = new Array();
     this.attributes = new Array();
-    
+    this.connections = new Array();
     this.x = 0;
     this.y = 0;
     this.width = 0;
@@ -46,24 +46,6 @@ Usecase.prototype.setup = function(ctx){
     this.title.x = this.x;
     this.title.y = this.y + this.title.fontSize;
     
-    
-}
-
-Usecase.prototype.hasPoints = function(mx,my){
-    return (mx >= this.x && mx < (this.x+this.width)) && (my >= this.y && my <= (this.y+this.height));
-}
-
-Usecase.prototype.draw = function(ctx){
-    ctx.strokeStyle= this.drawColor;
-    ctx.rect(this.x, this.y, this.width, this.height);
-    ctx.stroke();
-    
-    this.setup(ctx);
-    
-    this.title.draw(ctx);
-    this.line1.draw(ctx);
-    this.line2.draw(ctx);
-    
     var part = 0;
         
     var cur_part = 0;
@@ -77,10 +59,9 @@ Usecase.prototype.draw = function(ctx){
             this.methods[i].height = part;
             this.methods[i].x = this.x;
             this.methods[i].setup(ctx);
-            this.methods[i].drawColor = this.drawColor;
             this.methods[i].y = this.line1.y1 + cur_part + this.methods[i].fontSize;
-            
-            this.methods[i].draw(ctx);
+            this.methods[i].drawColor = this.drawColor;
+            this.methods[i].clearColor = this.clearColor;
             cur_part += part;
         }
     }
@@ -98,8 +79,42 @@ Usecase.prototype.draw = function(ctx){
             this.attributes[i].setup(ctx);
             this.attributes[i].y = this.line2.y1 + cur_part + this.attributes[i].fontSize;
             this.attributes[i].drawColor = this.drawColor;
-            this.attributes[i].draw(ctx);
+            this.attributes[i].clearColor = this.clearColor;
             cur_part += part;
+        }
+    }
+
+    for (i = 0; i < this.connections.length; i++) {
+        this.connections[i].setup(ctx);
+    }
+}
+
+Usecase.prototype.hasPoints = function(mx,my){
+    return (mx >= this.x && mx < (this.x+this.width)) && (my >= this.y && my <= (this.y+this.height));
+}
+
+Usecase.prototype.draw = function(ctx){
+    ctx.strokeStyle= this.drawColor;
+    ctx.rect(this.x, this.y, this.width, this.height);
+    ctx.stroke();
+    
+    //this.setup(ctx);
+    
+    this.title.draw(ctx);
+    this.line1.draw(ctx);
+    this.line2.draw(ctx);
+
+    if(this.methods.length != 0)
+    {
+        for (i = 0; i < this.methods.length; i++) {
+            this.methods[i].draw(ctx);
+        }
+    }
+    
+    if(this.attributes.length != 0)
+    {
+        for (i = 0; i < this.attributes.length; i++) {
+            this.attributes[i].draw(ctx);
         }
     }
     
@@ -119,37 +134,15 @@ Usecase.prototype.clear = function(ctx){
     
     if(this.methods.length != 0)
     {
-        part = (this.line2.y1 - this.line1.y1) / this.methods.length;
-        
         for (i = 0; i < this.methods.length; i++) {
-
-            this.methods[i].width = this.width;
-            this.methods[i].height = part;
-            this.methods[i].x = this.x;
-            this.methods[i].setup(ctx);
-            this.methods[i].y = this.line1.y1 + cur_part + this.methods[i].fontSize;
-            this.methods[i].clearColor = this.clearColor;
             this.methods[i].clear(ctx);
-            cur_part += part;
         }
     }
     
     if(this.attributes.length != 0)
     {
-        part = ((this.height + this.y) - this.line2.y1) / this.attributes.length;
-        
-        cur_part = 0;
-        
         for (i = 0; i < this.attributes.length; i++) {
-
-            this.attributes[i].width = this.width;
-            this.attributes[i].height = part;
-            this.attributes[i].x = this.x;
-            this.attributes[i].setup(ctx);
-            this.attributes[i].y = this.line2.y1 + cur_part + this.attributes[i].fontSize;
-            this.attributes[i].clearColor = this.clearColor;
             this.attributes[i].clear(ctx);
-            cur_part += part;
         }
     }
 }

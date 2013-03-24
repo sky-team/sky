@@ -95,11 +95,9 @@ Connection.prototype.setup = function(ctx){
 }
 
 Connection.prototype.draw = function(ctx){
-    this.setup(ctx);
     this.line.draw(ctx);
 }
 
 Connection.prototype.clear = function(ctx){
-    this.setup(ctx);
     this.line.clear(ctx);
 }

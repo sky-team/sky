@@ -58,6 +58,7 @@ and open the template in the editor.
                         
                         shape.attributes.push(new Text("+attribute1"));
                         shape.attributes.push(new Text("+attribute2"));
+                        shape.setup(context);
                         shape.draw(context);
                         shapes.push(shape);
                         
@@ -73,9 +74,11 @@ and open the template in the editor.
                                         var con = new Connection(con_source, con_dest);
                                         con.line.drawColor = "red";
                                         con.line.clearColor = "rgb(230,230,230)";
+                                        con.setup(context);
                                         con.draw(context);
                                         connections.push(con);
-                                    
+                                        con_source.connections.push(con);
+                                        con_dest.connections.push(con);
                                         con_source = null;
                                         con_dest = null;
                                     }
@@ -89,7 +92,6 @@ and open the template in the editor.
             function mouseUp() {
                 drag = false;
                 cur_shape = null;
-                //mode  = "x";
             }
 
             function refresh(){
@@ -111,10 +113,12 @@ and open the template in the editor.
                     if(mode == "move"){
                         cur_shape.x = x;
                         cur_shape.y = y;
+                        cur_shape.setup(context);
                     }else{
                         if(mode == "resize"){
                             cur_shape.width =  Math.abs(x - cur_shape.x);
                             cur_shape.height = Math.abs(y - cur_shape.y);
+                            cur_shape.setup(context);
                         } 
                     }
                     refresh();   
@@ -140,15 +144,28 @@ and open the template in the editor.
                 mode = "none";
                 mode_label.value = mode;
             }
-            
+            var line;
             function placeMode(){
                 mode = "place";
                 mode_label.value = mode;
+                
+                line = new Line();
+                line.x1 = 10;
+                line.x2 = 100;
+                line.y1 = 20;
+                line.y2 = 200;
+                
+                line.drawColor = "black";
+                line.clearColor = drawCanvas.style.backgroundColor;
+                
+                line.draw(context);
             }
             
             function resizeMode(){
                 mode = "resize";
                 mode_label.value = mode;
+                
+                line.clear(context);
             }
              
             function moveMode(){   
@@ -163,7 +180,7 @@ and open the template in the editor.
                 
                 tri.drawColor = "red";
                 tri.clearColor = "rgb(230,230,230)";
-                
+                tri.setup(context);
                 tri.draw(context);
                 
                 mode = "move";
@@ -183,18 +200,20 @@ and open the template in the editor.
             }
             
             function incTri(){
-                tri.clear(context);
+                clearDraw();
                 
                 tri.rotation ++;
                 
+                tri.setup(context);
                 tri.draw(context);
             }
             
             function dicTri(){
-                tri.clear(context);
+                clearDraw();
                 
                 tri.rotation --;
                 
+                tri.setup(context);
                 tri.draw(context);
             }
         </script>
