@@ -5,8 +5,8 @@
 package com.skyuml.logic;
 
 import com.skyuml.business.Project;
-import com.skyuml.utils.Keys;
 import com.skyuml.datamanagement.DefaultDatabase;
+import com.skyuml.utils.Keys;
 import com.skyuml.utils.RequestTools;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -14,9 +14,6 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
-
 
 /**
  *

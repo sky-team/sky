@@ -7,7 +7,6 @@ package com.skyuml.utils;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 /**
  *

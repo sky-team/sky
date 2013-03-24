@@ -1,0 +1,218 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="Utils.js"></script>
+        <script type="text/javascript" src="Text.js"></script>
+        <script type="text/javascript" src="Line.js"></script>
+        <script type="text/javascript" src="Usecase.js"></script>
+        <script type="text/javascript" src="Triangle.js"></script>
+        <script type="text/javascript" src="Connection.js"></script>       
+        <script type="text/javascript">
+            var mode = 0;
+            var mouse_down = false;
+            var shape_type = -1;
+            var drawCanvas = null
+            var context;
+            var cur_shape = null;
+            
+            var shapes = new Array();
+            var connections = new Array();
+            
+            var xy_label;
+            var mode_label;
+            
+            var con_source = null;
+            var con_dest = null;
+            
+            var tri;
+            
+            function mouseDown(e) {
+                //alert(mode);
+                if(mode == "resize" || mode == "move"){
+                    for (i = shapes.length - 1; i > -1; i--) {
+                        if(shapes[i].hasPoints(e.pageX - this.offsetLeft,e.pageY - this.offsetTop)){
+                            cur_shape = shapes[i];
+                            break;
+                        }
+                    }
+                    drag = cur_shape != null;
+                }else{
+                    if(mode == "place"){
+                        var shape = new Usecase();
+                        
+                        shape.x = e.pageX - this.offsetLeft;
+                        shape.y = e.pageY - this.offsetTop;
+                        shape.width = 100;
+                        shape.height = 200;
+                        shape.drawColor = "Red";
+                        shape.clearColor = "rgb(230,230,230)";
+                        shape.title.text = "Usecase";
+                        shape.methods.push(new Text("+method1"));
+                        shape.methods.push(new Text("+method2"));
+                        
+                        shape.attributes.push(new Text("+attribute1"));
+                        shape.attributes.push(new Text("+attribute2"));
+                        shape.draw(context);
+                        shapes.push(shape);
+                        
+                    }else
+                        if(mode == "connect"){
+                            for (i = shapes.length - 1; i > -1; i--) {
+                                if(shapes[i].hasPoints(e.pageX - this.offsetLeft,e.pageY - this.offsetTop)){
+                                    if(con_source == null){
+                                        con_source = shapes[i];
+                                    }
+                                    else{
+                                        con_dest = shapes[i];
+                                        var con = new Connection(con_source, con_dest);
+                                        con.line.drawColor = "red";
+                                        con.line.clearColor = "rgb(230,230,230)";
+                                        con.draw(context);
+                                        connections.push(con);
+                                    
+                                        con_source = null;
+                                        con_dest = null;
+                                    }
+                                    break;
+                                }
+                        }
+                    }
+                }
+            }
+
+            function mouseUp() {
+                drag = false;
+                cur_shape = null;
+                //mode  = "x";
+            }
+
+            function refresh(){
+                clearDraw();
+                for (d = 0; d < shapes.length; d++) {
+                    shapes[d].draw(context);
+                }
+                
+                for (z = 0; z < connections.length; z++) {
+                    connections[z].draw(context);
+                }
+            }
+
+            function mouseMove(e) {
+                var x = (e.pageX - this.offsetLeft);
+                var y = (e.pageY - this.offsetTop);
+                xy_label.value = "{"+x+","+y+"}";
+                if (drag) {
+                    if(mode == "move"){
+                        cur_shape.x = x;
+                        cur_shape.y = y;
+                    }else{
+                        if(mode == "resize"){
+                            cur_shape.width =  Math.abs(x - cur_shape.x);
+                            cur_shape.height = Math.abs(y - cur_shape.y);
+                        } 
+                    }
+                    refresh();   
+                }
+                
+                
+            }
+            
+            function init(){
+                drawCanvas = document.getElementById("canvas");
+                
+                drawCanvas.addEventListener('mousedown', mouseDown, false);
+                drawCanvas.addEventListener('mouseup', mouseUp, false);
+                drawCanvas.addEventListener('mousemove', mouseMove, false);
+                
+                context = drawCanvas.getContext('2d');
+                
+                xy_label = document.getElementById("xylabel");
+                mode_label = document.getElementById("modelabel");
+            }
+            
+            function noneMode(){
+                mode = "none";
+                mode_label.value = mode;
+            }
+            
+            function placeMode(){
+                mode = "place";
+                mode_label.value = mode;
+            }
+            
+            function resizeMode(){
+                mode = "resize";
+                mode_label.value = mode;
+            }
+             
+            function moveMode(){   
+                
+                tri = new Triangle();
+                
+                tri.x = 100;
+                tri.y = 100;
+                tri.size = 20;
+                
+                tri.rotation = 0;
+                
+                tri.drawColor = "red";
+                tri.clearColor = "rgb(230,230,230)";
+                
+                tri.draw(context);
+                
+                mode = "move";
+                mode_label.value = mode;
+            }
+            
+            function connectMode(){               
+                mode = "connect";
+                mode_label.value = mode;
+            }
+            
+            function clearDraw(){
+                context.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+                var w = drawCanvas.width;
+                drawCanvas.width = 1;
+                drawCanvas.width = w;
+            }
+            
+            function incTri(){
+                tri.clear(context);
+                
+                tri.rotation ++;
+                
+                tri.draw(context);
+            }
+            
+            function dicTri(){
+                tri.clear(context);
+                
+                tri.rotation --;
+                
+                tri.draw(context);
+            }
+        </script>
+    </head>
+    <body onload="init();">
+        <form>
+            <input type="button" onclick="noneMode();" value="none" /> 
+            <input type="button" onclick="placeMode();" value="place" /> 
+            <input type="button" onclick="resizeMode();" value="resize" /> 
+            <input type="button" onclick="moveMode();" value="move" /> 
+            <input type="button" onclick="connectMode();" value="connect" /> 
+            <input type="button" onclick="clearDraw();" value="clear" /> 
+            <input type="button" onclick="refresh();" value="refresh" />
+            <input type="text" id="xylabel"/>
+            <input type="text" id="modelabel"/>
+            <input type="button" onclick="incTri();" value="+" /> 
+            <input type="button" onclick="dicTri();" value="-" />
+        </form>
+        <canvas id="canvas" width="1200" height="600" style="border: 2px solid #000000;background-color:rgb(230,230,230);"></canvas>
+    </body>
+</html>
