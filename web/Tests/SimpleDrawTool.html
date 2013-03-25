@@ -7,12 +7,15 @@ and open the template in the editor.
     <head>
         <title></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="Drawable.js"></script>
+        <script type="text/javascript" src="UmlElement.js"></script>
         <script type="text/javascript" src="Utils.js"></script>
+        <script type="text/javascript" src="BlurEffects.js"></script>
         <script type="text/javascript" src="Text.js"></script>
         <script type="text/javascript" src="Line.js"></script>
-        <script type="text/javascript" src="Usecase.js"></script>
+        <script type="text/javascript" src="ClassDiagram.js"></script>
         <script type="text/javascript" src="Triangle.js"></script>
-        <script type="text/javascript" src="Connection.js"></script>       
+        <script type="text/javascript" src="Association.js"></script>
         <script type="text/javascript">
             var mode = 0;
             var mouse_down = false;
@@ -30,9 +33,18 @@ and open the template in the editor.
             var con_source = null;
             var con_dest = null;
             
-            var tri;
+            var effect;
+            var fis = true;
             
+            var last_selected = null;
             function mouseDown(e) {
+/*                if(line != null){
+                    //alert(line.toStr());
+                    if(line.hasPoints(e.pageX - this.offsetLeft,e.pageY - this.offsetTop)){
+                        alert("Has Points");
+                    }
+                }
+                return;*/
                 //alert(mode);
                 if(mode == "resize" || mode == "move"){
                     for (i = shapes.length - 1; i > -1; i--) {
@@ -44,7 +56,7 @@ and open the template in the editor.
                     drag = cur_shape != null;
                 }else{
                     if(mode == "place"){
-                        var shape = new Usecase();
+                        var shape = new ClassDiagram();
                         
                         shape.x = e.pageX - this.offsetLeft;
                         shape.y = e.pageY - this.offsetTop;
@@ -52,12 +64,16 @@ and open the template in the editor.
                         shape.height = 200;
                         shape.drawColor = "Red";
                         shape.clearColor = "rgb(230,230,230)";
-                        shape.title.text = "Usecase";
+                        shape.title.text = "Classx";
                         shape.methods.push(new Text("+method1"));
                         shape.methods.push(new Text("+method2"));
                         
                         shape.attributes.push(new Text("+attribute1"));
                         shape.attributes.push(new Text("+attribute2"));
+                        /*if(fis){
+                            fis = false;
+                            shape.effects.push(effect);
+                        }*/
                         shape.setup(context);
                         shape.draw(context);
                         shapes.push(shape);
@@ -71,9 +87,9 @@ and open the template in the editor.
                                     }
                                     else{
                                         con_dest = shapes[i];
-                                        var con = new Connection(con_source, con_dest);
-                                        con.line.drawColor = "red";
-                                        con.line.clearColor = "rgb(230,230,230)";
+                                        var con = new Association(con_dest, con_source);
+                                        con.drawColor = "red";
+                                        con.clearColor = "rgb(230,230,230)";
                                         con.setup(context);
                                         con.draw(context);
                                         connections.push(con);
@@ -85,19 +101,55 @@ and open the template in the editor.
                                     break;
                                 }
                         }
+                    }else
+                        if(mode == "select"){
+                            for (i = shapes.length - 1; i > -1; i--) {
+                                if(shapes[i].hasPoints(e.pageX - this.offsetLeft,e.pageY - this.offsetTop)){
+                                    if(last_selected == shapes[i])
+                                        return;
+                                    if(last_selected != null){
+                                        var index = last_selected.effects.indexOf(effect);
+                                        if(index > -1){
+                                            last_selected.effects.splice(index, 1);
+                                        }
+                                    }
+                                    
+                                    last_selected = shapes[i];
+                                    
+                                    last_selected.effects.push(effect);
+                                    last_selected.draw(context);
+                                    refresh();
+                                    return;
+                                }
+                            }
                     }
                 }
             }
 
             function mouseUp() {
                 drag = false;
-                cur_shape = null;
+                
+                if(mode != "select"){
+                    cur_shape = null;
+                }
+            }
+
+            
+            function clearDraw(){
+                context.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+                var w = drawCanvas.width;
+                drawCanvas.width = 1;
+                drawCanvas.width = w;
+                //doted();
             }
 
             function refresh(){
                 clearDraw();
+                //alert(shapes.length + "");
                 for (d = 0; d < shapes.length; d++) {
+                    //  alert(d + "x");
                     shapes[d].draw(context);
+                    //  alert(d + "x");
                 }
                 
                 for (z = 0; z < connections.length; z++) {
@@ -128,6 +180,7 @@ and open the template in the editor.
             }
             
             function init(){
+                
                 drawCanvas = document.getElementById("canvas");
                 
                 drawCanvas.addEventListener('mousedown', mouseDown, false);
@@ -138,6 +191,34 @@ and open the template in the editor.
                 
                 xy_label = document.getElementById("xylabel");
                 mode_label = document.getElementById("modelabel");
+                
+                effect = new BlurEffects("rgba(255,50,50,250)", 5);
+                effect.shadowColor = "rgba(0,0,255,255)";
+                effect.shadowBlur = 4;
+/*
+                line = new Line();
+                line.drawColor = "Black";
+                line.x1 = 50;
+                line.x2 = 150;
+                line.y1 = 50;
+                line.y2 = 50;
+
+                line.setup(context);
+                line.draw(context);*/
+                //doted();
+            }
+            
+            function doted(){
+                var spacing = 100;
+                for(var i = 0 ; i < drawCanvas.height ; i+=spacing){
+                        context.beginPath();
+                        context.setLineDash([1,spacing]);
+                        context.moveTo(0,i + spacing);
+                        context.lineTo(drawCanvas.width,i + spacing);
+                        context.stroke();
+                        context.closePath();
+                }
+                context.setLineDash([1,0]);
             }
             
             function noneMode(){
@@ -148,90 +229,117 @@ and open the template in the editor.
             function placeMode(){
                 mode = "place";
                 mode_label.value = mode;
-                
-                line = new Line();
-                line.x1 = 10;
-                line.x2 = 100;
-                line.y1 = 20;
-                line.y2 = 200;
-                
-                line.drawColor = "black";
-                line.clearColor = drawCanvas.style.backgroundColor;
-                
-                line.draw(context);
             }
             
             function resizeMode(){
                 mode = "resize";
                 mode_label.value = mode;
-                
-                line.clear(context);
             }
              
             function moveMode(){   
-                
-                tri = new Triangle();
-                
-                tri.x = 100;
-                tri.y = 100;
-                tri.size = 20;
-                
-                tri.rotation = 0;
-                
-                tri.drawColor = "red";
-                tri.clearColor = "rgb(230,230,230)";
-                tri.setup(context);
-                tri.draw(context);
                 
                 mode = "move";
                 mode_label.value = mode;
             }
             
-            function connectMode(){               
+            function connectMode(){            
                 mode = "connect";
                 mode_label.value = mode;
             }
             
-            function clearDraw(){
-                context.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
-                var w = drawCanvas.width;
-                drawCanvas.width = 1;
-                drawCanvas.width = w;
+            function selectMode(){               
+                mode = "select";
+                mode_label.value = mode;
+            }
+
+            var order = 0;
+            function testSh(){
+                var dd = new ClassDiagram();
+                effect.shadowColor = "rgba(0,0,255,255)";
+                effect.shadowBlur = 4;
+                effect.startEffects(context);
+                dd.x = 300;
+                dd.y = 20;
+                //dd.lineWidth = 5;
+                dd.drawColor = "rgb(0,0,0)"
+                dd.width = 100;
+                dd.height = 200;
+                dd.title.text = "Hello : "+order;
+                //dd.effects.push(effect);
+                dd.setup(context);
+                dd.draw(context);
+                effect.endEffects(context);
+                order++;
             }
             
-            function incTri(){
-                clearDraw();
+            function testNsh(){
                 
-                tri.rotation ++;
+                //context.sha
+                var ddx = new ClassDiagram();
                 
-                tri.setup(context);
-                tri.draw(context);
+                ddx.x = 10;
+                ddx.y = 20;
+                
+                ddx.width = 100;
+                ddx.height = 200;
+                ddx.title.text = "Hello : "+order;
+                ddx.setup(context);
+                ddx.draw(context);
+                
+                order++;
             }
             
-            function dicTri(){
-                clearDraw();
-                
-                tri.rotation --;
-                
-                tri.setup(context);
-                tri.draw(context);
+            function editAttributes(){
+                if(last_selected != null){
+                    //alert(document.getElementById("attrib").value);
+                    clearDraw();
+                    last_selected.attributes.push(new Text(document.getElementById("property").value));
+                    last_selected.setup(context);
+                    refresh();
+                }
             }
+            
+            function editMethods(){
+                if(last_selected != null){
+                    //alert(document.getElementById("attrib").value);
+                    clearDraw();
+                    last_selected.methods.push(new Text(document.getElementById("property").value));
+                    last_selected.setup(context);
+                    refresh();
+                }
+            }
+            
+            function editTitle(){
+                if(last_selected != null){
+                    //alert(document.getElementById("attrib").value);
+                    clearDraw();
+                    last_selected.title.text = document.getElementById("property").value;
+                    last_selected.setup(context);
+                    refresh();
+                }
+            }
+            
         </script>
     </head>
     <body onload="init();">
         <form>
             <input type="button" onclick="noneMode();" value="none" /> 
             <input type="button" onclick="placeMode();" value="place" /> 
-            <input type="button" onclick="resizeMode();" value="resize" /> 
+            <input type="button" onclick="resizeMode();" value="resize" disabled="disabled"/>
             <input type="button" onclick="moveMode();" value="move" /> 
-            <input type="button" onclick="connectMode();" value="connect" /> 
+            <input type="button" onclick="connectMode();" value="inherit" /> 
+            <input type="button" onclick="selectMode();" value="select" /> 
             <input type="button" onclick="clearDraw();" value="clear" /> 
             <input type="button" onclick="refresh();" value="refresh" />
             <input type="text" id="xylabel"/>
             <input type="text" id="modelabel"/>
-            <input type="button" onclick="incTri();" value="+" /> 
-            <input type="button" onclick="dicTri();" value="-" />
+            <input type="button" onclick="testSh();" value="shadow" />
+            <input type="button" onclick="testNsh();" value="Noshadow" />
+            <input type="text" id="property"/>
+            <input type="button" onclick="editAttributes();" value="Attribute" />
+            <input type="button" onclick="editMethods();" value="Mehode" />
+            <input type="button" onclick="editTitle();" value="Title" />
         </form>
-        <canvas id="canvas" width="1200" height="600" style="border: 2px solid #000000;background-color:rgb(230,230,230);"></canvas>
+        <canvas id="canvas" width="1330" height="600" style="border: 2px solid #000000;background-color:rgb(230,230,230);"></canvas>
     </body>
 </html>

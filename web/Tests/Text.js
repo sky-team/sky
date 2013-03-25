@@ -4,22 +4,33 @@
  */
 
 function Text(text){
-    this.x = 0;
-    this.y = 0; 
-    
+
     this.width = 0;
     this.height = 0;
     
     this.text = text;
     
     this.fontFamily = "Arial";
-    this.fontSize = 10;
+    this.fontSize = 20;
     
-    this.drawColor = "black";
-    this.clearColor = "white";
+    this.effects = new Array();
 }
+
+Text.prototype = new Drawable();
+
 Text.prototype.setup = function (ctx){
-    this.fontSize = getBestSize(ctx,this.text, this.fontFamily, this.width, this.height);
+    
+    /*
+     *var best = getBestSize(ctx,this.text, this.fontFamily, this.width, this.height);
+    this.fontSize = best.fontSize;
+    this.width = best.size.width;
+    this.height = best.size.height;
+     */
+    
+    var best = getRealSize(ctx,this.text,this.fontSize,this.fontFamily);
+    this.width = best.width;
+    this.height = best.height;
+    
 }
 
 Text.prototype.hasPoints = function(mx,my){
@@ -28,10 +39,17 @@ Text.prototype.hasPoints = function(mx,my){
 
 Text.prototype.draw = function(ctx){
     
+    for(var i = 0 ; i < this.effects.length ;i++){
+        this.effects[i].startEffects(ctx);
+    }
     ctx.strokeStyle= this.drawColor;
     ctx.font=this.fontSize+"px "+this.fontFamily;
     ctx.fillText(this.text,this.x,this.y);
     ctx.stroke();
+    
+    for(var i = 0 ; i < this.effects.length ;i++){
+        this.effects[i].endEffects(ctx);
+    }
 }
 
 Text.prototype.clear = function(ctx){

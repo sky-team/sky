@@ -41,6 +41,7 @@ public class Project {
 
     public void setUserId(int userId) {
         this.userId = userId;
+        Integer j;
     }
 
     public String getProjectName() {
