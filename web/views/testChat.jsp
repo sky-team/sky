@@ -9,7 +9,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <script type="text/javascript" src="js/jquery-1.8.2.js"></script>
+        <script type="text/javascript" src="../js/jquery-1.8.2.js"></script>
         
         <script type="text/javascript">
             var ws;
@@ -45,6 +45,7 @@
             
             function onOpen(event){
                 showMessage("Connected");
+                ws.send('{"app-id":2,"request-info":{"project-name":"a","diagram-name":"b","project-owner":1,"request-type":1}}');//2
             }
             
             function onMessage(event)//event.data will return the data
@@ -67,7 +68,8 @@
             
             function sendMessage() {
                 var message = $('#usermsg').val();
-                ws.send(message);
+                var msgBody='{"app-id":2,"request-info":{"project-name":"a","diagram-name":"b","project-owner":1,"request-type":2,"message":"'+message+'"}}';
+                ws.send(msgBody);
                 $('#usermsg').val('');
             }
         </script>
