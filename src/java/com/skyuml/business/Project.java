@@ -22,6 +22,7 @@ import java.util.ArrayList;
 public class Project {
     private int userId = -1;
     private String projectName; 
+    private int projectId;
     
     public static String userIdColumnName = "user_id";
     public static String projectNameColumnName = "projectName";
@@ -34,11 +35,19 @@ public class Project {
         this.userId = userId;
         this.projectName = projectName;
     }
-
+    
     public int getUserId() {
         return userId;
     }
-
+    
+    public int getProjectId(){
+        return projectId;
+    }
+    
+    public void setProjectId(int id){
+        projectId = id;
+    }
+    
     public void setUserId(int userId) {
         this.userId = userId;
         Integer j;
@@ -204,7 +213,22 @@ public class Project {
         
         return res;
     }
-
+    
+    @Override
+    public boolean equals(Object project){
+        if(project instanceof Project){
+            Project pro = (Project) project;
+            
+            if(pro.getProjectId() == this.getProjectId()){
+                return true;
+            }
+            
+            return false;
+        }
+        
+        return false;
+    }
+    
     @Override
     public String toString() {
         return "Project{" + "userId=" + userId + ", projectName=" + projectName + '}';

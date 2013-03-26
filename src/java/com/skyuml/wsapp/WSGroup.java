@@ -4,6 +4,7 @@
  */
 package com.skyuml.wsapp;
 
+import com.skyuml.utils.Keys;
 import com.skyuml.utils.Tuple;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -11,6 +12,9 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 /**
  *
@@ -25,15 +29,18 @@ public class WSGroup {
     boolean includeSender;
     Thread broadcastMessages;
     final int SLEEP_TIME = 100;
-    Object lock;
+    final Object  lock = new Object();
+    boolean removeUserOnIOException;
+    UserIOExceptionHandler onIOException; 
     
     public WSGroup(boolean inCludeSender){
         this.includeSender = inCludeSender;
         members = new ArrayList<WSUser>();
+        removeUserOnIOException = true;
         
         textMessages = new ConcurrentLinkedQueue<Tuple<String,WSUser>>();
         binaryMessages = new ConcurrentLinkedQueue<Tuple<ByteBuffer, WSUser>>();
-        lock = new Object();
+        //lock = new Object();
         
         broadcastMessages = new Thread(new Runnable() {
 
@@ -60,17 +67,36 @@ public class WSGroup {
                 }
             }
         });
+        
         broadcastMessages.start();
     }
     
-
+    public ArrayList<WSUser> getCurrentWSUsers(){
+        return members;
+    }
     
     public int numberOfMembers(){
         return members.size();
     }
     
-    public boolean isMemberExist(WSUser user){
+    //check if websocket user is exist
+    public boolean isWebSocketExist(WSUser user){
         return (members.indexOf(user) == -1)?false:true;
+    }
+    
+
+    //check if user is exit 
+    public boolean isUserExist(WSUser user){
+        boolean fla = false;
+        synchronized(lock){
+            for(int i = 0; i < members.size();i++){
+               if(members.get(i).equals(user)){
+                 fla = true;
+                 break;
+             }
+          }
+        }
+        return fla;
     }
     
     public void addMember(WSUser member){
@@ -102,13 +128,19 @@ public class WSGroup {
             return;
         
         if(includeSender){
-            for (WSUser user : members) {
+            for (WSUser user : members) {//change it to for loop
  
                     synchronized(user){
                         try{
                             user.sendTextMessage(msg);
                         }catch(IOException ex){
-                           members.remove(user);
+                           if(removeUserOnIOException){
+                            String un = user.getFullName();
+                            members.remove(user);
+                            if(onIOException != null){
+                                onIOException.boradcastProblem(members,un);
+                            }
+                           }
                         }
                         }
             }
@@ -143,6 +175,7 @@ public class WSGroup {
                         user.sendBinaryMessage(buf);
                     }
                 }catch(IOException exp){
+                    
                     exp.printStackTrace();
                 }
             }
@@ -161,6 +194,34 @@ public class WSGroup {
             }
         }
         }   
+    }
+    
+    public void setOnUserIOExceptionHandler(UserIOExceptionHandler ex){
+        this.onIOException = ex;
+    }
+    
+    public void setRemoveUserOnIOException(boolean bo){
+        removeUserOnIOException = bo;
+    }
+    
+    public static class UserIOExceptionHandler{
+        
+        public UserIOExceptionHandler(){
+            
+        }
+        
+        public void boradcastProblem(ArrayList<WSUser> members,String userName){
+         String msg = "{\""+ Keys.JSONMapping.APP_ID+"\":0,\""+Keys.JSONMapping.REQUEST_INFO+"\":{"+
+                 "\""+Keys.JSONMapping.RequestInfo.USER_FULL_NAME+"\":\""+userName+"\"}}";
+            for (WSUser wSUser : members) {
+             try {
+                 wSUser.sendTextMessage(msg);
+             } catch (IOException ex) {
+                 Logger.getLogger(WSGroup.class.getName()).log(Level.SEVERE, null, ex);
+             }
+            }
+            
+        }
     }
     
 }

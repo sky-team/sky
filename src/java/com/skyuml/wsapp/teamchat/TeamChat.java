@@ -80,12 +80,7 @@ public class TeamChat implements WSApp{
     //hard close
     @Override
     public void onClose(int state, WSUser sender) {
-        try {
-            //throw new UnsupportedOperationException("Not supported yet.");
-            cManager.removeMember(new JSONObject(), sender);
-        } catch (JSONException ex) {
-            Logger.getLogger(TeamChat.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
     }
     
 }
