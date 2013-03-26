@@ -97,7 +97,7 @@ public class ProjectManager {
         String progN = reqeustInfo.getString(Keys.JSONMapping.RequestInfo.PROJECT_NAME);
         String diaName = reqeustInfo.getString(Keys.JSONMapping.RequestInfo.DIAGRAM_NAME);
         int ownerid = reqeustInfo.getInt(Keys.JSONMapping.RequestInfo.PROJECT_OWNER);
-        System.out.println("content changed");
+        
         Project prog = getProject(progN, ownerid);
         if(prog != null){
             projects.get(prog).notifyContentChanged(jo.toString(), diaName, sender);
@@ -114,5 +114,42 @@ public class ProjectManager {
         if(prog != null){
             projects.get(prog).notifyInformationChanged(jo.toString(), diaName, sender);
         }
+    }
+    
+    public void addComponentToDiagram(JSONObject jo,WSUser sender) throws JSONException{
+        JSONObject reqeustInfo = jo.getJSONObject(Keys.JSONMapping.REQUEST_INFO);
+        String progN = reqeustInfo.getString(Keys.JSONMapping.RequestInfo.PROJECT_NAME);
+        String diaName = reqeustInfo.getString(Keys.JSONMapping.RequestInfo.DIAGRAM_NAME);
+        int ownerid = reqeustInfo.getInt(Keys.JSONMapping.RequestInfo.PROJECT_OWNER);
+        
+        Project prog = getProject(progN, ownerid);
+        if(prog != null){
+            if(projects.get(prog).isDiagramOpened(diaName)){
+                projects.get(prog).addComponentToDiagram(jo,sender);
+            }
+        }
+        
+    }
+    
+    public void removeComponentFromDiagram(JSONObject jo,WSUser sender) throws JSONException{
+        JSONObject reqeustInfo = jo.getJSONObject(Keys.JSONMapping.REQUEST_INFO);
+        String progN = reqeustInfo.getString(Keys.JSONMapping.RequestInfo.PROJECT_NAME);
+        String diaName = reqeustInfo.getString(Keys.JSONMapping.RequestInfo.DIAGRAM_NAME);
+        int ownerid = reqeustInfo.getInt(Keys.JSONMapping.RequestInfo.PROJECT_OWNER);
+        
+        Project prog = getProject(progN, ownerid);
+        if(prog != null){
+            if(projects.get(prog).isDiagramOpened(diaName)){
+                projects.get(prog).removeComponentFromDiagram(jo,sender);
+            }
+        }
+    }
+    
+    public void createDiagram(JSONObject jo,WSUser sender){
+        
+    }
+    
+    public void removeDiagram(JSONObject jo,WSUser sender){
+        
     }
 }

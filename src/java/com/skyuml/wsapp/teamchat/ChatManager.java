@@ -129,6 +129,7 @@ public class ChatManager {
                 "\""+Keys.JSONMapping.RequestInfo.USER_FULL_NAME+"\":\"%s\",\""+
                 Keys.JSONMapping.RequestInfo.USER_COLOR+"\":\"%s\",\""+Keys.JSONMapping.RequestInfo.USER_ID
                 +"\":%d}}" ;
+        
         String msg;
         for(int i = 0; i < ws.size();i++){
             msg = String.format(format, ws.get(i).getFullName(),ws.get(i).getWSUserColor(),ws.get(i).getUserId());
