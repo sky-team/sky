@@ -7,10 +7,15 @@ and open the template in the editor.
     <head>
         <title></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="Utils.js"></script>
+        <script type="text/javascript" src="raphael-min.js"></script>
+        <script type="text/javascript" src="DrawAreaApi/Graphics.js"></script>
+        <script type="text/javascript" src="DrawAreaApi/CanvasGraphics.js"></script>
+        <script type="text/javascript" src="DrawAreaApi/RaphaelGraphics.js"></script>
         <script type="text/javascript" src="Drawable.js"></script>
         <script type="text/javascript" src="UmlElement.js"></script>
-        <script type="text/javascript" src="Utils.js"></script>
         <script type="text/javascript" src="BlurEffects.js"></script>
+        <script type="text/javascript" src="ConnectionSpots.js"></script>
         <script type="text/javascript" src="Text.js"></script>
         <script type="text/javascript" src="Line.js"></script>
         <script type="text/javascript" src="ClassDiagram.js"></script>
@@ -38,6 +43,8 @@ and open the template in the editor.
             
             var last_selected = null;
             function mouseDown(e) {
+                //alert("Down");
+            
 /*                if(line != null){
                     //alert(line.toStr());
                     if(line.hasPoints(e.pageX - this.offsetLeft,e.pageY - this.offsetTop)){
@@ -50,6 +57,7 @@ and open the template in the editor.
                     for (i = shapes.length - 1; i > -1; i--) {
                         if(shapes[i].hasPoints(e.pageX - this.offsetLeft,e.pageY - this.offsetTop)){
                             cur_shape = shapes[i];
+                            //alert(shapes[i].toStr());
                             break;
                         }
                     }
@@ -62,6 +70,7 @@ and open the template in the editor.
                         shape.y = e.pageY - this.offsetTop;
                         shape.width = 100;
                         shape.height = 200;
+                        shape.lineWidth = 1;
                         shape.drawColor = "Red";
                         shape.clearColor = "rgb(230,230,230)";
                         shape.title.text = "Classx";
@@ -87,14 +96,15 @@ and open the template in the editor.
                                     }
                                     else{
                                         con_dest = shapes[i];
-                                        var con = new Association(con_dest, con_source);
+                                        var con = new Association(con_source , con_dest);
+                                        //alert("con ["+con_source.toStr()+"] , ["+con_dest.toStr()+"]");
                                         con.drawColor = "red";
                                         con.clearColor = "rgb(230,230,230)";
                                         con.setup(context);
                                         con.draw(context);
                                         connections.push(con);
-                                        con_source.connections.push(con);
-                                        con_dest.connections.push(con);
+                                        con_source.associations.push(con);
+                                        con_dest.associations.push(con);
                                         con_source = null;
                                         con_dest = null;
                                     }
@@ -128,7 +138,6 @@ and open the template in the editor.
 
             function mouseUp() {
                 drag = false;
-                
                 if(mode != "select"){
                     cur_shape = null;
                 }
@@ -137,9 +146,9 @@ and open the template in the editor.
             
             function clearDraw(){
                 context.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
-                var w = drawCanvas.width;
-                drawCanvas.width = 1;
-                drawCanvas.width = w;
+                //var w = drawCanvas.width;
+                //drawCanvas.width = 1;
+                //drawCanvas.width = w;
                 //doted();
             }
 
@@ -158,10 +167,13 @@ and open the template in the editor.
             }
 
             function mouseMove(e) {
+                //alert("Moving");
+                
                 var x = (e.pageX - this.offsetLeft);
                 var y = (e.pageY - this.offsetTop);
                 xy_label.value = "{"+x+","+y+"}";
                 if (drag) {
+                    
                     if(mode == "move"){
                         cur_shape.x = x;
                         cur_shape.y = y;
@@ -181,13 +193,17 @@ and open the template in the editor.
             
             function init(){
                 
-                drawCanvas = document.getElementById("canvas");
+               drawCanvas = document.getElementById("holder");
                 
-                drawCanvas.addEventListener('mousedown', mouseDown, false);
-                drawCanvas.addEventListener('mouseup', mouseUp, false);
-                drawCanvas.addEventListener('mousemove', mouseMove, false);
+               drawCanvas.addEventListener('mousedown', mouseDown, false);
+               drawCanvas.addEventListener('mouseup', mouseUp, false);
+               drawCanvas.addEventListener('mousemove', mouseMove, false);
                 
-                context = drawCanvas.getContext('2d');
+                var paper = new Raphael(drawCanvas);
+                
+                //paper.rect(100,100,200,400).attr({ stroke: 'red'});
+                
+                context = new RaphaelGraphics(paper); 
                 
                 xy_label = document.getElementById("xylabel");
                 mode_label = document.getElementById("modelabel");
@@ -195,6 +211,8 @@ and open the template in the editor.
                 effect = new BlurEffects("rgba(255,50,50,250)", 5);
                 effect.shadowColor = "rgba(0,0,255,255)";
                 effect.shadowBlur = 4;
+                effect.fill = false;
+                effect.opacity = 1;
 /*
                 line = new Line();
                 line.drawColor = "Black";
@@ -222,32 +240,37 @@ and open the template in the editor.
             }
             
             function noneMode(){
+                
                 mode = "none";
                 mode_label.value = mode;
             }
             var line;
             function placeMode(){
+                drawCanvas.style.cursor = "text";
                 mode = "place";
                 mode_label.value = mode;
             }
             
             function resizeMode(){
+                drawCanvas.style.cursor = "e-resize";
                 mode = "resize";
                 mode_label.value = mode;
             }
              
             function moveMode(){   
-                
+                drawCanvas.style.cursor = "move";
                 mode = "move";
                 mode_label.value = mode;
             }
             
-            function connectMode(){            
+            function connectMode(){    //
+                drawCanvas.style.cursor = "crosshair";
                 mode = "connect";
                 mode_label.value = mode;
             }
             
-            function selectMode(){               
+            function selectMode(){  
+                drawCanvas.style.cursor = "pointer";
                 mode = "select";
                 mode_label.value = mode;
             }
@@ -319,6 +342,75 @@ and open the template in the editor.
                 }
             }
             
+            function setFont(){
+                if(last_selected != null){
+                    //alert(document.getElementById("attrib").value);
+                    clearDraw();
+                    last_selected.fontFamily = document.getElementById("font").value;
+                    
+                    last_selected.setup(context);
+                    refresh();
+                }
+            }
+            
+            function switchToRaphael(){
+                
+                drawCanvas.parentNode.removeChild(drawCanvas);
+                drawCanvas = document.createElement("div");
+                drawCanvas.style.border="2px solid #000000";
+                drawCanvas.style['background-color'] = "rgb(230,230,230)";
+                drawCanvas.style['width'] = "1330px";
+                drawCanvas.style['height'] = "600px";
+                document.body.appendChild(drawCanvas)
+                drawCanvas = document.getElementById("holder");
+                
+                drawCanvas.addEventListener('mousedown', mouseDown, false);
+                drawCanvas.addEventListener('mouseup', mouseUp, false);
+                drawCanvas.addEventListener('mousemove', mouseMove, false);
+                
+                var paper = new Raphael(drawCanvas);
+                
+                context = new RaphaelGraphics(paper); 
+                
+                refresh();
+            }
+
+            function switchToHtml(){
+                /*drawCanvas.parentNode.removeChild(drawCanvas);
+                drawCanvas = document.createElement("canvas");
+                drawCanvas.style.border="2px solid #000000";
+                drawCanvas.style['background-color'] = "rgb(230,230,230)";
+                drawCanvas.style['width'] = "1330px";
+                drawCanvas.style['height'] = "600px";
+                document.body.appendChild(drawCanvas)
+                drawCanvas = document.getElementById("holder");
+                
+                drawCanvas.addEventListener('mousedown', mouseDown, false);
+                drawCanvas.addEventListener('mouseup', mouseUp, false);
+                drawCanvas.addEventListener('mousemove', mouseMove, false);
+                
+                context = drawCanvas.getContext('2d');
+                
+                refresh();*/
+                
+                var canvas = document.getElementById("canvas");
+                
+                var can = new CanvasGraphics(canvas.getContext('2d'));
+                
+                can.clearRect(0, 0, canvas.width, canvas.height);
+                
+                //var w = drawCanvas.width;
+                //drawCanvas.width = 1;
+                //drawCanvas.width = w;
+                
+                for (d = 0; d < shapes.length; d++) 
+                    shapes[d].draw(can);
+                
+                for (z = 0; z < connections.length; z++) 
+                    connections[z].draw(can);
+            }
+
+
         </script>
     </head>
     <body onload="init();">
@@ -339,7 +431,13 @@ and open the template in the editor.
             <input type="button" onclick="editAttributes();" value="Attribute" />
             <input type="button" onclick="editMethods();" value="Mehode" />
             <input type="button" onclick="editTitle();" value="Title" />
+            <input type="text" id="font"/>
+            <input type="button" onclick="setFont();" value="Set Font" />
+            
+            <!--<input type="button" onclick="switchToRaphael();" value="Rapheal" />-->
+            <input type="button" onclick="switchToHtml();" value="Canvas" />
         </form>
+        <div id="holder"  style="border: 2px solid #000000;background-color:rgb(230,230,230);width:1330px;height:600px;-webkit-user-select: none;"></div>
         <canvas id="canvas" width="1330" height="600" style="border: 2px solid #000000;background-color:rgb(230,230,230);"></canvas>
     </body>
 </html>
