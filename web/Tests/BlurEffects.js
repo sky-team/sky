@@ -8,6 +8,8 @@ function BlurEffects(sc,sb){
     this.shadowBlur = sb;
     this.shadowOffsetX = 0;
     this.shadowOffsetY = 0;
+    this.opacity = 0.5;
+    this.fill = true;
 }
 
 BlurEffects.prototype.startEffects = function(ctx){
@@ -17,13 +19,17 @@ BlurEffects.prototype.startEffects = function(ctx){
     ctx.shadowOffsetY=this.shadowOffsetY;
     ctx.shadowBlur = this.shadowBlur;
     ctx.shadowColor = this.shadowColor;
+    ctx.shadowOpacity = this.opacity;
+    ctx.shadowFill = this.fill;
 }
 
 BlurEffects.prototype.endEffects = function(ctx){
     ctx.closePath();
     ctx.restore();
-    ctx.shadowBlur = 0;
-    ctx.shadowColor = "rgb(0,0,0,0)";
+    ctx.shadowBlur = undefined;
+    ctx.shadowColor = undefined;
+    ctx.shadowOpacity = undefined;
+    ctx.shadowFill = true;
 }
 
 BlurEffects.prototype.getType = function(){

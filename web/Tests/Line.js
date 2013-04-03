@@ -44,8 +44,7 @@ Line.prototype.draw = function(ctx){
 
     ctx.lineWidth = this.lineWidth;
     ctx.strokeStyle = this.drawColor;
-    ctx.moveTo(this.x1,this.y1);
-    ctx.lineTo(this.x2,this.y2);
+    ctx.line(this.x1,this.y1,this.x2,this.y2);
     ctx.stroke();
     
     for(var i = 0 ; i < this.effects.length ;i++){
@@ -56,8 +55,7 @@ Line.prototype.draw = function(ctx){
 Line.prototype.clear = function(ctx){
     ctx.lineWidth = this.lineWidth;
     ctx.strokeStyle = this.clearColor;
-    ctx.moveTo(this.x1,this.y1);
-    ctx.lineTo(this.x2,this.y2);
+    ctx.line(this.x1,this.y1,this.x2,this.y2);
     ctx.stroke();
 }
 

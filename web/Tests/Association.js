@@ -13,8 +13,35 @@ function Association(s,d){
     
     this.line = new Line();
     this.association = new Triangle();
-    
+    this.leftAssociation = new Triangle();
+    this.rightAssociation = new Triangle();
+    this.topAssociation = new Triangle();
+    this.downAssociation = new Triangle();
     this.effects = new Array();
+}
+
+Association.prototype.setupLeft = function(){
+    this.leftAssociation.direction = 0;
+    this.leftAssociation.x = this.destination.connectionSpots.XRightSpot;
+    this.leftAssociation.y = this.destination.connectionSpots.YRightSpot;
+}
+
+Association.prototype.setupRight = function(){
+    this.rightAssociation.direction = 2;
+    this.rightAssociation.x = this.destination.connectionSpots.XLeftSpot;
+    this.rightAssociation.y = this.destination.connectionSpots.YLeftSpot;
+}
+
+Association.prototype.setupTop = function(){
+    this.topAssociation.direction = 3;
+    this.topAssociation.x = this.destination.connectionSpots.XDownSpot;
+    this.topAssociation.y = this.destination.connectionSpots.YDownSpot;
+}
+
+Association.prototype.setupDown = function(){
+    this.downAssociation.direction = 1;
+    this.downAssociation.x = this.destination.connectionSpots.XTopSpot;
+    this.downAssociation.y = this.destination.connectionSpots.YTopSpot;
 }
 
 Association.prototype.hasPoints = function(mx,my){
@@ -22,7 +49,79 @@ Association.prototype.hasPoints = function(mx,my){
 }
 
 Association.prototype.setup = function(ctx){
+    var isRight = this.destination.x >= (this.source.x + this.source.width);
+    var isLeft = (this.destination.x + this.destination.width) <= this.source.x;
+    var isTop = (this.destination.y + this.destination.height) <= this.source.y;
+    var isDown = this.destination.y >= (this.source.y + this.source.height);
     
+    if(isTop){
+        this.setupTop();
+        this.association = this.topAssociation;
+        this.association.size = 10;
+        this.association.setup();
+        this.line.x1 = this.source.connectionSpots.XTopSpot;
+        this.line.y1 = this.source.connectionSpots.YTopSpot;
+
+        this.line.x2 = this.association.conx;
+        this.line.y2 = this.association.cony;
+        //return;
+    }else
+        if(isDown){
+            this.setupDown();
+            this.association = this.downAssociation;
+            this.association.size = 10;
+            this.association.setup();
+            this.line.x1 = this.source.connectionSpots.XDownSpot;
+            this.line.y1 = this.source.connectionSpots.YDownSpot;
+
+            this.line.x2 = this.association.conx;
+            this.line.y2 = this.association.cony;
+            //return;
+        }else
+            if(isLeft){
+                this.setupLeft();
+                this.association = this.leftAssociation;
+                this.association.size = 10;
+                this.association.setup();
+                this.line.x1 = this.source.connectionSpots.XLeftSpot;
+                this.line.y1 = this.source.connectionSpots.YLeftSpot;
+
+                this.line.x2 = this.association.conx;
+                this.line.y2 = this.association.cony;
+                //return;
+            }else
+                if(isRight){
+                    this.setupRight();
+                    this.association = this.rightAssociation;
+                    this.association.size = 10;
+                    this.association.setup();
+                    this.line.x1 = this.source.connectionSpots.XRightSpot;
+                    this.line.y1 = this.source.connectionSpots.YRightSpot;
+
+                    this.line.x2 = this.association.conx;
+                    this.line.y2 = this.association.cony;
+                    //return;
+                }else{
+                    this.setupLeft();
+                    this.association = this.leftAssociation;
+                    this.association.size = 10;
+                    this.association.setup();
+                    this.line.x1 = this.source.connectionSpots.XLeftSpot;
+                    this.line.y1 = this.source.connectionSpots.YLeftSpot;
+
+                    this.line.x2 = this.association.conx;
+                    this.line.y2 = this.association.cony;
+                }
+    
+    this.association.drawColor = this.drawColor;
+    this.association.clearColor = this.clearColor;
+    this.association.effects = this.effects;
+    
+    this.line.drawColor = this.drawColor;
+    this.line.clearColor = this.clearColor;
+    this.line.effects = this.effects;
+    
+/*
     var st = 1;
     var src = this.source;
     var dest = this.destination;
@@ -271,7 +370,7 @@ Association.prototype.setup = function(ctx){
 
         this.line.x1 = this.association.conx;
         this.line.y1 = this.association.cony;
-    }
+    }*/
 }
 
 Association.prototype.draw = function(ctx){

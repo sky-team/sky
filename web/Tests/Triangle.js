@@ -33,11 +33,11 @@ Triangle.prototype.setup = function(ctx){
     
     switch(this.direction){
         case 0:
-            this.line1.x2 = (this.x + this.size) - this.rotation;
+            this.line1.x2 = (this.x + this.size);
             this.line1.y2 = this.y - this.size;
 
             this.line2.x2 = this.x + this.size;
-            this.line2.y2 = (this.y + this.size) - this.rotation;
+            this.line2.y2 = (this.y + this.size);
             
             this.conx = this.line1.x2;
             this.cony = this.line1.y2 + this.size;
@@ -52,9 +52,9 @@ Triangle.prototype.setup = function(ctx){
             this.line2.y2 = (this.y - this.size);*/
                 
             this.line1.x2 = (this.x - this.size);
-            this.line1.y2 = (this.y - this.size) + this.rotation;
+            this.line1.y2 = (this.y - this.size);
             
-            this.line2.x2 = (this.x + this.size) - this.rotation;
+            this.line2.x2 = (this.x + this.size);
             this.line2.y2 = (this.y - this.size);
             
             this.conx = this.line1.x2 + this.size;
@@ -63,21 +63,21 @@ Triangle.prototype.setup = function(ctx){
         
         case 2:
             this.line1.x2 = this.x - this.size;
-            this.line1.y2 = (this.y - this.size) + this.rotation;
+            this.line1.y2 = (this.y - this.size);
  
-            this.line2.x2 = (this.x - this.size) + this.rotation;
-            this.line2.y2 = (this.y + this.size) ;
+            this.line2.x2 = (this.x - this.size);
+            this.line2.y2 = (this.y + this.size);
             
             this.conx = this.line1.x2;
             this.cony = this.line1.y2 + this.size;
         break;
         
         case 3:
-            this.line1.x2 = (this.x - this.size) + this.rotation;
+            this.line1.x2 = (this.x - this.size);
             this.line1.y2 = (this.y + this.size);
 
             this.line2.x2 = (this.x + this.size);
-            this.line2.y2 = (this.y + this.size)  - this.rotation;
+            this.line2.y2 = (this.y + this.size);
             
             this.conx = this.line1.x2 + this.size;
             this.cony = this.line1.y2;
@@ -100,20 +100,7 @@ Triangle.prototype.setup = function(ctx){
     this.line1.effects = this.effects;
     this.line2.effects = this.effects;
     this.line3.effects = this.effects;
-    
-    if(Math.abs(this.rotation) >= (this.size*2)){
-        this.direction = this.rotation < 0 ? this.direction - 1 : this.direction + 1;
-        
-        this.rotation = 0;
-        
-        if(this.direction == 4)
-            this.direction = 0;
-        else
-            if(this.direction == -1)
-                this.direction = 3;
-    }
 }
-
 Triangle.prototype.draw = function(ctx){
     //this.setup(ctx);
     this.line1.draw(ctx);

@@ -19,18 +19,9 @@ function Text(text){
 Text.prototype = new Drawable();
 
 Text.prototype.setup = function (ctx){
-    
-    /*
-     *var best = getBestSize(ctx,this.text, this.fontFamily, this.width, this.height);
-    this.fontSize = best.fontSize;
-    this.width = best.size.width;
-    this.height = best.size.height;
-     */
-    
     var best = getRealSize(ctx,this.text,this.fontSize,this.fontFamily);
     this.width = best.width;
     this.height = best.height;
-    
 }
 
 Text.prototype.hasPoints = function(mx,my){
@@ -42,6 +33,7 @@ Text.prototype.draw = function(ctx){
     for(var i = 0 ; i < this.effects.length ;i++){
         this.effects[i].startEffects(ctx);
     }
+
     ctx.strokeStyle= this.drawColor;
     ctx.font=this.fontSize+"px "+this.fontFamily;
     ctx.fillText(this.text,this.x,this.y);

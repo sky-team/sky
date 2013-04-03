@@ -10,25 +10,27 @@ function ClassDiagram(){
     
     this.methods = new Array();
     this.attributes = new Array();
-    this.connections = new Array();
+    this.associations = new Array();
     this.effects = new Array();
     
-    this.x = 0;
-    this.y = 0;
     this.width = 0;
     this.height = 0;
     
-    this.drawColor = "black";
-    this.clearColor = "white";
-    
     this.lineWidth = 0;
+    
+    this.connectionSpots = new ConnectionSpots();    
+    
+    this.fontFamily = "Arial";
+    this.fontSize = 20;
 }
 
-//ClassDiagram.prototype = new Drawable();
+ClassDiagram.prototype = new Drawable();
 //ClassDiagram.prototype = new UmlElement();
 
 ClassDiagram.prototype.setup = function(ctx){
     
+    this.title.fontFamily = this.fontFamily;
+    this.title.fontSize = this.fontSize;
     this.title.setup(ctx);
     
     var max_width = this.title.width;
@@ -37,7 +39,9 @@ ClassDiagram.prototype.setup = function(ctx){
     var attributes_bound = 0;
 
     for (i = 0; i < this.methods.length; i++) {
-        this.methods[i].x = this.x;
+        this.methods[i].x = this.x;        
+        this.methods[i].fontFamily = this.fontFamily;
+        this.methods[i].fontSize = this.fontSize;
         this.methods[i].setup(ctx);
         this.methods[i].drawColor = this.drawColor;
         this.methods[i].clearColor = this.clearColor;
@@ -47,6 +51,8 @@ ClassDiagram.prototype.setup = function(ctx){
     
     for (i = 0; i < this.attributes.length; i++) {
         this.attributes[i].x = this.x;
+        this.attributes[i].fontFamily = this.fontFamily;
+        this.attributes[i].fontSize = this.fontSize;
         this.attributes[i].setup(ctx);
         this.attributes[i].drawColor = this.drawColor;
         this.attributes[i].clearColor = this.clearColor;
@@ -97,9 +103,25 @@ ClassDiagram.prototype.setup = function(ctx){
         cur_part += this.attributes[i].height + 1;
     }
     
-    for (i = 0; i < this.connections.length; i++) {
-        this.connections[i].setup(ctx);
+        
+    this.connectionSpots.XRightSpot = this.x + this.width;
+    this.connectionSpots.YRightSpot = this.y + this.height/2;
+    
+    this.connectionSpots.XLeftSpot = this.x;
+    this.connectionSpots.YLeftSpot = this.y + this.height/2;
+    
+    this.connectionSpots.XTopSpot = this.x + this.width/2;
+    this.connectionSpots.YTopSpot = this.y;
+    
+    this.connectionSpots.XDownSpot = this.x + this.width/2;
+    this.connectionSpots.YDownSpot = this.y + this.height;
+
+    //alert(this.associations.)
+    for (i = 0; i < this.associations.length; i++) {
+        this.associations[i].setup(ctx);
     }
+    
+    //alert(this.connectionSpots.toStr());
 }
 
 ClassDiagram.prototype.hasPoints = function(mx,my){
@@ -107,20 +129,6 @@ ClassDiagram.prototype.hasPoints = function(mx,my){
 }
 
 ClassDiagram.prototype.draw = function(ctx){
-    
-    
-    /*
-    //debug text only
-    {
-        var text = new Text(this.width + " , " + Math.floor(this.title.height));
-        text.x = this.x + this.width;
-        text.y = this.y;
-        text.width = 20;
-        text.height = 10;
-        text.fontSize = 20;
-        
-        text.draw(ctx);
-    }*/
     
     for(var i = 0 ; i < this.effects.length ;i++){
         this.effects[i].startEffects(ctx);
