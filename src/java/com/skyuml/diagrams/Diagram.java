@@ -14,7 +14,7 @@ import java.util.ArrayList;
  *
  * @author Yazan
  */
-public abstract class Diagram implements Externalizable{
+public abstract class Diagram implements Externalizable,DiagramOperation{
     private String name;
 
     private ArrayList<Part> parts = new ArrayList<Part>();

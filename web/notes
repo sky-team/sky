@@ -1,3 +1,4 @@
 for testing perposes :
     # i have changed both "openProject function in class ProjectManager" and "openDiagram function in class DiagramManager".
     # i have changed "getFullName function in WSUser class"
+    # in chat app when new user is joined give him name of all members currently join.

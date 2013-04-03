@@ -76,6 +76,9 @@ public class CollaborationUML implements WSApp {
     public void executRequest(JSONObject jo,WSUser sender)throws JSONException{
         JSONObject requestInfo = jo.getJSONObject(Keys.JSONMapping.REQUEST_INFO);
         
+        //put sender id
+        requestInfo.put(Keys.JSONMapping.RequestInfo.USER_ID, sender.getUserId());
+        
         switch(requestInfo.getInt(Keys.JSONMapping.RequestInfo.REQUEST_TYPE)){
             
             case  1 :pManager.openDiagram(requestInfo, sender);//i sent only the request-info [sub JSON]

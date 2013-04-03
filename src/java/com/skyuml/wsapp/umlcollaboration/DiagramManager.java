@@ -5,6 +5,7 @@
 package com.skyuml.wsapp.umlcollaboration;
 import com.skyuml.wsapp.WSUser;
 import com.skyuml.diagrams.Diagram;
+import com.skyuml.utils.Keys;
 import com.skyuml.wsapp.WSGroup;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -13,21 +14,20 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
  * @author Hamza
  */
 public class DiagramManager {
-    
-    //private HashMap<String,Diagram> diagrams;
-    //private HashMap<String,ArrayList<WSUser>> users;
+
     private HashMap<Diagram,WSGroup> diagrams;
     private ArrayList<String> diagramsName;
     
     public DiagramManager(String[] diagramsName){
         diagrams = new HashMap<Diagram,WSGroup>();
-        //users = new HashMap<String,ArrayList<WSUser>>();
         
         this.diagramsName = new ArrayList<String>();
         for (String string : diagramsName) {
@@ -46,6 +46,7 @@ public class DiagramManager {
         }
         return null;
     }
+    
     private boolean addObserver(String diagram_name,WSUser user){
         Diagram di = getDiagramByName(diagram_name);
         if(di == null)
@@ -83,13 +84,45 @@ public class DiagramManager {
         return (diagrams.get(getDiagramByName(diaID)) == null)? -1 : diagrams.get(getDiagramByName(diaID)).numberOfMembers();
     }
     
+    //add component to the diagram 
+    public void addComponentToDiagram(JSONObject jo,WSUser sender) throws JSONException{
+        JSONObject reqeustInfo = jo.getJSONObject(Keys.JSONMapping.REQUEST_INFO);
+        String diaName = reqeustInfo.getString(Keys.JSONMapping.RequestInfo.DIAGRAM_NAME);
+        Diagram  dia = getDiagramByName(diaName);
+        
+        dia.addComponent(jo);
+        
+        diagrams.get(dia).pushTextMessage(jo.toString(), sender);
+        
+        
+    }
+    
+    //remove component from diagram
+    public void removeComponentFromDiagram(JSONObject jo,WSUser sender) throws JSONException{
+        JSONObject reqeustInfo = jo.getJSONObject(Keys.JSONMapping.REQUEST_INFO);
+        String diaName = reqeustInfo.getString(Keys.JSONMapping.RequestInfo.DIAGRAM_NAME);
+        Diagram  dia = getDiagramByName(diaName);
+        
+        dia.removeComponent(jo);
+        
+        diagrams.get(dia).pushTextMessage(jo.toString(), sender);
+    }
+    
+    public void createDiagram(JSONObject jo,WSUser sender){
+        
+    }
+    
+    public void removeDiagram(JSONObject jo,WSUser sender){
+        
+    }
+    
     // when so one join diagram notify other users in the same diagram
     public boolean openDiagram(String dia_name,WSUser user){
         if(!isDiagramExist(dia_name))
             return false;
         
         if(!isDiagramOpened(dia_name)){
-            Diagram dia =new Diagram("b") {
+            Diagram dia =new Diagram(dia_name) {
                 @Override
                 public void writeExternal(ObjectOutput out) throws IOException {
                     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -99,7 +132,28 @@ public class DiagramManager {
                 public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
                     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 }
+                
+                @Override
+                public void addComponent(JSONObject jo) {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+                
+                @Override
+                public void removeComponent(JSONObject jo) {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+                
+                @Override
+                public void updateComponent(JSONObject jo) {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+                
+                @Override
+                public JSONObject toJSON() {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
             };//null;//Diagram.load(diaId);
+            
             if(dia != null){
                 diagrams.put(dia, new WSGroup(false));
             }
