@@ -4,14 +4,14 @@
  */
 package com.skyuml.diagrams;
 
-import org.json.JSONObject;
-
 /**
  *
  * @author userzero
  */
-public interface DiagramComponentOperation {
-    void update(JSONObject jo);
-    String getId();
-    JSONObject toJSON();
+public enum AssociationType {
+    use,
+    include,
+    extend,
+    isA,
+    hasA
 }

@@ -15,5 +15,6 @@ public interface DiagramOperation {
     void addComponent(JSONObject jo);
     void removeComponent(JSONObject jo);
     void updateComponent(JSONObject jo);
+    String getId();
     JSONObject toJSON();
 }

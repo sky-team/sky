@@ -4,32 +4,40 @@
  */
 package com.skyuml.diagrams;
 
+import org.json.JSONObject;
+
 /**
  *
  * @author Yazan
  */
-public class Association {
-    private Diagram parentDiagram;
-    private Diagram chileDiagram;
-
-    public Association(Diagram parentDiagram, Diagram chileDiagram) {
-        this.parentDiagram = parentDiagram;
-        this.chileDiagram = chileDiagram;
+public class Association implements DiagramComponentOperation{
+    private AssociationType type;
+    
+    private String id;
+    private String title;
+    private String source;
+    private String destanation;
+    
+    public Association(AssociationType type,String id,String title,String source,String destanation){
+        this.type = type;
+        this.id = id;
+        this.title = title;
+        this.source = source;
+        this.destanation = destanation;
     }
 
-    public Diagram getParentDiagram() {
-        return parentDiagram;
+    @Override
+    public void update(JSONObject jo) {
+        
     }
 
-    public void setParentDiagram(Diagram parentDiagram) {
-        this.parentDiagram = parentDiagram;
+    @Override
+    public String getId() {
+        return id;
     }
 
-    public Diagram getChileDiagram() {
-        return chileDiagram;
-    }
-
-    public void setChileDiagram(Diagram chileDiagram) {
-        this.chileDiagram = chileDiagram;
+    @Override
+    public JSONObject toJSON() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

@@ -59,21 +59,57 @@ public final class Keys {
         public final static int AUTO_SAVE_ID = 3;
         
     }
+    
     public static final class JSONMapping{
         private JSONMapping(){}
         
         public final static String APP_ID = "app-id";
         public final static String REQUEST_INFO = "request-info";
-        
+        public final static String TOKEN_ID = "token-id";
         public static final class RequestInfo{
             private RequestInfo(){}
             public final static String REQUEST_TYPE = "request-type";
-            public final static String PROJECT_NAME = "project-name";
-            public final static String PROJECT_OWNER = "project-owner";
-            public final static String DIAGRAM_NAME ="diagram-name";
+            
+            //user
             public final static String USER_COLOR ="user-color";
             public final static String USER_FULL_NAME ="user-full-name";
             public final static String USER_ID = "user-id";
+            
+            //project
+            public final static String PROJECT_NAME = "project-name";
+            public final static String PROJECT_OWNER = "project-owner";
+ 
+            //diagram
+            public final static String DIAGRAM_NAME ="diagram-name";
+            public final static String DIAGRAM_CONTENT="diagram-content";
+            
+            public static final class DiagramContent{
+                private DiagramContent(){}
+                
+                //common content
+                public static final String X_LOCATION = "x-location";
+                public static final String Y_LOCATION = "y-location";
+                
+                public static final String COMPONENT_ID = "component-id";
+                public static final String COMPONENT_TYPE = "component-type";
+                public static final String TITLE = "title";
+                
+                public static final class UseCaseDiagram{
+                    private UseCaseDiagram(){}
+                    
+                    //public static final String ACTOR_NAME = "actor-name";
+                    //public static final String OVAL_NAME = "oval-name";
+                    
+                }
+                public static final class ClassDiagram{
+                    private ClassDiagram(){}
+                    
+                    public static final String METHODS = "methods";
+                    public static final String MEMBERS = "members";
+                    public static final String OPERATION = "operation";
+                }
+                
+            }
             
         }
     }

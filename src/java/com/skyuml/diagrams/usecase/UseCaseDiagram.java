@@ -4,13 +4,17 @@
  */
 package com.skyuml.diagrams.usecase;
 
-import com.skyuml.diagrams.Association;
 import com.skyuml.diagrams.Diagram;
-import com.skyuml.diagrams.Part;
+import com.skyuml.diagrams.DiagramComponentFactory;
+import com.skyuml.diagrams.DiagramComponentOperation;
+import com.skyuml.utils.Keys;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
@@ -18,15 +22,9 @@ import java.util.ArrayList;
  */
 public class UseCaseDiagram extends Diagram{
 
-    private String text;
-    private float width;
-    private float height;
-    private float x;
-    private float y;
-    private ArrayList<Association> associations = new ArrayList<Association>();
-
     public UseCaseDiagram(String name) {
         super(name);
+        
     }
     
         @Override
@@ -37,9 +35,9 @@ public class UseCaseDiagram extends Diagram{
         
         out.writeUTF(header);
         out.writeUTF(getName());
-        for (Part part : getParts()) {
+        /*for (Part part : getParts()) {
             part.writeExternal(out);
-        }
+        }*/
         out.writeUTF("</Diagram>");
         
         
@@ -53,6 +51,41 @@ public class UseCaseDiagram extends Diagram{
         
         
         
+    }
+
+    @Override
+    public void addComponent(JSONObject diagramContent) {
+        try {
+            DiagramComponentOperation com = DiagramComponentFactory.createComponent(diagramContent);
+            addComponent(com);
+        } catch (JSONException ex) {
+            Logger.getLogger(UseCaseDiagram.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public void removeComponent(JSONObject jo) {
+        try {
+            String id = jo.getString(Keys.JSONMapping.RequestInfo.DiagramContent.COMPONENT_ID);
+            removeComponent(id);
+        } catch (JSONException ex) {
+            Logger.getLogger(UseCaseDiagram.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Override
+    public void updateComponent(JSONObject jo) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public JSONObject toJSON() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getId() {
+        return getName();
     }
     
 }
