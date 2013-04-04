@@ -5,7 +5,7 @@
 package com.skyuml.diagrams;
 
 /**
- *
+ * enumeration contain the supported associations. 
  * @author userzero
  */
 public enum AssociationType {

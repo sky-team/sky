@@ -4,28 +4,34 @@
  */
 package com.skyuml.diagrams.classdiagram;
 
+import com.skyuml.diagrams.Diagram;
 import com.skyuml.diagrams.DiagramComponentOperation;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.util.Hashtable;
 import org.json.JSONObject;
 
 /**
  *
  * @author userzero
  */
-public class ClassDiagram implements DiagramComponentOperation{
+public class ClassDiagram extends Diagram{
 
+    public ClassDiagram(String id){
+        super(id);
+    }
+    
     @Override
-    public void update(JSONObject jo) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void writeExternal(ObjectOutput out) throws IOException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public JSONObject toJSON() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
-    public String getId() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+
     
 }

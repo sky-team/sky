@@ -94,6 +94,17 @@ public final class Keys {
                 public static final String COMPONENT_TYPE = "component-type";
                 public static final String TITLE = "title";
                 
+                public static final String ASSOCIATIONS = "associations";
+                public static final String COMPONENTS = "components";
+                
+                public static final class Association{
+                    private Association(){}
+                    
+                    
+                    public static final String ASSOCIATION_SOURCE = "association-source";
+                    public static final String ASSOCIATION_DESTINATION = "association-destination";
+                }
+                
                 public static final class UseCaseDiagram{
                     private UseCaseDiagram(){}
                     
@@ -101,6 +112,8 @@ public final class Keys {
                     //public static final String OVAL_NAME = "oval-name";
                     
                 }
+                
+                
                 public static final class ClassDiagram{
                     private ClassDiagram(){}
                     

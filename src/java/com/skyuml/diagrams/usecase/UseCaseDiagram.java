@@ -18,23 +18,23 @@ import org.json.JSONObject;
 
 /**
  *
- * @author Yazan
+ * 
+ * @author Hamza
  */
 public class UseCaseDiagram extends Diagram{
 
-    public UseCaseDiagram(String name) {
-        super(name);
-        
+    public UseCaseDiagram(String id) {
+        super(id);
     }
     
         @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         
         String header = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>";
-        String nameTag = String.format("<Diagram name=\"%s\"",getName());
+        String nameTag = String.format("<Diagram name=\"%s\"",getId());
         
         out.writeUTF(header);
-        out.writeUTF(getName());
+        out.writeUTF(getId());
         /*for (Part part : getParts()) {
             part.writeExternal(out);
         }*/
@@ -47,45 +47,8 @@ public class UseCaseDiagram extends Diagram{
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         
         String header = in.readUTF();
-        String nameTag = in.readUTF();
-        
-        
-        
+        String nameTag = in.readUTF();  
     }
 
-    @Override
-    public void addComponent(JSONObject diagramContent) {
-        try {
-            DiagramComponentOperation com = DiagramComponentFactory.createComponent(diagramContent);
-            addComponent(com);
-        } catch (JSONException ex) {
-            Logger.getLogger(UseCaseDiagram.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    @Override
-    public void removeComponent(JSONObject jo) {
-        try {
-            String id = jo.getString(Keys.JSONMapping.RequestInfo.DiagramContent.COMPONENT_ID);
-            removeComponent(id);
-        } catch (JSONException ex) {
-            Logger.getLogger(UseCaseDiagram.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    @Override
-    public void updateComponent(JSONObject jo) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public JSONObject toJSON() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getId() {
-        return getName();
-    }
     
 }

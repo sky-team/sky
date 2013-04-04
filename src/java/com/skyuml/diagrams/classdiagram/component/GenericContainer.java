@@ -6,6 +6,7 @@ package com.skyuml.diagrams.classdiagram.component;
 
 import com.skyuml.diagrams.ComponentIds;
 import com.skyuml.diagrams.DiagramComponentOperation;
+import com.skyuml.diagrams.classdiagram.GenericContainerType;
 import com.skyuml.utils.Keys;
 import java.util.ArrayList;
 import org.json.JSONArray;
@@ -13,10 +14,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- *
+ * Generic Container represent both class and interface component.
  * @author userzero
  */
-public class Class implements DiagramComponentOperation{
+public class GenericContainer implements DiagramComponentOperation{
     private static final String OPERATION_SEPARATOR = "//";
     
     private String id;
@@ -27,8 +28,14 @@ public class Class implements DiagramComponentOperation{
     
     int x;
     int y;
+    
+    GenericContainerType contType;
+    
 
-    public Class(String id,String title,int x,int y){
+    public GenericContainer(GenericContainerType type,String id,String title,int x,int y){
+        
+        contType = type;
+        
         members = new  ArrayList<String>();
         methods = new ArrayList<String>();
         
@@ -39,7 +46,10 @@ public class Class implements DiagramComponentOperation{
         this.title = title;
     }
     
-    public Class(String id,String title,int x,int y,ArrayList<String> methods,ArrayList<String>members){
+    public GenericContainer(GenericContainerType type,String id,String title,int x,int y,ArrayList<String> methods,ArrayList<String>members){
+       
+       contType = type;
+       
        this.methods = methods;
        this.members = members;
        
@@ -48,6 +58,7 @@ public class Class implements DiagramComponentOperation{
        
        this.id = id;
        this.title = title;
+       
     }
     
     public void setId(String id) {
@@ -216,8 +227,12 @@ public class Class implements DiagramComponentOperation{
         
         try{
             json.put(Keys.JSONMapping.RequestInfo.DiagramContent.COMPONENT_ID, getId());
-
-            json.put(Keys.JSONMapping.RequestInfo.DiagramContent.COMPONENT_TYPE, ComponentIds.CLASS);
+            
+            if(contType == GenericContainerType.CLASS){
+                json.put(Keys.JSONMapping.RequestInfo.DiagramContent.COMPONENT_TYPE, ComponentIds.CLASS);
+            }else if(contType == GenericContainerType.INTERFACE){
+                json.put(Keys.JSONMapping.RequestInfo.DiagramContent.COMPONENT_TYPE, ComponentIds.INTERFACE);
+            }
 
             json.put(Keys.JSONMapping.RequestInfo.DiagramContent.TITLE, getTitle());
 

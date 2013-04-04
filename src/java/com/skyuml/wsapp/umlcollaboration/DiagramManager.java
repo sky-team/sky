@@ -39,7 +39,7 @@ public class DiagramManager {
         
         for (Iterator<Diagram> it = diagrams.keySet().iterator(); it.hasNext();) {
             Diagram di = it.next();
-            if(di.getName().equals(diaName)){
+            if(di.getId().equals(diaName)){
                 return di; 
             }
             
