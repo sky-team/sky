@@ -4,7 +4,12 @@
  */
 package com.skyuml.diagrams.usecase.component;
 
+import com.skyuml.diagrams.ComponentIds;
 import com.skyuml.diagrams.DiagramComponentOperation;
+import com.skyuml.utils.Keys;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -17,23 +22,79 @@ public class Oval implements DiagramComponentOperation{
     private int y;
     
     private String id;
-    private String name;
+    private String title;
     
-    public Oval(String id,String name,int x,int y){
+    public Oval(String id,String title,int x,int y){
         this.id = id;
-        this.name = name;
+        this.title = title;
         
         this.x = x;
         this.y = y;
     }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
     @Override
     public void update(JSONObject jo) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            JSONObject reqeustInfo = jo.getJSONObject(Keys.JSONMapping.REQUEST_INFO);
+            JSONObject digramcontent = reqeustInfo.getJSONObject(Keys.JSONMapping.RequestInfo.DIAGRAM_CONTENT);
+            
+            if(!digramcontent.isNull(Keys.JSONMapping.RequestInfo.DiagramContent.TITLE)){
+                setTitle(digramcontent.getString(Keys.JSONMapping.RequestInfo.DiagramContent.TITLE));
+            }
+            
+            
+            if(!digramcontent.isNull(Keys.JSONMapping.RequestInfo.DiagramContent.X_LOCATION)){
+                setX(digramcontent.getInt(Keys.JSONMapping.RequestInfo.DiagramContent.X_LOCATION));
+            }
+            
+            if(!digramcontent.isNull(Keys.JSONMapping.RequestInfo.DiagramContent.Y_LOCATION)){
+                setY(digramcontent.getInt(Keys.JSONMapping.RequestInfo.DiagramContent.Y_LOCATION));
+            }
+        } catch (JSONException ex) {
+            Logger.getLogger(Oval.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override
     public JSONObject toJSON() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        JSONObject json = new JSONObject();
+        try {
+            json.put(Keys.JSONMapping.RequestInfo.DiagramContent.COMPONENT_ID, getId());
+            json.put(Keys.JSONMapping.RequestInfo.DiagramContent.X_LOCATION, getX());
+            json.put(Keys.JSONMapping.RequestInfo.DiagramContent.Y_LOCATION, getY());
+            json.put(Keys.JSONMapping.RequestInfo.DiagramContent.TITLE, getTitle());
+            json.put(Keys.JSONMapping.RequestInfo.DiagramContent.COMPONENT_TYPE, ComponentIds.OVAL);
+        } catch (JSONException ex) {
+            Logger.getLogger(Actor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return json;
     }
 
     @Override

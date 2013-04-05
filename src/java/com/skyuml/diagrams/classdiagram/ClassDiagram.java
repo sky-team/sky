@@ -6,6 +6,7 @@ package com.skyuml.diagrams.classdiagram;
 
 import com.skyuml.diagrams.Diagram;
 import com.skyuml.diagrams.DiagramComponentOperation;
+import com.skyuml.diagrams.DiagramType;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -30,6 +31,11 @@ public class ClassDiagram extends Diagram{
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public String getDiagramType() {
+        return DiagramType.CLASS;
     }
 
 

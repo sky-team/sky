@@ -4,8 +4,12 @@
  */
 package com.skyuml.diagrams;
 
+import com.skyuml.diagrams.usecase.UseCaseDiagram;
 import com.skyuml.utils.Keys;
 import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,6 +24,10 @@ import org.json.JSONObject;
 public abstract class Diagram implements Externalizable,DiagramOperation{
     
     private String id;
+    protected final String DIAGRAM_HEADER = "diagram-header";
+    protected final String DIAGRAM_ID="diagram-id";
+    protected final String DIAGRAM_TYPE = "diagram-type";
+    protected final String DIAGRAM_BODY = "diagram-body";
     
     protected Hashtable<String, DiagramComponentOperation> components;
     protected Hashtable<String, DiagramComponentOperation> associations;
@@ -133,11 +141,52 @@ public abstract class Diagram implements Externalizable,DiagramOperation{
             
             json.put(Keys.JSONMapping.RequestInfo.DiagramContent.ASSOCIATIONS, asso);
             json.put(Keys.JSONMapping.RequestInfo.DiagramContent.COMPONENTS, comp);
+            json.put(Keys.JSONMapping.RequestInfo.DiagramContent.DIAGRAM_TYPE, getDiagramType());
             
         } catch (JSONException ex) {
             Logger.getLogger(Diagram.class.getName()).log(Level.SEVERE, null, ex);
         }
         return json;
+    }
+    
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        try {
+            /*String header = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>";
+            String nameTag = String.format("<Diagram name=\"%s\"",getId());
+            
+            out.writeUTF(header);
+            out.writeUTF(getId());
+            /*for (Part part : getParts()) {
+                part.writeExternal(out);
+            }*/
+            /*out.writeUTF("</Diagram>");*/
+                
+            JSONObject rootjs = new JSONObject();
+            JSONObject subjs = new JSONObject();
+            
+            subjs.put(DIAGRAM_ID, getId());
+            subjs.put(DIAGRAM_TYPE, getDiagramType());
+            
+            rootjs.put(DIAGRAM_HEADER, subjs);
+            rootjs.put(DIAGRAM_BODY, toJSON());
+            
+            out.write(rootjs.toString().getBytes());
+            out.flush();
+            
+        } catch (JSONException ex) {
+            Logger.getLogger(UseCaseDiagram.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+        
+    }
+
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        
+        String header = in.readUTF();
+        String nameTag = in.readUTF();  
     }
 
 }

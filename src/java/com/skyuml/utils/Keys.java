@@ -83,6 +83,7 @@ public final class Keys {
             public final static String DIAGRAM_NAME ="diagram-name";
             public final static String DIAGRAM_CONTENT="diagram-content";
             
+            
             public static final class DiagramContent{
                 private DiagramContent(){}
                 
@@ -96,6 +97,8 @@ public final class Keys {
                 
                 public static final String ASSOCIATIONS = "associations";
                 public static final String COMPONENTS = "components";
+                
+                public final static String DIAGRAM_TYPE = "diagram-type";
                 
                 public static final class Association{
                     private Association(){}

@@ -5,6 +5,9 @@
 package com.skyuml.wsapp.umlcollaboration;
 import com.skyuml.wsapp.WSUser;
 import com.skyuml.diagrams.Diagram;
+import com.skyuml.diagrams.classdiagram.ClassDiagram;
+import com.skyuml.diagrams.classdiagram.GenericContainerType;
+import com.skyuml.diagrams.classdiagram.component.GenericContainer;
 import com.skyuml.utils.Keys;
 import com.skyuml.wsapp.WSGroup;
 import java.io.IOException;
@@ -122,42 +125,7 @@ public class DiagramManager {
             return false;
         
         if(!isDiagramOpened(dia_name)){
-            Diagram dia =new Diagram(dia_name) {
-                @Override
-                public void writeExternal(ObjectOutput out) throws IOException {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                }
-                
-                @Override
-                public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                }
-                
-                @Override
-                public void addComponent(JSONObject jo) {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                }
-                
-                @Override
-                public void removeComponent(JSONObject jo) {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                }
-                
-                @Override
-                public void updateComponent(JSONObject jo) {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                }
-                
-                @Override
-                public String getId() {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                }
-                
-                @Override
-                public JSONObject toJSON() {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                }
-            };//null;//Diagram.load(diaId);
+            Diagram dia =new ClassDiagram("dia1");//null;//Diagram.load(diaId);
             
             if(dia != null){
                 diagrams.put(dia, new WSGroup(false));
