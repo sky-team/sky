@@ -8,8 +8,7 @@ package com.skyuml.diagrams;
  *
  * @author Hamza
  */
-public final class DiagramType {
-    public static final String USECASE = "usecase";
-    public static final String CLASS = "class";
-    
+public enum DiagramType {
+    Class,
+    Usecase
 }

@@ -30,8 +30,8 @@ public class UseCaseDiagram extends Diagram{
     
 
     @Override
-    public String getDiagramType() {
-        return DiagramType.USECASE;
+    public DiagramType getDiagramType() {
+        return DiagramType.Usecase;
     }
 
     

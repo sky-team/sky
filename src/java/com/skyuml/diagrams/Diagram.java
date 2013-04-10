@@ -6,11 +6,15 @@ package com.skyuml.diagrams;
 
 import com.skyuml.diagrams.usecase.UseCaseDiagram;
 import com.skyuml.utils.Keys;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.Externalizable;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+import java.security.InvalidParameterException;
 import java.util.Hashtable;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONArray;
@@ -21,21 +25,34 @@ import org.json.JSONObject;
  *
  * @author Yazan
  */
-public abstract class Diagram implements Externalizable,DiagramOperation{
+public abstract class Diagram implements DiagramOperation{
     
     private String id;
-    protected final String DIAGRAM_HEADER = "diagram-header";
-    protected final String DIAGRAM_ID="diagram-id";
-    protected final String DIAGRAM_TYPE = "diagram-type";
-    protected final String DIAGRAM_BODY = "diagram-body";
-    
     protected Hashtable<String, DiagramComponentOperation> components;
     protected Hashtable<String, DiagramComponentOperation> associations;
+    
+    @Override
+    public Hashtable<String, DiagramComponentOperation> getComponents() {
+        return components;
+    }
+    
+    @Override
+    public void setComponents(Hashtable<String, DiagramComponentOperation> components) {
+        this.components = components;
+    }
+    
+    @Override
+    public Hashtable<String, DiagramComponentOperation> getAssociations() {
+        return associations;
+    }
 
-    public Diagram(String id) {
+    public void setAssociations(Hashtable<String, DiagramComponentOperation> associations) {
+        this.associations = associations;
+    }
+    
+    @Override
+    public void setId(String id) {
         this.id = id;
-        components = new Hashtable<String, DiagramComponentOperation>();
-        associations = new Hashtable<String, DiagramComponentOperation>();
     }
     
     @Override
@@ -44,14 +61,25 @@ public abstract class Diagram implements Externalizable,DiagramOperation{
         
     }
     
-    public DiagramComponentOperation getComponent(String key){//check this maybe bug
+    public Diagram(){
+        
+    }
+    public Diagram(String id) {
+        this.id = id;
+        components = new Hashtable<String, DiagramComponentOperation>();
+        associations = new Hashtable<String, DiagramComponentOperation>();
+    }
+    
+    
+    
+    /*public DiagramComponentOperation getComponent(String key){//check this maybe bug
         DiagramComponentOperation dia = associations.get(key);
         if(dia == null){
             dia = components.get(key);
         }
         
         return dia;
-    }
+    }*/
     
 
     @Override
@@ -141,7 +169,7 @@ public abstract class Diagram implements Externalizable,DiagramOperation{
             
             json.put(Keys.JSONMapping.RequestInfo.DiagramContent.ASSOCIATIONS, asso);
             json.put(Keys.JSONMapping.RequestInfo.DiagramContent.COMPONENTS, comp);
-            json.put(Keys.JSONMapping.RequestInfo.DiagramContent.DIAGRAM_TYPE, getDiagramType());
+            
             
         } catch (JSONException ex) {
             Logger.getLogger(Diagram.class.getName()).log(Level.SEVERE, null, ex);
@@ -150,26 +178,20 @@ public abstract class Diagram implements Externalizable,DiagramOperation{
     }
     
     @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
+    public void setDiagramType(DiagramType diaType){
+        this.setDiagramType(diaType);
+    }
+    
+    public void writeDiagram(FileOutputStream out) throws IOException {
         try {
-            /*String header = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>";
-            String nameTag = String.format("<Diagram name=\"%s\"",getId());
-            
-            out.writeUTF(header);
-            out.writeUTF(getId());
-            /*for (Part part : getParts()) {
-                part.writeExternal(out);
-            }*/
-            /*out.writeUTF("</Diagram>");*/
-                
             JSONObject rootjs = new JSONObject();
             JSONObject subjs = new JSONObject();
             
-            subjs.put(DIAGRAM_ID, getId());
-            subjs.put(DIAGRAM_TYPE, getDiagramType());
+            subjs.put(Keys.JSONMapping.RequestInfo.DIAGRAM_NAME, getId());
+            subjs.put(Keys.JSONMapping.RequestInfo.DIAGRAM_TYPE, getDiagramType().name());
             
-            rootjs.put(DIAGRAM_HEADER, subjs);
-            rootjs.put(DIAGRAM_BODY, toJSON());
+            rootjs.put(Keys.JSONMapping.RequestInfo.DiagramContent.DIAGRAM_HEADER, subjs);
+            rootjs.put(Keys.JSONMapping.RequestInfo.DiagramContent.DIAGRAM_BODY, toJSON());
             
             out.write(rootjs.toString().getBytes());
             out.flush();
@@ -182,11 +204,35 @@ public abstract class Diagram implements Externalizable,DiagramOperation{
         
     }
 
-    @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        
-        String header = in.readUTF();
-        String nameTag = in.readUTF();  
+    
+    public void readDiagram(FileInputStream in) throws IOException, ClassNotFoundException {
+        try {
+            
+            Scanner pw= new Scanner(in);
+            StringBuilder sb = new StringBuilder();
+            
+            while(pw.hasNextLine()){
+                sb.append(pw.nextLine());
+            }
+            
+            
+            
+            JSONObject js = new JSONObject(sb.toString());
+            
+            Diagram diagram = DiagramFactory.getDiagramFromJSON(js);
+            
+            if(diagram == null){
+                throw new InvalidParameterException();
+            }else{
+                this.setId(diagram.getId());
+                this.setAssociations(diagram.getAssociations());
+                this.setComponents(diagram.getComponents());
+                this.setDiagramType(diagram.getDiagramType());
+            }
+            //this.
+        } catch (JSONException ex) {
+            Logger.getLogger(Diagram.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

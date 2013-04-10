@@ -23,19 +23,19 @@ public class ClassDiagram extends Diagram{
         super(id);
     }
     
-    @Override
+    
     public void writeExternal(ObjectOutput out) throws IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
+    
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public String getDiagramType() {
-        return DiagramType.CLASS;
+    public DiagramType getDiagramType() {
+        return DiagramType.Class;
     }
 
 
