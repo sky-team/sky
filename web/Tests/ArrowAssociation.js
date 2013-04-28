@@ -4,54 +4,54 @@
  */
 
 
-function Association(s,d){
+function ArrowAssociation(s,d){
     this.source = s;
     this.destination = d;
     
     this.line = new Line();
-    this.association = new Triangle();
+    this.association = new Arrow();
     this.title = new Text("");
     
-    this.leftAssociation = new Triangle();
-    this.rightAssociation = new Triangle();
-    this.topAssociation = new Triangle();
-    this.downAssociation = new Triangle();
+    this.leftAssociation = new Arrow();
+    this.rightAssociation = new Arrow();
+    this.topAssociation = new Arrow();
+    this.downAssociation = new Arrow();
     
     this.effects = new Array();
     this.dynamic = true;
 }
 
-Association.prototype = new Drawable();
+ArrowAssociation.prototype = new Drawable();
 
-Association.prototype.setupLeft = function(){
+ArrowAssociation.prototype.setupLeft = function(){
     this.leftAssociation.direction = 0;
     this.leftAssociation.setX( this.destination.connectionSpots.XRightSpot);
     this.leftAssociation.setY( this.destination.connectionSpots.YRightSpot);
 }
 
-Association.prototype.setupRight = function(){
+ArrowAssociation.prototype.setupRight = function(){
     this.rightAssociation.direction = 2;
     this.rightAssociation.setX( this.destination.connectionSpots.XLeftSpot);
     this.rightAssociation.setY( this.destination.connectionSpots.YLeftSpot);
 }
 
-Association.prototype.setupTop = function(){
+ArrowAssociation.prototype.setupTop = function(){
     this.topAssociation.direction = 3;
     this.topAssociation.setX( this.destination.connectionSpots.XDownSpot);
     this.topAssociation.setY( this.destination.connectionSpots.YDownSpot);
 }
 
-Association.prototype.setupDown = function(){
+ArrowAssociation.prototype.setupDown = function(){
     this.downAssociation.direction = 1;
     this.downAssociation.setX( this.destination.connectionSpots.XTopSpot);
     this.downAssociation.setY( this.destination.connectionSpots.YTopSpot);
 }
 
-Association.prototype.hasPoints = function(mx,my){
+ArrowAssociation.prototype.hasPoints = function(mx,my){
     return this.line.hasPoints(mx,my) || this.association.hasPoints(mx,my);
 }
 
-Association.prototype.update = function(){
+ArrowAssociation.prototype.update = function(){
     
     if(!this.dynamic)
         return;
@@ -143,7 +143,7 @@ Association.prototype.update = function(){
 }
 
 
-Association.prototype.destroyElement = function(){
+ArrowAssociation.prototype.destroyElement = function(){
     
     if(this.line.element == null)
         return;
@@ -155,7 +155,7 @@ Association.prototype.destroyElement = function(){
     this.downAssociation.destroyElement();
 }
 
-Association.prototype.createElement = function(paper){
+ArrowAssociation.prototype.createElement = function(paper){
     if(this.line.element != null)
         return;
     
@@ -167,30 +167,30 @@ Association.prototype.createElement = function(paper){
 }
 
 
-Association.prototype.getWidth = function(){
+ArrowAssociation.prototype.getWidth = function(){
     return this.association.getWidth() + this.line.getWidth();
 }
 
-Association.prototype.getHeight = function(){
+ArrowAssociation.prototype.getHeight = function(){
     return this.size;
 }
 
-Association.prototype.setSize = function(s){
+ArrowAssociation.prototype.setSize = function(s){
     this.leftAssociation.setSize(s);
     this.rightAssociation.setSize(s);
     this.topAssociation.setSize(s);
     this.downAssociation.setSize(s);
 }
 
-Association.prototype.setX = function(x){
+ArrowAssociation.prototype.setX = function(x){
     this.x = x;
 }
 
-Association.prototype.setY = function(y){
+ArrowAssociation.prototype.setY = function(y){
     this.y = y;
 }
 
-Association.prototype.setDrawColor = function(color){
+ArrowAssociation.prototype.setDrawColor = function(color){
     this.drawColor = color;
     
     this.line.setDrawColor(color);
@@ -200,7 +200,7 @@ Association.prototype.setDrawColor = function(color){
     this.downAssociation.setDrawColor(color);
 }
 
-Association.prototype.setLineWidth = function(w){
+ArrowAssociation.prototype.setLineWidth = function(w){
     this.lineWidth = w;
     
     this.line.setLineWidth(w);
@@ -210,7 +210,7 @@ Association.prototype.setLineWidth = function(w){
     this.downAssociation.setLineWidth(w);
 }
 
-Association.prototype.hide = function(){
+ArrowAssociation.prototype.hide = function(){
     
     this.line.hide();
     this.leftAssociation.hide();
@@ -219,7 +219,7 @@ Association.prototype.hide = function(){
     this.downAssociation.hide();
 }
 
-Association.prototype.show = function(){
+ArrowAssociation.prototype.show = function(){
     
     this.line.show();
     this.leftAssociation.show();
@@ -228,16 +228,16 @@ Association.prototype.show = function(){
     this.downAssociation.show();
 }
 
-Association.prototype.setDashed = function(){
+ArrowAssociation.prototype.setDashed = function(){
     
     this.line.applyAttr({"stroke-dasharray":"- -"});
 }
 
-Association.prototype.setSolid = function(){
+ArrowAssociation.prototype.setSolid = function(){
     
     this.line.applyAttr({"stroke-dasharray":"-"});
 }
 
-Association.prototype.getType = function(){
+ArrowAssociation.prototype.getType = function(){
     return this.line.getAttr("stroke-dasharray") == "- -" ? "c-3" : "c-4";
 }

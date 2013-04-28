@@ -10,6 +10,7 @@ for (i = 72; i > 0 ; i-=3) {
 
 var measure_text = '__';
 
+
 function disableSelection(element) {
     if (typeof element.onselectstart != 'undefined') {
         element.onselectstart = function() { return false; };
