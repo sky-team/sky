@@ -18,7 +18,7 @@ public class TestWSModel extends AuthenticateModel{
 
     @Override
     public void performGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher(Keys.ViewMapping.TEST_WS_VIEW).forward(request, response);
+        request.getRequestDispatcher(Keys.ViewMapping.OPEN_PROJECT_VIEW).forward(request, response);
     }
 
     @Override
