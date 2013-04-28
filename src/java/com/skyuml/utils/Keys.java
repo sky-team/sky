@@ -41,7 +41,7 @@ public final class Keys {
     private ViewMapping(){}
     
     public static String INDEX_ERROR_VIEW = "/views/error.jsp";
-    public static String OPEN_PROJECT_VIEW = "/views/openProjectView.jsp";
+    public static String OPEN_PROJECT_VIEW = "/views/openProject.jsp";
     public static String TEST_WS_VIEW = "/views/testws.jsp";
     
     }

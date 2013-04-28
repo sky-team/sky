@@ -30,7 +30,7 @@ public class WSHandler extends WebSocketServlet {
     
     @Override
     protected StreamInbound createWebSocketInbound(String string, HttpServletRequest hsr) {
-        User us = null;//(User)hsr.getSession().getAttribute(Keys.SessionAttribute.USER);
+        User us = new User("EEE", "eeee", "Java", "soso",10);//null;//(User)hsr.getSession().getAttribute(Keys.SessionAttribute.USER);
         WSUser user = new WSUser(us);
         
         user.registerWSApplication(umlApp);

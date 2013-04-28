@@ -6,3 +6,9 @@
 
 --- update comp dia
 {"app-id":1,"request-info":{"project-name":"a","diagram-name":"b","project-owner":1,"request-type":3}}
+
+--Open chat channel
+{"app-id":2,"request-info":{"project-name":"a","diagram-name":"b","project-owner":1,"request-type":1}}
+
+--Send Message
+{"app-id":2,"request-info":{"project-name":"a","diagram-name":"b","project-owner":1,"request-type":2,"message":"'+message+'"}}

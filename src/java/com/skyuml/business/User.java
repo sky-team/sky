@@ -23,7 +23,8 @@ public class User implements Serializable{
     private String password;
     private String firstName;
     private String lastName;
- 
+    private String id;
+    
     public static String userIdColumnName = "user_id";
     public static String emailColumnName = "email";
     public static String passwordColumnName = "password";
@@ -35,11 +36,12 @@ public class User implements Serializable{
         
     }
 
-    public User(String email, String password, String firstName, String lastName) {
+    public User(String email, String password, String firstName, String lastName,int userId) {
         this.email = email;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.userId = userId;
     }
 
     public int getUserId() {
