@@ -85,7 +85,7 @@ public class WSGroup {
         boolean fla = false;
         synchronized (lock) {
             for (int i = 0; i < members.size(); i++) {
-                if (members.get(i).equals(user)) {
+                if (members.get(i).getUserId() == user.getUserId()) {
                     fla = true;
                     break;
                 }

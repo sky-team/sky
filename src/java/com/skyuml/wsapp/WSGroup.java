@@ -9,6 +9,7 @@ import com.skyuml.utils.Tuple;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -98,6 +99,9 @@ public class WSGroup {
         synchronized (lock) {
             if (members.indexOf(member) == -1) {
                 members.add(member);
+                System.out.println("Register new memebr in project " + member.getFullName());
+            }else{
+                System.out.println("Fail to Register new memebr in project ,, member already exist." + member.getFullName());
             }
         }
     }
@@ -116,11 +120,10 @@ public class WSGroup {
                 while (flag) {
                     try {
                         if (textMessages.isEmpty()) {
-                            broadcastMessages.stop();
                             flag = false;
                             members.clear();
-                            textMessages.clear();
                             binaryMessages.clear();
+                            broadcastMessages.stop();
                         }
                         Thread.sleep(100);
                     } catch (Exception exp) {
@@ -144,51 +147,77 @@ public class WSGroup {
     }
 
     private void broadcastTextMessage(String msg, WSUser sender) {
+        ArrayList<WSUser> tempToDelete = new ArrayList<WSUser>();
 
         if (members.size() <= 0) {
             return;
         }
 
         if (includeSender) {
-            for (int i = 0;i < members.size();i++) {//change it to for loop
+            for (int i = 0; i < members.size(); i++) {//change it to for loop
 
                 synchronized (members.get(i)) {
                     try {
                         members.get(i).sendTextMessage(msg);
                     } catch (IOException ex) {
                         if (removeUserOnIOException) {
-                            String un = members.get(i).getFullName();
-                            members.remove(members.get(i));
-                            if (onIOException != null) {
-                                onIOException.boradcastProblem(members, un);
-                            }
+                            tempToDelete.add(members.get(i));
+                            logError(members.get(i).getFullName() +" : Not responding, i'm going to remove him");
+                        }
+                        if (onIOException != null) {
+                            onIOException.boradcastProblem(members, members.get(i).getFullName());
                         }
                     }
                 }
             }
+
+            //clear dicconnected users 
+            if (tempToDelete.size() > 0) {
+                for (Iterator<WSUser> it = tempToDelete.iterator(); it.hasNext();) {
+                    members.remove(it.next());
+                }
+                tempToDelete.clear();
+            }
+
         } else {
-            for (int i = 0;i < members.size();i++) {
+            for (int i = 0; i < members.size(); i++) {
+                System.out.println(i);
                 synchronized (members.get(i)) {
-                    if (!members.get(i).equals(sender)) {
+                    if (members.get(i).getUserId() != sender.getUserId()) {
                         try {
                             members.get(i).sendTextMessage(msg);
                         } catch (IOException ex) {
-                            String un = members.get(i).getFullName();
-                            members.remove(members.get(i));
+                            if (removeUserOnIOException) {
+                                tempToDelete.add(members.get(i));
+                                logError(members.get(i).getFullName() +" : Not responding, i'm going to remove him");
+                            }
                             if (onIOException != null) {
-                                onIOException.boradcastProblem(members, un);
+                                onIOException.boradcastProblem(members, members.get(i).getFullName());
                             }
                         }
                     }
                 }
 
+            }
+
+            //clear dicconnected users 
+            if (tempToDelete.size() > 0) {
+                for (Iterator<WSUser> it = tempToDelete.iterator(); it.hasNext();) {
+                    members.remove(it.next());
+                }
+                tempToDelete.clear();
             }
         }
 
     }
 
-    private void broadcastBinatyMessage(ByteBuffer buf, WSUser sender) {
+    private void logError(String msg) {
+        System.out.println(msg);
+    }
 
+    private void broadcastBinatyMessage(ByteBuffer buf, WSUser sender) {
+         throw new UnsupportedOperationException("Not supported yet. Come and fix me 'Hamza' !!");
+        /*
         synchronized (lock) {
             if (members.size() <= 0) {
                 return;
@@ -209,7 +238,7 @@ public class WSGroup {
             } else {
                 for (WSUser user : members) {
                     try {
-                        if (!user.equals(sender)) {
+                        if (user.getUserId() != sender.getUserId()) {
 
                             synchronized (user) {
                                 user.sendBinaryMessage(buf);
@@ -220,7 +249,7 @@ public class WSGroup {
                     }
                 }
             }
-        }
+        }*/
     }
 
     public void setOnUserIOExceptionHandler(UserIOExceptionHandler ex) {
@@ -237,8 +266,8 @@ public class WSGroup {
         }
 
         public void boradcastProblem(ArrayList<WSUser> members, String userName) {
-            String msg = "{\"" + Keys.JSONMapping.APP_ID + "\":0,\"" + Keys.JSONMapping.REQUEST_INFO + "\":{"
-                    + "\"" + Keys.JSONMapping.RequestInfo.USER_FULL_NAME + "\":\"" + userName + "\"}}";
+            String msg = "{\"" + Keys.JSONMapping.APP_ID + "\":2,\"" + Keys.JSONMapping.REQUEST_INFO + "\":{"
+                    + "\"" + Keys.JSONMapping.RequestInfo.USER_FULL_NAME + "\":\"" + userName + "\",\"" + Keys.JSONMapping.RequestInfo.REQUEST_TYPE + "\":-1}}";
             for (WSUser wSUser : members) {
                 try {
                     wSUser.sendTextMessage(msg);

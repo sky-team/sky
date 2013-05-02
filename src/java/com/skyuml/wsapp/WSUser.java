@@ -89,11 +89,11 @@ public class WSUser extends MessageInbound{
     }
     
     public String getFullName(){
-        //String fullName = String.format("%s %s", userInfo.getFirstName(),userInfo.getLastName());
-        return "test1 test2";//fullName;
+        return String.format("%s %s", userInfo.getFirstName(),userInfo.getLastName());
+
     }
 
-    @Override
+    /*@Override
     public boolean equals(Object wsUser) {
         if(wsUser instanceof WSUser){
             
@@ -106,7 +106,7 @@ public class WSUser extends MessageInbound{
         }
         
         return false;
-    }
+    }*/
     
     
     
