@@ -4,6 +4,10 @@
     Author     : Hamza
 --%>
 
+<%@page import="java.util.ArrayList"%>
+<%@page import="com.skyuml.business.User"%>
+<%@page import="com.skyuml.business.Project"%>
+<%@page import="com.skyuml.utils.Keys"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!--<!DOCTYPE HTML>-->
 <html>
@@ -14,105 +18,68 @@
 
         <link rel="stylesheet" href="js/sidr/stylesheets/jquery.sidr.light.css">
         <!--<link rel="stylesheet" href="js/sidr/stylesheets/jquery.sidr.dark.css"/>-->
-
-        <script type="text/javascript">
-            var ws;
-            function startConnection() {
-
-                var ip = "localhost";
-                var port = "8084";
-
-                var url = "ws://" + ip + ":" + port + "/SkyUML/main?id=2"
-
-                if ('WebSocket' in window)
-                    ws = new WebSocket(url);
-                else if ('MozWebSocket' in window)
-                    ws = new MozWebSocket(url);
-                else
-                    alert("not support");
-
-                ws.onopen = function(event) {
-                    onOpen(event);
-                }
-
-                ws.onmessage = function(event) {
-                    onMessage(event);
-                }
-
-                ws.onclose = function(event) {
-                    onClose(event);
-                }
-
-                ws.onerror = function(event) {
-                    onError(event);
-                }
-            }
-
-            function onOpen(event) {
-                showMessage("Connected");
-                //register in the chat app
-                ws.send('{"app-id":2,"request-info":{"project-name":"a","diagram-name":"b","project-owner":1,"request-type":1}}');//2
-            }
-
-            function onMessage(event)//event.data will return the data
-            {
-                showMessage(event.data);
-            }
-
-            function onClose(event) {
-                showMessage("Disconnect");
-            }
-
-            function onError(event) {
-                showMessage("Error !!!")
-            }
-
-            function showMessage(msg) {
-                var $textarea = $('#messages');
-                $textarea.val($textarea.val() + msg + "\n");
-            }
-
-            function sendMessage() {
-                var message = $('#usermsg').val();
-                var msgBody = '{"app-id":2,"request-info":{"project-name":"a","diagram-name":"b","project-owner":1,"request-type":2,"message":"' + message + '"}}';
-                ws.send(msgBody);
-                $('#usermsg').val('');
-            }
+        <script type="text/javascript" src="js/Utils/Utils.js"></script>
+        <script type="text/javascript" src="js/Utils/ArrayList.js"></script>
+        <script type="text/javascript" src="js/Utils/HashMap.js"></script>
+        <script type="text/javascript" src="js/raphael-min.js"></script>
+        <script type="text/javascript" src="js/UmlElements/Drawable.js"></script>
+        <script type="text/javascript" src="js/UmlElements/ConnectionSpots.js"></script>
+        <script type="text/javascript" src="js/UmlElements/Text.js"></script>
+        <script type="text/javascript" src="js/UmlElements/Line.js"></script>
+        <script type="text/javascript" src="js/UmlElements/ClassDiagram.js"></script>
+        <script type="text/javascript" src="js/UmlElements/Usecase.js"></script>
+        <script type="text/javascript" src="js/UmlElements/Triangle.js"></script>
+        <script type="text/javascript" src="js/UmlElements/Arraw.js"></script>
+        <script type="text/javascript" src="js/UmlElements/Circle.js"></script>
+        <script type="text/javascript" src="js/UmlElements/Association.js"></script>
+        <script type="text/javascript" src="js/UmlElements/ActorSkeleton.js"></script>
+        <script type="text/javascript" src="js/UmlElements/Actor.js"></script>
+        <script type="text/javascript" src="js/UmlElements/ClassAttribute.js"></script>
+        <script type="text/javascript" src="js/UmlElements/ClassMethod.js"></script>
+        <script type="text/javascript" src="js/UmlElements/Ellipse.js"></script>
+        <script type="text/javascript" src="js/ElementsFactory.js"></script>
+        <script type="text/javascript" src="js/SocketHandler.js"></script>
+        <script type="text/javascript" src="js/InterfaceHandler.js"></script>
+        <script type="text/javascript"> 
+            
         </script>
     </head>
 
-    <body>
+    <body onload="init();">
 
-        <div class="divHeader mertoFont">
+        <div class="divHeader mertoFont" style="-webkit-user-select: none;" onselectstart="return false;">
             <img src="images/skyuml.png"style="width:200px;height:125px;position: absolute;"/>
             <div class="divider"></div>
             <div class="headerItem metroIcon"><img src="images/header/home.png"/><h2>home</h2></div>
             <div class="headerItem metroIcon"><img src="images/header/settings.png"/><h2>setting</h2></div>
             <div class="headerItem metroIcon"><img src="images/header/info.png"/><h2>about us</h2></div>
-            <div class="headerUserinfo">
-                <div class="userFName"> Hamza</div>
-                <div class="userLName"> Kofahi</div>
+            <div class="headerUserinfo" >
+                <div class="userFName"> <%= ((User)request.getSession().getAttribute(Keys.SessionAttribute.USER)).getFirstName() %></div>
+                <div class="userLName"> <%= ((User)request.getSession().getAttribute(Keys.SessionAttribute.USER)).getLastName() %></div>
                 <div class="userPic"></div>
                 <div class="userInfoDivider"></div>
                 <a class="settingBTN metroIcon"></a>
 
             </div>
             <a id="right-menu" href="#right-menu" class="chatButton metroIcon" >1</a>
+            <a onclick="fillEditMenu();" id="right-menu-att" href="#right-menu-att" class="chatButton metroIcon" style="background:url(images/uml_icons/edit.jpg);right:80px; width: 32;height: 30;"></a>
 
         </div>
 
-        <div  class="leftslide mertoFont">
+        <div  class="leftslide mertoFont" style="-webkit-user-select: none;" onselectstart="return false;">
             <div id="st-accordion" class="st-accordion">
                 <ul>
                     <li>
                         <a href="#">Diagrams<span class="st-arrow">Open or Close</span></a>
                         <div class="st-content">
-                            <a href="#">Diagram 1</a>
-                            <a href="#">Diagram 2</a>
-                            <a href="#">Diagram 3</a>
-                            <a href="#">Diagram 4</a>
-                            <a href="#">Diagram 5</a>
-                            <a class="removeDiagramBTN"></a><a class="addDiagramBTN"></a>
+                            <%Project project = (Project)request.getAttribute(Keys.AttributeNames.PROJECT_ATTRIBUTE_NAME);
+                              ArrayList<String> diag = project.getProjectDiagrams();
+                              for(int i = 0 ; i < diag.size() ;i++){
+                            %>
+                            <a href="javascript:openDiagram('<%= diag.get(i)%>');"><%= diag.get(i)%></a>
+                            <%}%>
+                            <a href="javascript:removeDiagram();" class="removeDiagramBTN"></a>
+                            <a href="javascript:createDiagram();" class="addDiagramBTN"></a>
                         </div>
                     </li>
                     <li>
@@ -120,11 +87,12 @@
                         <div class="st-content">
 
                             <table>
-                                <tr><th><img src="images/icon/081.png" style="width:40px;height:40px;"/></th><th><img src="images/icon/082.png" style="width:40px;height:40px;"/></th><th><img src="images/icon/083.png" style="width:40px;height:40px;"/></th></tr>
-                                <tr><th><img src="images/icon/084.png" style="width:40px;height:40px;"/></th><th><img src="images/icon/085.png" style="width:40px;height:40px;"/></th><th><img src="images/icon/086.png" style="width:40px;height:40px;"/></th></tr>
-                                <tr><th><img src="images/icon/087.png" style="width:40px;height:40px;"/></th><th><img src="images/icon/088.png" style="width:40px;height:40px;"/></th><th><img src="images/icon/089.png" style="width:40px;height:40px;"/></th></tr>
-                                <tr><th><img src="images/icon/090.png" style="width:40px;height:40px;"/></th><th><img src="images/icon/091.png" style="width:40px;height:40px;"/></th><th><img src="images/icon/092.png" style="width:40px;height:40px;"/></th></tr>
+                                <tr><th><img onclick="placeMode('class');" src="images/uml_icons/class.jpg" style="width:40px;height:40px;"/></th><th><img onclick="placeMode('actor');" src="images/uml_icons/actor.jpg" style="width:40px;height:40px;"/></th><th><img onclick="placeMode('usecase');" src="images/uml_icons/usecase.jpg" style="width:40px;height:40px;"/></th></tr>
+                                <tr><th><img onclick="connectMode('is-a1');" src="images/uml_icons/is-a1.jpg" style="width:40px;height:40px;"/></th><th><img onclick="connectMode('is-a2');" src="images/uml_icons/is-a2.jpg" style="width:40px;height:40px;"/></th><th><img onclick="connectMode('has-a');" src="images/uml_icons/has-a.jpg" style="width:40px;height:40px;"/></th></tr>
+                                <tr><th><img onclick="connectMode('use');" src="images/uml_icons/use.jpg" style="width:40px;height:40px;"/></th><th><img onclick="connectMode('extend');" src="images/uml_icons/extend.jpg" style="width:40px;height:40px;"/></th><th><img onclick="connectMode('includ');" src="images/uml_icons/includ.jpg" style="width:40px;height:40px;"/></th></tr>
+                                <tr><th><img onclick="selectMode();" src="images/uml_icons/select.jpg" style="width:40px;height:40px;"/></th><th><img onclick="removeMode();" src="images/uml_icons/remove.jpg" style="width:40px;height:40px;"/></th><th><img onclick="moveMode();" src="images/uml_icons/move.jpg" style="width:40px;height:40px;"/></th></tr>
                             </table>
+
                         </div>
                     </li>
                 </ul>
@@ -153,7 +121,60 @@
             </form>
         </div>
 
-        <div class="drawingArea metroIcon">
+        <div id="sidr-right-att" class="sidr right">					
+            <form action="javascript:return false;">
+                <input  type="submit" onclick="javascript:$('#right-menu-att').click();" value="Close" style="width:60px;"/>
+                <input type="button" onclick="fillEditMenu();" value="refresh" style="width:60px;float: left;"/>
+                <input type="button" value="Confirm" onclick="confirmClassChanges();javascript:$('#right-menu-att').click();" style="width:60px;float: left;"/>
+                <br>
+                <label>Title</label><input type="text" id="element_title"/>
+                <div id="edit_class" <!--style="visibility: hidden;"-->>  
+                     <fieldset title="Access">
+                        <legend>Access</legend>
+                        <input type="radio" value="+" name="class_access" checked="true" id="class_public_access"/>public<br>
+                        <input type="radio" value="-" name="class_access" id="class_private_access"/>private<br>
+                        <input type="radio" value="#" name="class_access" id="class_protected_access"/>protected<br>
+                    </fieldset>
+
+                    <fieldset title="data">
+                        <legend>Info</legend>
+                        <label>Name</label><input type="text" id="class_info_name"/>
+                        <label>Datatype</label><input type="text" id="class_info_datatype"/>
+                        <fieldset title="data">
+                            <legend>Method Params</legend>
+                            <label>Name</label><input type="text" id="class_info_mp_name"/>
+                            <label>Datatype</label><input type="text" id="class_info_mp_datatype"/>
+                            <input type="button" value="Add" onclick="addParam();" style="width:35px;float: left"/>
+                            <input type="button" value="Remove" onclick="removeSelectedParam();" style="width:60px;float: left"/>
+                            <input type="button" value="Update" onclick="updateSelectedParam();" style="width:55px;float: left"/>
+                            <select id="method_param_select" size="5" onchange="selectedParamChanged();"></select>
+                        </fieldset>
+                    </fieldset>
+                    Attributes<br>
+                    <input type="button" value="Add" onclick="addAttribute();" style="width:70px;float: left"/>
+                    <input type="button" value="Remove" onclick="removeSelectedAttribute();" style="width:70px;float: left"/>
+                    <input type="button" value="Update" onclick="updateSelectedAttribute();" style="width:70px;float: left"/>
+                    <select id="attributes_select" size="5" onchange="selectedAttributeChanged();"></select>
+                    Methods<br>
+                    <input type="button" value="Add" onclick="addMethod();" style="width:70px;float: left"/>
+                    <input type="button" value="Remove" onclick="removeSelectedMethod();" style="width:70px;float: left"/>
+                    <input type="button" value="Update" onclick="updateSelectedMethod();" style="width:70px;float: left"/>
+                    <select id="methods_select" size="5" onchange="selectedMethodChanged();"></select>
+                </div>
+
+            </form>
+        </div>
+
+        <label id="xylabel" style="visibility: hidden;"></label><label id="modelabel" style="visibility: hidden;"></label>
+                            
+        <div id ="holder" class="drawingArea metroIcon" style="-webkit-user-select: none;" onselectstart="return false;">
+            <form>
+                <input type="hidden" name="projectName" id="projectName" value="<%=project.getProjectName() %>"/>
+                <input type="hidden" name="projectOwner" id="projectOwner" value="<%=project.getUserId() %>"/>
+            </form>
+                <button type="button"  onclick="addComp('<%= "firstDiagram" %>');">Add Comp</button>
+                <button type="button"  onclick="updateComp('<%= "firstDiagram" %>');">Update comp</button>
+                <button type="button"  onclick="removeComp('<%= "firstDiagram" %>');">remvoe comp</button>
         </div>
 
         <!-- Include jQuery -->
@@ -174,6 +195,12 @@
                 name: 'sidr-right',
                 side: 'right',
                 body: '#drawing'
+            });
+
+            $('#right-menu-att').sidr({
+                name: 'sidr-right-att',
+                side: 'right',
+                body:'#drawing'
             });
 
             startConnection();

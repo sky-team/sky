@@ -12,6 +12,14 @@
         <servlet-name>SkyUMLWSDispatcher</servlet-name>
         <servlet-class>com.skyuml.wsapp.WSHandler</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>Drawer</servlet-name>
+        <servlet-class>Drawer</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SvgExporter</servlet-name>
+        <servlet-class>com.skyuml.logic.SvgExporter</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>SkyUMLRequestDispatcher</servlet-name>
         <url-pattern>/main</url-pattern>
@@ -23,6 +31,14 @@
     <servlet-mapping>
         <servlet-name>SkyUMLWSDispatcher</servlet-name>
         <url-pattern>/wsmain</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Drawer</servlet-name>
+        <url-pattern>/Drawer</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SvgExporter</servlet-name>
+        <url-pattern>/SvgExporter</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

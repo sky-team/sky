@@ -11,19 +11,30 @@ package com.skyuml.utils;
 public final class Keys {
     private Keys(){}
     
+    public static final class ConnectionSettings {
+        private ConnectionSettings(){}
+        public static final String DATABASE_IP = "localhost";
+        public static final int DATABASE_PORT = 3306;
+    }
+    
+    //used to exchage data between servlet and jsp "view"
     public static final class AttributeNames{
         private AttributeNames(){}
         public static final String USER_ATTRIBUTE_NAME = "USER_DATA";
         public static final String PROJECT_ATTRIBUTE_NAME = "PROJECT_DATA";
+        public static final String SHARED_PROJECT_ATTRIBUTE_NAME = "SHARED_PROJECT_DATA";
         
     }
     
+    //used to get the data from POST or GET request in servlet
     public static final class RequestParams{
         private RequestParams(){}
         public static final String USER_ID = "USER_ID";
         public static final String PROJECT_NAME = "PROJECT_NAME";
         public static final String PROJECT_OWNER_ID = "PROJECT_OWNER_ID";
         public static final String DIAGRAM_NAME = "DIAGRAM_NAME";
+        public static final String USER_NAME = "username";
+        public static final String PASSWORD = "password";
     }
     public static final class SessionAttribute{
         private SessionAttribute(){}
@@ -43,6 +54,9 @@ public final class Keys {
     public static String INDEX_ERROR_VIEW = "/views/error.jsp";
     public static String OPEN_PROJECT_VIEW = "/views/openProject.jsp";
     public static String TEST_WS_VIEW = "/views/testws.jsp";
+    public static String TEST_CHAT_VIEW = "/views/testChat.jsp";
+    public static String SIMPE_MY_PRPJECTS_VIEW = "/views/simplemyproject.jsp";
+    public static String SIMPE_LOGIN = "/views/simplelogin.jsp";
     
     }
     
@@ -57,6 +71,7 @@ public final class Keys {
         public final static int UML_COLLAPORATION_ID = 1;
         public final static int TEAM_CHAT_ID = 2;
         public final static int AUTO_SAVE_ID = 3;
+        public final static int SVG_EXPORTER_ID = 4;
         
     }
     

@@ -9,7 +9,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <script type="text/javascript" src="../js/jquery.js"></script>
+        <script type="text/javascript" src="js/jquery.js"></script>
         
         <script type="text/javascript">
             var ws;
@@ -69,7 +69,7 @@
             function sendMessage() {
                 var message = $('#usermsg').val();
                 var msgBody='{"app-id":2,"request-info":{"project-name":"a","diagram-name":"b","project-owner":1,"request-type":2,"message":"'+message+'"}}';
-                ws.send(msgBody);
+                ws.send(message);
                 $('#usermsg').val('');
             }
         </script>
