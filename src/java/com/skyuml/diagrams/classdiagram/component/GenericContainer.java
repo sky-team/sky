@@ -18,7 +18,7 @@ import org.json.JSONObject;
  * @author userzero
  */
 public class GenericContainer implements DiagramComponentOperation{
-    private static final String OPERATION_SEPARATOR = "//";
+    public static final String OPERATION_SEPARATOR = "//";
     
     private String id;
     private String title;

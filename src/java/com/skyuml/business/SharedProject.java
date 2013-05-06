@@ -21,6 +21,7 @@ public class SharedProject implements Serializable{
     private int userId;
     private int ownerId;
     private String projectName;
+    private String description;
     
     public static String userIdColumnName = "user_id";
     public static String ownerIdColumnName = "owner_id";
@@ -33,6 +34,7 @@ public class SharedProject implements Serializable{
         this.userId = userId;
         this.ownerId = ownerId;
         this.projectName = projectName;
+        this.description = "none.";
     }
 
     public int getUserId() {
@@ -63,6 +65,14 @@ public class SharedProject implements Serializable{
         
         return Project.select(connection, ownerId ,projectName);
         
+    }
+    
+    public String getProjectDescription(){
+        return description;
+    }
+    
+    public void setProjectDescription(String des){
+        this.description = des;
     }
     
     public User getUser(Connection connection) throws SQLException{
@@ -107,6 +117,9 @@ public class SharedProject implements Serializable{
             pr.userId = set.getInt(userIdColumnName);
             pr.projectName = set.getString(projectNameColumnName);
             pr.ownerId = set.getInt(ownerIdColumnName);
+            Project p = Project.select(connection, pr.ownerId,pr.projectName);
+            if(p != null)
+                pr.description = p.getProjectDescription();
             
             prs.add(pr);
         }

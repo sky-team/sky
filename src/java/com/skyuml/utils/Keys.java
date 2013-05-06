@@ -57,6 +57,7 @@ public final class Keys {
     public static String TEST_CHAT_VIEW = "/views/testChat.jsp";
     public static String SIMPE_MY_PRPJECTS_VIEW = "/views/simplemyproject.jsp";
     public static String SIMPE_LOGIN = "/views/simplelogin.jsp";
+    public static String MY_PROJECTS_VIEW = "/views/selectProject.jsp";
     
     }
     

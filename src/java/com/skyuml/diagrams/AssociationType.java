@@ -13,5 +13,7 @@ public enum AssociationType {
     include,
     extend,
     isA,
-    hasA
+    hasA,
+    aggregation,
+    implement 
 }

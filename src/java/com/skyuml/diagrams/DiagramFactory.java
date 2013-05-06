@@ -64,6 +64,7 @@ public class DiagramFactory {
                 for (int i=0;i <jsassociation.length();i++) {
                     DiagramComponentOperation diacom = DiagramComponentFactory.createComponent(jsassociation.getJSONObject(i));
                     association.put(diacom.getId(), diacom);
+                    System.out.println("Asso ID : "+ diacom.getId());
                 }
                 
                 //get all COMPONENT elements

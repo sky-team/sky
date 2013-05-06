@@ -91,7 +91,7 @@ body{
 	position:absolute;
 	background-color: #1ba1e2;
 	float:right;
-	right: 9;
+	right: 9px;
 	
 	margin-right: 20px;
 	margin-top: 10px;
@@ -123,7 +123,7 @@ body{
 }
 .userFName{
 	width:120px;
-	height:33;
+	height:33px;
 	float:left;
 	position:absolute;
 	margin-left :5px;
@@ -134,10 +134,10 @@ body{
 }
 .userLName{
 	width:120px;
-	height:33;
+	height:33px;
 	float:left;
 	position:absolute;
-	margin-top:35;
+	margin-top:35px;
 	margin-left :5px;
 	font-size: 18px;
 	font-family: sans-serif;

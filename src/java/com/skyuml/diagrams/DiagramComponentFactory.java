@@ -41,6 +41,8 @@ public class DiagramComponentFactory {
      * c-2 : interface
      * c-3 : isA
      * c-4 : hasA
+     * c-5 : aggregation
+     * c-6 : composition
      * 
      */
     
@@ -79,6 +81,8 @@ public class DiagramComponentFactory {
                     case 2 : comp = createInterface(diagramContent);break;
                     case 3 : comp = createAssociation(AssociationType.isA,diagramContent);break;
                     case 4 : comp = createAssociation(AssociationType.hasA, diagramContent);break;
+                    case 5 : comp = createAssociation(AssociationType.implement, diagramContent);break;
+                    case 6 : comp = createAssociation(AssociationType.aggregation, diagramContent);break;
                 }
         }
         }catch(JSONException jsExp){

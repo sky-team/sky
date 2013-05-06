@@ -20,6 +20,18 @@
         <servlet-name>SvgExporter</servlet-name>
         <servlet-class>com.skyuml.logic.SvgExporter</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>MyProjects</servlet-name>
+        <servlet-class>com.skyuml.logic.MyProjects</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LoginModel</servlet-name>
+        <servlet-class>com.skyuml.logic.LoginModel</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SharedWithMeModel</servlet-name>
+        <servlet-class>com.skyuml.logic.SharedWithMeModel</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>SkyUMLRequestDispatcher</servlet-name>
         <url-pattern>/main</url-pattern>
@@ -39,6 +51,18 @@
     <servlet-mapping>
         <servlet-name>SvgExporter</servlet-name>
         <url-pattern>/SvgExporter</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>MyProjects</servlet-name>
+        <url-pattern>/MyProjects</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginModel</servlet-name>
+        <url-pattern>/LoginModel</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SharedWithMeModel</servlet-name>
+        <url-pattern>/SharedWithMeModel</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

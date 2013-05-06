@@ -47,7 +47,7 @@ public class ProjectManager {
                             try {
                                 
                                 Project project = it.next();
-                                projects.get(project).saveAllDiagams(projectsPath+"/"+project.getProjectName()+"_"+project.getUserId()+"/");
+                                projects.get(project).saveAllDiagams();
                                 
                             } catch (IOException ex) {
                                 Logger.getLogger(ProjectManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -86,8 +86,8 @@ public class ProjectManager {
                  prog = Project.select(DefaultDatabase.getInstance().getConnection(), owner_id, prog_name);
                  ArrayList<String> diams  = prog.getProjectDiagrams();
                  
-                 projects.put(prog, new DiagramManager(prog_name,owner_id,
-                         diams.toArray(new String[diams.size()])));
+                 projects.put(prog, new DiagramManager(projectsPath+"/"+prog_name+"_"+owner_id+"/"
+                         ,prog_name,owner_id,diams.toArray(new String[diams.size()])));
                  
             } catch (SQLException ex) {
                 Logger.getLogger(ProjectManager.class.getName()).log(Level.SEVERE, null, ex);

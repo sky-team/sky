@@ -24,8 +24,11 @@ public class Project {
     private int userId = -1;
     private String projectName; 
     private int projectId;
+    private String description;
+    
     private ArrayList<String> diagrams;
     
+    public static String descriptionColumeName = "project_description";
     public static String userIdColumnName = "user_id";
     public static String projectNameColumnName = "projectName";
     public static String userTableName = "projects";
@@ -33,9 +36,10 @@ public class Project {
     public Project(){
     }
 
-    public Project(int userId, String projectName) {
+    public Project(int userId, String projectName,String des) {
         this.userId = userId;
         this.projectName = projectName;
+        this.description = des;
     }
     
     public int getUserId() {
@@ -44,6 +48,13 @@ public class Project {
     
     public int getProjectId(){
         return projectId;
+    }
+    
+    public String getProjectDescription(){
+        return description;
+    }
+    public void setProjectDescription(String des){
+        this.description = des;
     }
     
     public void setProjectId(int id){
@@ -97,6 +108,7 @@ public class Project {
             pr = new Project();
             pr.userId = set.getInt(userIdColumnName);
             pr.projectName = set.getString(projectNameColumnName);
+            pr.description = set.getString(descriptionColumeName);
         }
         
         set.close();
@@ -119,7 +131,7 @@ public class Project {
             Project pr = new Project();
             pr.userId = set.getInt(userIdColumnName);
             pr.projectName = set.getString(projectNameColumnName);
-            
+            pr.description = set.getString(descriptionColumeName);
             prs.add(pr);
         }
         
@@ -140,7 +152,7 @@ public class Project {
             Project pr = new Project();
             pr.userId = set.getInt(userIdColumnName);
             pr.projectName = set.getString(projectNameColumnName);
-            
+            pr.description = set.getString(descriptionColumeName);
             prs.add(pr);
         }
         
@@ -162,6 +174,7 @@ public class Project {
             
             pr.userId = set.getInt(userIdColumnName);
             pr.projectName = set.getString(projectNameColumnName);
+            pr.description = set.getString(descriptionColumeName);
             
             prs.add(pr);
         }
@@ -178,9 +191,9 @@ public class Project {
         
         Statement st = connection.createStatement();
 
-        String cols =  userIdColumnName +"," + projectNameColumnName ;
+        String cols =  userIdColumnName +"," + projectNameColumnName+","+descriptionColumeName ;
         
-        String values = project.userId + ", '"+project.projectName + "'";
+        String values = project.userId + ", '"+project.projectName + "' ,'" + project.description+"'";
         
         res = st.executeUpdate(String.format(Utils.Formats.INSERT_FORMAT,userTableName,cols,values));
         

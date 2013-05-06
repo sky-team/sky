@@ -5,26 +5,18 @@
  */
 package com.skyuml.controller;
 
-import com.skyuml.business.User;
-import com.skyuml.logic.IndexModel;
+
 import com.skyuml.logic.ModelManager;
 import com.skyuml.logic.Modelable;
+import com.skyuml.logic.MyProjects;
 import com.skyuml.logic.OpenProjectModel;
 import com.skyuml.logic.OpenWSConnectionModel;
-import com.skyuml.logic.OpenProjectModel2;
-import java.io.File;
-import com.skyuml.datamanagement.MySqlDatabase;
-import com.skyuml.datamanagement.Database;
-import com.skyuml.datamanagement.DefaultDatabase;
-import com.skyuml.diagrams.Diagram;
+import com.skyuml.logic.SharedWithMeModel;
+
 import com.skyuml.logic.SimpleLogin;
 import com.skyuml.logic.SimpleViewMyProjects;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -45,9 +37,10 @@ public class SkyUMLRequestDispatcher extends HttpServlet {
         
         //here setup the models
         manager.put(1, new SimpleLogin());
-        manager.put(2, new SimpleViewMyProjects());
+        manager.put(2, new MyProjects());
         manager.put(3,new OpenProjectModel());
         manager.put(4, new OpenWSConnectionModel());
+        manager.put(5, new SharedWithMeModel());
         
     }
     
@@ -129,43 +122,9 @@ public class SkyUMLRequestDispatcher extends HttpServlet {
     }
     
     private void test(){
-            /*try {
-                try {
-                   
-                  new File("/WEB-INF/Data/Projects/A_555/").mkdirs();
-                   File file = new File("/WEB-INF/Data/Projects/A_555/dia1.d");
-                   
-                   file.createNewFile();
-                   
-                   PrintWriter p = new PrintWriter(file);
-                   p.write("Test 123");
-                   p.flush();
-                   p.close();
-                   System.out.println( "PATH : "  +file.getPath() + ":"+file.getAbsolutePath());
-               } catch (IOException ex) {
-                   Logger.getLogger(SkyUMLRequestDispatcher.class.getName()).log(Level.SEVERE, null, ex);
-                   
-                   
-               }
-               
-               
-               
-               int res = Diagram.delete(database.getConnection(), 1, "b","b");
-               System.out.println("Result : " + res);
-                int x;
-            }catch (SQLException ex) {
-                Logger.getLogger(SkyUMLRequestDispatcher.class.getName()).log(Level.SEVERE, null, ex);
-            }*/
+
             
-            ArrayList<User> uu;
-        try {
-            uu = User.selectByFirstname(DefaultDatabase.getInstance().getConnection(), "hamza");
-            System.out.println("Size : "+uu.size());
-        } catch (SQLException ex) {
-            Logger.getLogger(SkyUMLRequestDispatcher.class.getName()).log(Level.SEVERE, null, ex);
-        }
-            
-       
+      
     }
 
 

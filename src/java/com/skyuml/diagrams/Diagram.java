@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -120,8 +121,26 @@ public abstract class Diagram implements DiagramOperation {
 
                 String id = ri.getString(Keys.JSONMapping.RequestInfo.DiagramContent.COMPONENT_ID);
                 if (id != null) {
+                    
                    associations.remove(id);
-                   components.remove(id);
+                   DiagramComponentOperation dia = components.remove(id);
+                   
+                   if(dia != null){
+                       ArrayList<String> tempToDel = new ArrayList<String>();
+                       
+                       for (Iterator<String> it = associations.keySet().iterator(); it.hasNext();) {
+                           String key = it.next();
+                           Association asso = (Association)associations.get(key);
+                           if(asso.getSource().equals(dia.getId()) || asso.getDestination().equals(dia.getId())){
+                               tempToDel.add(key);
+                           }
+                       }
+                       
+                       for (Iterator<String> it = tempToDel.iterator(); it.hasNext();) {
+                           associations.remove(it.next());
+                       }
+                       tempToDel.clear();
+                   }
                 }
             } catch (JSONException ex) {
                 Logger.getLogger(Diagram.class.getName()).log(Level.SEVERE, null, ex);
@@ -166,9 +185,10 @@ public abstract class Diagram implements DiagramOperation {
                 comp.put(object.toJSON());
             }
 
-            JSONArray asso = new JSONArray(associations.values());
+            JSONArray asso = new JSONArray();
             for (DiagramComponentOperation object : associations.values()) {
                 asso.put(object.toJSON());
+                System.out.println("From asso loop json" +object.getId());
             }
 
             json.put(Keys.JSONMapping.RequestInfo.DiagramContent.ASSOCIATIONS, asso);
@@ -257,13 +277,15 @@ public abstract class Diagram implements DiagramOperation {
         try {
 
             js = new JSONObject(sb.toString());
+            System.out.println("Before calling factory : " +sb.toString());
+            System.out.println("Before calling factory JSON: " +js.toString());
         } catch (JSONException ex) {
             Logger.getLogger(Diagram.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
         
         Diagram diagram = DiagramFactory.getDiagramFromJSON(js);
-        
+        System.out.println("after calling factory JSON: " +diagram.toJSON());
         return diagram;
 
     }
@@ -272,10 +294,13 @@ public abstract class Diagram implements DiagramOperation {
         
         ArrayList<String> diagrams = new ArrayList<String>();
         Statement st = connection.createStatement();
+        System.out.println(st == null);
+        System.err.println(String.format(Utils.Formats.SELECT_CONDITION_FORMAT,
+                digramNameColumnName ,tableName,projectNameColumnName+" = '"+projectName+"' AND "+userIdColumnName+" = "+projectOwner));
         ResultSet set = st.executeQuery(String.format(Utils.Formats.SELECT_CONDITION_FORMAT,
-                digramNameColumnName, tableName,projectNameColumnName+" = '"+projectName+"' AND "+userIdColumnName+" = "+projectOwner));
+                digramNameColumnName ,tableName,projectNameColumnName+" = '"+projectName+"' AND "+userIdColumnName+" = "+projectOwner));
         String diaName;
-        
+        System.out.println(set == null);
         while(set.next()){
             diaName = set.getString(digramNameColumnName);
             
@@ -315,4 +340,16 @@ public abstract class Diagram implements DiagramOperation {
         
         return res;
     }
+    
+    public static boolean update(Connection connection,int projectOwner,String projectName,String newDiaName,String oldDiaName)throws SQLException{
+        
+        Statement st = connection.createStatement();
+        String setValue=digramNameColumnName+"='"+newDiaName+"'";
+        String condition = projectNameColumnName+"='"+projectName+"' AND "+userIdColumnName+"="+projectOwner+" AND "+digramNameColumnName+" = '"+oldDiaName+"'";
+        int res = st.executeUpdate(String.format(Utils.Formats.UPDATE_FORMAT, tableName,setValue,condition));
+        
+        st.close();
+  
+        return (res != 0)?true:false;
+    } 
 }

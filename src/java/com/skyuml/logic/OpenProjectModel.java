@@ -23,8 +23,14 @@ public class OpenProjectModel extends AuthenticateModel{
 
     @Override
     public void performGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
+            
+        
+    }
 
-            try{
+    @Override
+    public void performPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try{
                 request.setAttribute(
                     Keys.AttributeNames.PROJECT_ATTRIBUTE_NAME,
                     Project.select(
@@ -43,12 +49,6 @@ public class OpenProjectModel extends AuthenticateModel{
             
             
             request.getRequestDispatcher(Keys.ViewMapping.OPEN_PROJECT_VIEW).forward(request, response);
-        
-    }
-
-    @Override
-    public void performPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

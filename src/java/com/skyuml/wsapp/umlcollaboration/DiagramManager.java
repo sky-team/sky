@@ -9,6 +9,7 @@ import com.skyuml.wsapp.WSUser;
 import com.skyuml.diagrams.Diagram;
 import com.skyuml.diagrams.DiagramType;
 import com.skyuml.diagrams.classdiagram.ClassDiagram;
+import com.skyuml.diagrams.classdiagram.component.GenericContainer;
 import com.skyuml.diagrams.usecase.UseCaseDiagram;
 import com.skyuml.utils.Keys;
 import com.skyuml.wsapp.WSGroup;
@@ -20,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONException;
@@ -40,13 +42,15 @@ public class DiagramManager {
     private WSGroup members;
     private String projectName;
     private int projectOwner;
-    private ArrayList<String> tempToDelete;
-    
-    public DiagramManager(String projectName, int projectOwner, String[] diagramsName) {
+    private ConcurrentLinkedQueue<String> tempToDelete;
+    private String projectPath;
+
+    public DiagramManager(String projectPath, String projectName, int projectOwner, String[] diagramsName) {
         diagrams = new HashMap<Diagram, WSGroup>();
         members = new WSGroup(false);
-        
-        tempToDelete = new ArrayList<String>();
+        this.projectPath = projectPath;
+
+        tempToDelete = new ConcurrentLinkedQueue<String>();
         this.projectName = projectName;
         this.projectOwner = projectOwner;
 
@@ -110,7 +114,7 @@ public class DiagramManager {
     }
 
     public void registerProjectMember(WSUser sender) {
-        System.out.println("Register User in project : # of members "+ (members.numberOfMembers()+1));
+        System.out.println("Register User in project : # of members " + (members.numberOfMembers() + 1));
         members.addMember(sender);
     }
 
@@ -205,10 +209,10 @@ public class DiagramManager {
 
             //notify all members in the project that this diagram is removed
             members.pushTextMessage(jo.toString(), sender);
-            
+
             //remove it form available digrams
             diagramsName.remove(diaName);
-            
+
             //flag it to remove it form server
             tempToDelete.add(diaName);
 
@@ -264,7 +268,7 @@ public class DiagramManager {
             try {
                 try {
                     Diagram dia = getDiagramByName(diaName);
-                    reqeustInfo.put(Keys.JSONMapping.RequestInfo.DIAGRAM_TYPE, dia.getId());
+                    reqeustInfo.put(Keys.JSONMapping.RequestInfo.DIAGRAM_TYPE, dia.getDiagramType().name());
                     reqeustInfo.put(Keys.JSONMapping.RequestInfo.DIAGRAM_CONTENT, dia.toJSON());
                 } catch (JSONException ex) {
                     Logger.getLogger(DiagramManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -311,18 +315,66 @@ public class DiagramManager {
     }
 
     public void notifyInformationChanged(JSONObject jo, String dianame, WSUser sender) {
-        Diagram dia = getDiagramByName(dianame);
-        if (dia != null) {
-            diagrams.get(dia).pushTextMessage(jo.toString(), sender);
+        System.out.println("Diagram Naem" + dianame);
+        String[] parts = dianame.split(GenericContainer.OPERATION_SEPARATOR);
+        if (parts.length == 2) {
+            String diaName = parts[0];
+            Diagram dia = getDiagramByName(diaName);
+            String newName = parts[1];
+
+            if (isDiagramExist(diaName) && !isDiagramExist(newName)) {
+                try {
+                    
+                    //rename the diagram file on harddisk
+                    File oldn = new File(projectPath + diaName);
+                    File newn = new File(projectPath + newName);
+                    oldn.renameTo(newn);
+                    
+                    if (dia == null) {
+                        try {
+                            dia = Diagram.Load(projectPath + newName);
+                            dia.setId(newName);
+                            diagrams.put(dia, new WSGroup(false));
+                        } catch (FileNotFoundException ex) {
+                            Logger.getLogger(DiagramManager.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                    
+                    
+                   
+                    
+
+                    synchronized (diagramsName) {
+                        //remvoe old name
+                        diagramsName.remove(diaName);
+                        
+                        diagramsName.put(newName, 1);
+
+                        
+                    }
+
+
+
+                    //update data base 
+                    Diagram.update(DefaultDatabase.getInstance().getConnection(), projectOwner, projectName, newName, diaName);
+
+                } catch (SQLException ex) {
+                    Logger.getLogger(DiagramManager.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                //notify other members
+                members.pushTextMessage(jo.toString(), sender);
+            } else {
+                System.out.println("Diagaram is exist !");
+            }
         }
     }
 
-    public void saveAllDiagams(String path) throws IOException { //this part need to be syncronized 
+    public void saveAllDiagams() throws IOException { //this part need to be syncronized 
         int action;
         File tempf;
-        
-        new File(path).mkdirs();//if 
-        
+
+        new File(projectPath).mkdirs();//if 
+
         for (String diaName : diagramsName.keySet()) {
             action = diagramsName.get(diaName);
 
@@ -332,7 +384,7 @@ public class DiagramManager {
                 break;
 
                 case 1: { // update the file 
-                    tempf = new File(path + diaName);
+                    tempf = new File(projectPath + diaName);
 
                     //prepar the file to write
                     if (tempf.exists()) {
@@ -340,7 +392,7 @@ public class DiagramManager {
                     }
                     tempf.createNewFile();
 
-                    getDiagramByName(diaName).writeDiagram(tempf);
+                    getDiagramByName(diaName).writeDiagram(tempf);//problem here fix it
                     diagramsName.put(diaName, 0);
 
                 }
@@ -350,10 +402,10 @@ public class DiagramManager {
 
             //clean removed digrams
             for (Iterator<String> it = tempToDelete.iterator(); it.hasNext();) {
-                    tempf = new File(path + it.next());
-                    tempf.delete();
+                tempf = new File(projectPath + it.next());
+                tempf.delete();
             }
-            tempToDelete.clear();
+            //tempToDelete.clear();
 
         }
     }

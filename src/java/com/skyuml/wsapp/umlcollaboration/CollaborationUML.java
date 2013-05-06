@@ -5,9 +5,12 @@
 package com.skyuml.wsapp.umlcollaboration;
 
 import com.skyuml.utils.Keys;
+import com.skyuml.utils.Tuple;
 import com.skyuml.wsapp.WSApp;
 import com.skyuml.wsapp.WSUser;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,27 +22,48 @@ import org.json.*;
  */
 public class CollaborationUML implements WSApp {
     ProjectManager pManager;
+    ConcurrentLinkedQueue<Tuple<JSONObject,WSUser>> usersActions;
+    
+    Thread jobExecuter;
+    
+    final int sleepTime = 500;
+    
     int appId;
     
     public CollaborationUML(int appId){
         this.appId = appId;
         pManager = new ProjectManager();
+        
+        usersActions = new ConcurrentLinkedQueue<Tuple<JSONObject, WSUser>>();
+        
+        jobExecuter = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                while(true){
+                    while(!usersActions.isEmpty()){
+                        Tuple<JSONObject,WSUser> tub = usersActions.remove();
+                        try {
+                            executRequest(tub.getItem1(), tub.getItem2());
+                        } catch (JSONException ex) {
+                            Logger.getLogger(CollaborationUML.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                    
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(CollaborationUML.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        });
+        
+        jobExecuter.start();
     }
     
 
-    /*Example
-     *  String json = "{"
-         + "  \"query\": \"Pizza\", "
-         + "  \"locations\":{ \"X\":94043, \"Y\":90210 } "
-         + "}";
-        
-        JSONObject obj =(JSONObject) new JSONTokener(json).nextValue();
-        System.out.println(obj.getString("query"));
-        JSONObject obj2 = obj.getJSONObject("locations");
-        System.out.println(obj2.getInt("X"));
-        System.out.println(obj2.getInt("Y"));
-     */
-    
+
     @Override
     public void onTextMessage(String msg,WSUser sender){
         try {
@@ -47,7 +71,8 @@ public class CollaborationUML implements WSApp {
             JSONObject jo = (JSONObject) new JSONTokener(msg).nextValue();
             int aid = jo.getInt(Keys.JSONMapping.APP_ID);
             if(getAppId() == aid){
-                executRequest(jo,sender);
+                usersActions.add(new Tuple<JSONObject, WSUser>(jo, sender));
+                //executRequest(jo,sender);
             }
         } catch (JSONException ex) {
             Logger.getLogger(CollaborationUML.class.getName()).log(Level.SEVERE, null, ex);

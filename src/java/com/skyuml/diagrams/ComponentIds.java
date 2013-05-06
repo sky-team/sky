@@ -16,6 +16,8 @@ public final class ComponentIds {
     public static final String INTERFACE = "c-2";
     public static final String IS_A = "c-3";
     public static final String HAS_A = "c-4";
+    public static final String IMPLEMENT = "c-5";
+    public static final String AGGREGATION = "c-6";
     
     
     //usecase diagram component ids
