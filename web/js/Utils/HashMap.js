@@ -1,7 +1,3 @@
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 function Pair(k,v){
     this.key = k;
@@ -11,6 +7,9 @@ function Pair(k,v){
 }
 
 function HashMap(){
+    this.iterator = null;
+    this.isBreak = false;
+    
     this.first = null;
     this.last = null;
     this.count = 0;   
@@ -43,17 +42,56 @@ HashMap.prototype.isEmpty = function (){
 HashMap.prototype.size = function (){
     return this.count;
 }
-    
-HashMap.prototype.get =  function(key){
+
+HashMap.prototype.containsKey = function (key){
     var temp = this.first;
         
     while(temp){
         if(this.comparetor(temp.key, key))
-            break;
+            return true;
+        temp = temp.next;
+    }
+    
+    return false;
+}
+
+HashMap.prototype.containsValue = function (value){
+    var temp = this.first;
+        
+    while(temp){
+        if(this.comparetor(temp.value, value))
+            return true;
+        temp = temp.next;
+    }
+    
+    return false;
+}
+
+HashMap.prototype.replaceKey = function(old_key,new_key){
+    var temp = this.first;
+        
+    while(temp){
+        if(this.comparetor(temp.key, old_key))
+        {
+            temp.key = new_key;
+            return;
+        }
+           
+        temp = temp.next;
+    }
+    
+    return;
+}
+ 
+HashMap.prototype.get =  function(key){
+    var temp = this.first;
+    while(temp){
+        if(this.comparetor(temp.key, key))
+            return temp.value;
         temp = temp.next;
     }
         
-    return temp.value;
+    return null;
 }
 
 HashMap.prototype.remove = function (key){
@@ -97,9 +135,11 @@ HashMap.prototype.clear = function (){
 
 HashMap.prototype.forEach = function (callback){
     var temp = this.first;
-    
+    this.isBreak = false;
     while(temp){
         callback(temp.key,temp.value);
+        if(this.isBreak)
+            break;
         temp = temp.next;
     }
 }
@@ -125,6 +165,8 @@ HashMap.prototype.valueSet = function (){
         temp = temp.next;
     }
 }
+
+
 
 HashMap.prototype.toJson = function(){
     
@@ -155,4 +197,61 @@ HashMap.prototype.toJson = function(){
     json += '}';
     
     return json;
+}
+
+/*
+ *@description break the current runing forEach
+ */
+HashMap.prototype.doBreak = function (){
+    this.isBreak = true;
+}
+
+/*
+ *@description move the iterator pointer to the first element
+ **/
+HashMap.prototype.iterator_first = function (){
+    this.iterator = this.first; 
+}
+
+/*
+ *@description move the iterator pointer to the last element
+ */
+HashMap.prototype.iterator_last = function (){
+    this.iterator = this.last; 
+}
+
+/*
+ *@function get value that the iterator pointer is pointing to. 
+ */
+HashMap.prototype.iterator_currentValue = function (){
+    return this.iterator.value; 
+}
+
+/*
+ *@function get key that the iterator pointer is pointing to. 
+ */
+HashMap.prototype.iterator_currentKey = function (){
+    return this.iterator.key; 
+}
+
+/*
+ *@description move the iterator pointer one step backward
+ */
+HashMap.prototype.iterator_prev = function (){
+    this.iterator = this.iterator.prev;
+}
+
+ArrayList.prototype.iterator_hasPrev = function (){
+    return this.iterator != null; 
+}
+
+/*
+ *@description move the iterator pointer one step forward
+ */
+HashMap.prototype.iterator_next = function (){
+    this.iterator = this.iterator.next;
+}
+
+HashMap.prototype.iterator_hasNext = function (){
+    return this.iterator != null;
 }

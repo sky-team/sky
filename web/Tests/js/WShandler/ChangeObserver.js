@@ -1,5 +1,5 @@
 
-function ChangeObserver(name,type){
+function ShapeChangesHandler(name,type){
     this.appId = 1;
     this.tokenId = "not_tacken";
     this.userId = -1;
@@ -10,13 +10,7 @@ function ChangeObserver(name,type){
     this.communicator = null;
 }
 
-ChangeObserver.prototype.getTypeId = function(element){
-    if(element instanceof ClassDiagram){
-        return "c-1";
-    }
-}
-
-ChangeObserver.prototype.LocationChanged = function(id,element){
+ShapeChangesHandler.prototype.LocationChanged = function(element){
     
     var map = new HashMap();
     
@@ -33,7 +27,7 @@ ChangeObserver.prototype.LocationChanged = function(id,element){
     var diagram_content = new HashMap();
     diagram_content.add("x-location", element.x);
     diagram_content.add("y-location", element.y);
-    diagram_content.add("component-id", id);
+    diagram_content.add("component-id", element.id);
     diagram_content.add("component-type", element.getType());
     diagram_content.add("diagram-type", this.diagramType);
     
@@ -44,12 +38,12 @@ ChangeObserver.prototype.LocationChanged = function(id,element){
     var json = map.toJson();
     
     alert(json);
-    alert(JSON.stringify(json));
-    
-    this.communicator.send(json);
+    //alert(JSON.stringify(json));
+    return json;
+    //this.communicator.send(json);
 }
 
-ChangeObserver.prototype.MethodAdded = function(id,element,method){
+ShapeChangesHandler.prototype.MethodAdded = function(id,element,method){
     
     var map = new HashMap();
     
@@ -77,7 +71,7 @@ ChangeObserver.prototype.MethodAdded = function(id,element,method){
     this.communicator.send(map.toJson());
 }
 
-ChangeObserver.prototype.MethodRemove = function(id,element,method){
+ShapeChangesHandler.prototype.MethodRemove = function(id,element,method){
     
     var map = new HashMap();
     
@@ -105,7 +99,7 @@ ChangeObserver.prototype.MethodRemove = function(id,element,method){
     this.communicator.send(map.toJson());
 }
 
-ChangeObserver.prototype.MethodUpdate = function(id,element,old_attrib,new_attrib){
+ShapeChangesHandler.prototype.MethodUpdate = function(id,element,old_attrib,new_attrib){
     
     var map = new HashMap();
     
@@ -133,7 +127,7 @@ ChangeObserver.prototype.MethodUpdate = function(id,element,old_attrib,new_attri
     this.communicator.send(map.toJson());
 }
 
-ChangeObserver.prototype.AttributeAdded = function(id,element,attrib){
+ShapeChangesHandler.prototype.AttributeAdded = function(id,element,attrib){
     
     var map = new HashMap();
     
@@ -162,7 +156,7 @@ ChangeObserver.prototype.AttributeAdded = function(id,element,attrib){
 }
 
 
-ChangeObserver.prototype.AttributeRemove = function(id,element,attrib){
+ShapeChangesHandler.prototype.AttributeRemove = function(id,element,attrib){
     
     var map = new HashMap();
     
@@ -190,7 +184,7 @@ ChangeObserver.prototype.AttributeRemove = function(id,element,attrib){
     this.communicator.send(map.toJson());
 }
 
-ChangeObserver.prototype.AttributeUpdate = function(id,element,old_attrib,new_attrib){
+ShapeChangesHandler.prototype.AttributeUpdate = function(id,element,old_attrib,new_attrib){
     
     var map = new HashMap();
     

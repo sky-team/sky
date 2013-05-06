@@ -1,64 +1,78 @@
-
-
 function ElementsFactory(type){
-    
-    if(type == 'class'){
-        return new ClassDiagram();
+    var shape = null;
+    if(type == 'c-1'){
+        shape = new ClassDiagram();
+    }else
+    if(type == 'c-2'){
+        shape = new ClassDiagram();
+        shape.setStereotype("<interface>");
+    }else
+    if(type == 'u-2'){
+        shape = new Usercase();
+    }else
+    if(type == 'u-1'){
+        shape = new Actor();
     }
     
-    if(type == 'usecase'){
-        return new Usercase();
-    }
-    
-    if(type == 'actor'){
-        return new Actor();
-    }
-    
-    return null;
+    return shape;
 }
 
 function AssociationsStyler(type,association,paper){
     
-    if(type == 'is-a1'){
-        association.setDashed();
+    var xyz = null;
+    
+    if(type == 'c-3'){
         association.setTitle("inherits");
-        return;
+        //association.type = "c-3";
     }
    
-    if(type == 'is-a2'){
+    if(type == 'c-5'){
         association.setSolid();
         association.setTitle("implements");
-        return;
+        //association.type = "c-5";
     }
    
-    if(type == 'has-a'){
-        association.setSolid();
+    if(type == 'c-4'){
+        xyz = new Diamond();
+        xyz.createElement(paper);
+        association.setAssociationElement(xyz);
         association.setTitle("composes");
-        return;
-    }
-    
-    if(type == 'use'){
-        association.destroyElement();                  
-        association.setArrawed();
-        association.createElement(paper);
-        association.setTitle("uses");
-        return;
-    }
-    
-    if(type == 'extend'){
-        association.destroyElement();                  
-        association.setArrawed();
-        association.createElement(paper);
-        association.setTitle("<extends>");
-        return;
+        //association.type = "c-4";
     }
 
-    if(type == 'include'){
-        association.destroyElement();                  
-        association.setArrawed();
-        association.createElement(paper);
-        association.setTitle("<includs>");
-        return;
+    if(type == 'c-6'){
+        xyz = new Diamond();
+        xyz.createElement(paper);
+        xyz.applyAttr({"fill":"black"});
+        association.setAssociationElement(xyz);
+        association.setTitle("Aggregate");
+       // association.type = "c-6";
     }
     
+    if(type == 'u-3'){                 
+        xyz = new Arraw();
+        xyz.createElement(paper);
+        association.setAssociationElement(xyz);
+        association.setTitle("uses");
+        //association.type = "u-3";
+    }
+    
+    if(type == 'u-5'){
+        xyz = new Arraw();
+        xyz.createElement(paper);
+        association.setAssociationElement(xyz);
+        association.setTitle("<extends>");
+        //association.type = "u-5";
+    }
+
+    if(type == 'u-4'){
+        xyz = new Arraw();
+        xyz.createElement(paper);
+        association.setAssociationElement(xyz);
+        association.setTitle("<includs>");
+        //association.type = "u-4";
+    }
+    association.type = type;
+    association.setWidth(15);
+    association.setHeight(25);
 }

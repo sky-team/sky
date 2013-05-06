@@ -34,6 +34,19 @@ Usercase.prototype.hasPoints = function(mx,my){
     //return this.element == null ? false : this.element.isPointInside(mx,my);
 }
 
+Usercase.prototype.getAssociationsOfPoint = function(mx,my){
+    var selected = null;
+    var _this = this;
+    this.associations.forEachReversed(function(asso){
+       if(asso.hasPoints(mx, my)){
+           selected = asso;
+           _this.associations.doBreak();
+       } 
+    });
+    
+    return selected;
+}
+
 Usercase.prototype.getSpotOfPoint = function(mx,my){
     if(this.connectionSpots.leftHasPoint(mx, my))
     {
@@ -114,6 +127,7 @@ Usercase.prototype.update = function(){
     this.associations.forEach(function(asso){
         asso.update();
     });
+    //alert("x");
 }
 
 Usercase.prototype.destroyElement = function(){
@@ -343,6 +357,17 @@ Usercase.prototype.toSvg = function(){
     });
 
     return svg;
+}
+
+Usercase.prototype.refresh = function(){
+    this.x = this.getAttr("x");
+    this.y = this.getAttr("y");
+    this.width = this.getAttr("width");
+    this.height = this.getAttr("height");
+    this.drawColor = this.getAttr("stroke");
+    this.lineWidth = this.getAttr("stroke-width");
+    
+    this.title.refresh();
 }
 
 Usercase.prototype.playAnimation = function(){

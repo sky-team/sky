@@ -8,8 +8,6 @@ function Ellipse(){
     this.height = 0;
     this.lineWidth = 2;
     
-    this.effects = new Array();
-    
     this.element = null;
     
     this.lastGlowEffects = new Array();
@@ -169,4 +167,12 @@ Ellipse.prototype.unglow = function(){
 Ellipse.prototype.toSvg = function(){
     var svg = raphaelToSvg(this.element.node) + '\r\n';
     return svg;
+}
+
+Ellipse.prototype.refresh = function(){
+    this.x = this.getAttr("x");
+    this.y = this.getAttr("y");
+    this.lineWidth = this.getAttr("stroke-width");
+    this.width = this.getAttr("width");
+    this.height = this.getAttr("height");
 }

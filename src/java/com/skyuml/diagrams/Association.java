@@ -25,13 +25,18 @@ public class Association implements DiagramComponentOperation {
     private String title;
     private String source;
     private String destination;
-
-    public Association(AssociationType type, String id, String title, String source, String destination) {
+    private int sourceSpot;
+    private int destinationSpot;
+    
+    public Association(AssociationType type, String id, String title, String source, String destination,int sspot,int dspot) {
         this.type = type;
         this.id = id;
         this.title = title;
         this.source = source;
         this.destination = destination;
+        this.sourceSpot =sspot;
+        this.destinationSpot = dspot;
+        
     }
 
     public Association() {
@@ -51,6 +56,14 @@ public class Association implements DiagramComponentOperation {
             if (!dc.isNull(Keys.JSONMapping.RequestInfo.DiagramContent.Association.ASSOCIATION_DESTINATION)) {
                 this.destination = dc.getString(Keys.JSONMapping.RequestInfo.DiagramContent.Association.ASSOCIATION_DESTINATION);
             }
+            if(!dc.isNull(Keys.JSONMapping.RequestInfo.DiagramContent.Association.SOURCE_SPOT)){
+                this.sourceSpot = dc.getInt(Keys.JSONMapping.RequestInfo.DiagramContent.Association.SOURCE_SPOT);
+            }
+            
+            if(!dc.isNull(Keys.JSONMapping.RequestInfo.DiagramContent.Association.DESTINATION_SPOT)){
+                this.destinationSpot = dc.getInt(Keys.JSONMapping.RequestInfo.DiagramContent.Association.DESTINATION_SPOT);
+            }
+            
         } catch (JSONException ex) {
             Logger.getLogger(Association.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -96,6 +109,15 @@ public class Association implements DiagramComponentOperation {
     public void setDestination(String destination) {
         this.destination = destination;
     }
+    
+    public void setSourceSpot(int sspot){
+        this.sourceSpot = sspot;
+    }
+    
+    public void setDestinationSpot(int dspot){
+        this.destinationSpot = dspot;
+    }
+    
     @Override
 
     public JSONObject toJSON() {
@@ -132,6 +154,10 @@ public class Association implements DiagramComponentOperation {
 
             //set destination id
             json.put(Keys.JSONMapping.RequestInfo.DiagramContent.Association.ASSOCIATION_DESTINATION, getDestination());
+            
+            json.put(Keys.JSONMapping.RequestInfo.DiagramContent.Association.SOURCE_SPOT,sourceSpot);
+            
+            json.put(Keys.JSONMapping.RequestInfo.DiagramContent.Association.DESTINATION_SPOT,destinationSpot);
 
         } catch (JSONException jsEX) {
             jsEX.printStackTrace();

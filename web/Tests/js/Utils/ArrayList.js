@@ -181,6 +181,9 @@ ArrayList.prototype.clear = function (){
     this.last = null;
 }
 
+/*
+ *@description start a for each loop
+ */
 ArrayList.prototype.forEach = function (callback){
     var temp = this.first;
     this.isBreak = false;
@@ -194,6 +197,9 @@ ArrayList.prototype.forEach = function (callback){
     }
 }
 
+/*
+ *@description start a for each loop with reversed order
+ */
 ArrayList.prototype.forEachReversed = function (callback){
     var temp = this.last;
     this.isBreak = false;
@@ -206,6 +212,9 @@ ArrayList.prototype.forEachReversed = function (callback){
     }
 }
 
+/*
+ *@description exports the elements as an array
+ */
 ArrayList.prototype.toArray = function (){
     var temp = this.first;
     
@@ -219,6 +228,9 @@ ArrayList.prototype.toArray = function (){
     return eles;
 }
 
+/*
+ *@description export the ArrayList contents as json format
+ */
 ArrayList.prototype.toJson = function(){
     
     var temp = this.first;
@@ -253,38 +265,52 @@ ArrayList.prototype.toJson = function(){
     return json;
 }
 
+/*
+ *@description break the current runing forEach
+ */
 ArrayList.prototype.doBreak = function (){
     this.isBreak = true;
 }
 
 /*
- *@function move the iterator pointer to the first element
+ *@description move the iterator pointer to the first element
  **/
 ArrayList.prototype.iterator_first = function (){
     this.iterator = this.first; 
 }
 
 /*
- *@function move the iterator pointer to the last element
- **/
+ *@description move the iterator pointer to the last element
+ */
 ArrayList.prototype.iterator_last = function (){
     this.iterator = this.last; 
 }
 
 /*
- *@function get value that the iterator pointer to 
- **/
+ *@function get value that the iterator pointer is pointing to. 
+ */
 ArrayList.prototype.iterator_current = function (){
     return this.iterator.value; 
 }
 
 /*
- *@function move the iterator pointer to the first element
- **/
+ *@description move the iterator pointer one step backward
+ */
 ArrayList.prototype.iterator_prev = function (){
     this.iterator = this.iterator.prev;
 }
 
 ArrayList.prototype.iterator_hasPrev = function (){
-    return this.iterator != null && this.iterator.prev != null; 
+    return this.iterator != null; 
+}
+
+/*
+ *@description move the iterator pointer one step forward
+ */
+ArrayList.prototype.iterator_next = function (){
+    this.iterator = this.iterator.next;
+}
+
+ArrayList.prototype.iterator_hasNext = function (){
+    return this.iterator != null;
 }

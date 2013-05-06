@@ -19,46 +19,53 @@ function ElementsFactory(type){
 
 function AssociationsStyler(type,association,paper){
     
+    var xyz = null;
+    
     if(type == 'is-a1'){
         association.setDashed();
         association.setTitle("inherits");
-        return;
     }
    
     if(type == 'is-a2'){
-        association.setSolid();
         association.setTitle("implements");
-        return;
     }
    
     if(type == 'has-a'){
-        association.setSolid();
+        xyz = new Diamond();
+        xyz.createElement(paper);
+        association.setAssociationElement(xyz);
         association.setTitle("composes");
-        return;
+    }
+
+    if(type == 'has-a2'){
+        xyz = new Diamond();
+        xyz.createElement(paper);
+        xyz.applyAttr({"fill":"black"});
+        association.setAssociationElement(xyz);
+        association.setTitle("Aggregation");
     }
     
-    if(type == 'use'){
-        association.destroyElement();                  
-        association.setArrawed();
-        association.createElement(paper);
+    if(type == 'use'){                 
+        xyz = new Arraw();
+        xyz.createElement(paper);
+        association.setAssociationElement(xyz);
         association.setTitle("uses");
-        return;
     }
     
     if(type == 'extend'){
-        association.destroyElement();                  
-        association.setArrawed();
-        association.createElement(paper);
+        xyz = new Arraw();
+        xyz.createElement(paper);
+        association.setAssociationElement(xyz);
         association.setTitle("<extends>");
-        return;
     }
 
     if(type == 'include'){
-        association.destroyElement();                  
-        association.setArrawed();
-        association.createElement(paper);
+        xyz = new Arraw();
+        xyz.createElement(paper);
+        association.setAssociationElement(xyz);
         association.setTitle("<includs>");
-        return;
     }
     
+    association.setWidth(15);
+    association.setHeight(25);
 }

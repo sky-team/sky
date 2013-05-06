@@ -206,3 +206,12 @@ Line.prototype.toSvg = function(){
 
     return svg;
 }
+
+Line.prototype.refresh = function(){
+    this.lineWidth = this.getAttr("stroke-width");
+    this.width = this.getAttr("width");
+    this.height = this.getAttr("height");
+    this.drawColor = this.getAttr("stroke");
+    
+    this.text.refresh();
+}

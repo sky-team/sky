@@ -3,6 +3,19 @@
  * and open the template in the editor.
  */
 
+function isJsonArray(json){
+    var str = JSON.stringify(json);
+    
+    return str.length > 0 ? str.charAt(0) == '[' : false;
+}
+
+
+function isJsonObject(json){
+    var str = JSON.stringify(json);
+    
+    return str.length > 0 ? str.charAt(0) == '{' : false;
+}
+
 function hasAttributes(node){
     try{
         if(node.attributes){

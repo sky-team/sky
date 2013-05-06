@@ -110,7 +110,7 @@
             
             function openFackDiagram(d){
                 alert("Open");
-                change_handler = new ChangeObserver("b", "Class");
+                change_handler = new ShapeChangesHandler("b", "Class");
                 alert("CO");
                 change_handler.communicator = ws;
                 change_handler.userId = myId;

@@ -121,9 +121,10 @@ public final class Keys {
                 public static final class Association{
                     private Association(){}
                     
-                    
                     public static final String ASSOCIATION_SOURCE = "association-source";
                     public static final String ASSOCIATION_DESTINATION = "association-destination";
+                    public static final String SOURCE_SPOT = "source-spot";
+                    public static final String DESTINATION_SPOT = "destination-spot";
                 }
                 
                 public static final class UseCaseDiagram{

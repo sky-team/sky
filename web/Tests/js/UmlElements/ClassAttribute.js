@@ -156,3 +156,7 @@ ClassAttribute.prototype.toSvg = function(){
 
     return svg;
 }
+
+ClassAttribute.prototype.refresh = function(){
+    this.text.refresh();
+}

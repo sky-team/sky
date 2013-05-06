@@ -264,6 +264,14 @@ public class DiagramComponentFactory {
                 asso.setDestination(diagramContent.getString(Keys.JSONMapping.RequestInfo.DiagramContent.Association.ASSOCIATION_DESTINATION));
             }
             
+            if(!diagramContent.isNull(Keys.JSONMapping.RequestInfo.DiagramContent.Association.SOURCE_SPOT)){
+                asso.setSourceSpot(diagramContent.getInt(Keys.JSONMapping.RequestInfo.DiagramContent.Association.SOURCE_SPOT));
+            }
+            
+            if(!diagramContent.isNull(Keys.JSONMapping.RequestInfo.DiagramContent.Association.DESTINATION_SPOT)){
+                asso.setDestinationSpot(diagramContent.getInt(Keys.JSONMapping.RequestInfo.DiagramContent.Association.DESTINATION_SPOT));
+            }
+            
         }catch(JSONException jsExp){
             jsExp.printStackTrace();
         }catch(Exception exp){

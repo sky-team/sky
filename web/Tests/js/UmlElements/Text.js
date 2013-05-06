@@ -194,3 +194,21 @@ Text.prototype.toSvg = function(){
 
     return svg;
 }
+
+Text.prototype.rotate = function(degree){
+    this.element.rotate(degree, this.x, this.y);
+}
+
+Text.prototype.rotate = function(degree,rx,ry){
+    this.element.rotate(degree, rx, ry);
+}
+
+Text.prototype.refresh = function(){
+    this.x = this.getAttr("x");
+    this.y = this.getAttr("y");
+    this.fontSize = this.getAttr("font-size");
+    this.fontFamily = this.getAttr("font-family");
+    this.width = this.getAttr("width");
+    this.height = this.getAttr("height");
+    this.drawColor = this.getAttr("fill");
+}

@@ -114,6 +114,7 @@ Usercase.prototype.update = function(){
     this.associations.forEach(function(asso){
         asso.update();
     });
+    //alert("x");
 }
 
 Usercase.prototype.destroyElement = function(){
@@ -343,6 +344,17 @@ Usercase.prototype.toSvg = function(){
     });
 
     return svg;
+}
+
+Usercase.prototype.refresh = function(){
+    this.x = this.getAttr("x");
+    this.y = this.getAttr("y");
+    this.width = this.getAttr("width");
+    this.height = this.getAttr("height");
+    this.drawColor = this.getAttr("stroke");
+    this.lineWidth = this.getAttr("stroke-width");
+    
+    this.title.refresh();
 }
 
 Usercase.prototype.playAnimation = function(){

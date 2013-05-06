@@ -39,7 +39,46 @@ ClassMethod.prototype.toStr = function(){
     return this.access+this.name+'('+param+')'+':'+this.datatype;
 }
 
+ClassMethod.prototype.toFormat = function(){
+    
+    var param = "";
+    if(this.params.size() > 0){
+        this.params.forEach(function(p){
+            param += p + ",";
+        });
+        param = param.substr(0, param.length - 1);
+    }
+    
+    return this.access+","+this.name+","+this.datatype+ (param.length > 0 ? ";"+param : "");
+}
+
+ClassMethod.prototype.fromFormat = function(format){
+    var sime_color = format.indexOf(";", 0);
+    var parts ;
+    if(sime_color > -1){
+       parts = format.split(";");
+    }else{
+        parts = new Array();
+        parts.push(format);
+    }
+    
+    var strs = parts[0].split(",");
+    var params = new Array();
+    if(parts.length > 1)
+        params = parts[1].split(",");
+    if(strs.length>2){
+        this.access = strs[0];
+        this.name = strs[1];
+        this.datatype = strs[2];
+    }
+ 
+    for (var i = 0; i < params.length; i++) {
+        this.params.add(params[i]);
+    }
+}
+
 ClassMethod.prototype.update = function(){
+  
 }
 
 ClassMethod.prototype.destroyElement = function(){
@@ -178,3 +217,8 @@ ClassMethod.prototype.toSvg = function(){
     svg += this.text.toSvg();
     return svg;
 }
+
+ClassMethod.prototype.refresh = function(){
+    this.text.refresh();
+}
+

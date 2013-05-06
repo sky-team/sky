@@ -251,7 +251,7 @@ public class DiagramManager {
             try {
                 dia = Diagram.Load(path + diaName);
                 System.out.println("Diagram : " + dia.toJSON());
-            } catch (FileNotFoundException ex) {
+            } catch (Exception ex) {
                 Logger.getLogger(DiagramManager.class.getName()).log(Level.SEVERE, null, ex);
             }
 

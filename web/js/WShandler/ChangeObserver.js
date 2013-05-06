@@ -42,10 +42,7 @@ ChangeObserver.prototype.LocationChanged = function(id,element){
     map.add("request-info", request_info);
     
     var json = map.toJson();
-    
-    alert(json);
-    alert(JSON.stringify(json));
-    
+        
     this.communicator.send(json);
 }
 

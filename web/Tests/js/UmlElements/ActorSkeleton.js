@@ -180,3 +180,10 @@ ActorSkeleton.prototype.toSvg = function(){
 ActorSkeleton.prototype.getType = function(){
     return "x-1";
 }
+
+ActorSkeleton.prototype.refresh = function(){
+    this.body.refresh();
+    this.hand.refresh();
+    this.lleg.refresh();
+    this.rleg.refresh();
+}

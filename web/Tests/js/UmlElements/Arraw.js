@@ -1,113 +1,99 @@
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 function Arraw(){
-    this.line1 = new Line();
-    this.line2 = new Line();
+    this.width = 0;
+    this.height = 0;
+ 
+    this.lineWidth = 2;
+    
+    this.element = null;
+    
+    this.lastGlowEffects = new Array();
+    
+    this.direction = 0;
     
     this.conx = 0;
     this.cony = 0;
-    
-    this.size = 10;
-    
-    this.rotation = 0;
-    this.direction = 0;
-    
-    this.effects = new Array();
 }
 
 Arraw.prototype = new Drawable();
 
-Arraw.prototype.hasPoints = new function(mx,my){
-    return false;
+Arraw.prototype.hasPoints = function(mx,my){
+    return this.element == null ? false : this.element.isPointInside(mx,my);
+}
+
+Arraw.prototype.toStr = function(){
+    return "X:"+this.x+" , Y:"+this.y + " , Width:"+this.width+" , Height:"+this.height;
+}
+
+Arraw.prototype.getPath = function(){
+    var path1,path2,path3;
+    switch(this.direction){
+        case 0:
+            path1 = "M" + this.x + " " + this.y + "L" + (this.x + this.width) + " " + (this.y - this.height/2);
+            path2 = "M" + (this.x + this.width) + " " + (this.y + this.height/2) + "L" + (this.x ) + " " + (this.y);
+            path3 = "M" + (this.x + this.width) + " " + (this.y) + "L" + (this.x) + " " + (this.y);
+            this.conx = this.x + this.width;
+            this.cony = this.y;
+            break;
+        case 2:
+            path1 = "M" + this.x + " " + this.y + "L" + (this.x - this.width) + " " + (this.y - this.height/2);
+            path2 = "M" + (this.x - this.width) + " " + (this.y + this.height/2) + "L" + (this.x) + " " + (this.y);
+            path3 = "M" + (this.x - this.width) + " " + (this.y) + "L" + (this.x) + " " + (this.y);
+            this.conx = this.x - this.width;
+            this.cony = this.y;
+            break;
+        case 3:
+            path1 = "M" + this.x + " " + this.y + "L" + (this.x - this.width/2) + " " + (this.y - this.height);
+            path2 = "M" + (this.x + this.width/2) + " " + (this.y - this.height) + "L" + (this.x) + " " + (this.y);
+            path3 = "M" + (this.x) + " " + (this.y - this.height) + "L" + (this.x) + " " + (this.y);
+            this.conx = this.x;
+            this.cony = this.y - this.height;
+            break;
+        case 1:
+            path1 = "M" + this.x + " " + this.y + "L" + (this.x - this.width/2) + " " + (this.y + this.height);
+            path2 = "M" + (this.x + this.width/2) + " " + (this.y + this.height) + "L" + (this.x) + " " + (this.y);
+            path3 = "M" + (this.x) + " " + (this.y + this.height) + "L" + (this.x) + " " + (this.y);
+            this.conx = this.x;
+            this.cony = this.y +this.height;
+            break;
+    }
+    
+    return path1 + path2+path3;
 }
 
 Arraw.prototype.update = function(){
-    this.line1.setX1(this.x);
-    this.line1.setY1(this.y);
-    this.line2.setX1(this.x);
-    this.line2.setY1(this.y);
+    var path = this.getPath();
     
-    switch(this.direction){
-        case 0:
-            
-            this.line1.setX2(this.x + this.size);
-            this.line1.setY2(this.y - this.size);
-
-            this.line2.setX2(this.x + this.size);
-            this.line2.setY2(this.y + this.size);
-            
-        break;
-        
-        case 1:
-            
-            this.line1.setX2(this.x - this.size);
-            this.line1.setY2(this.y - this.size);
-            
-            this.line2.setX2(this.x + this.size);
-            this.line2.setY2(this.y - this.size);
-        break;
-        
-        case 2:
-            
-            this.line1.setX2(this.x - this.size);
-            this.line1.setY2(this.y - this.size);
- 
-            this.line2.setX2(this.x - this.size);
-            this.line2.setY2(this.y + this.size);
-        break;
-        
-        case 3:
-            
-            this.line1.setX2(this.x - this.size);
-            this.line1.setY2(this.y + this.size);
-
-            this.line2.setX2(this.x + this.size);
-            this.line2.setY2(this.y + this.size);
-            
-        break;
-    }
-    
-    this.conx = this.line1.x1;
-    this.cony = this.line1.y1;
-    
-    this.line1.effects = this.effects;
-    this.line2.effects = this.effects;
-    
-    this.line1.update();
-    this.line2.update();
+    this.element.attr({
+        "path":path
+    });
 }
 
 Arraw.prototype.destroyElement = function(){
-    
-    if(this.line1.element == null)
+    if(this.element == null)
         return;
     
-    this.line1.destroyElement();
-    this.line2.destroyElement();
+    this.element.remove();
+    this.element = null;
 }
 
 Arraw.prototype.createElement = function(paper){
-    if(this.line1.element != null)
+    if(this.element != null)
         return;
-    
-    this.line1.createElement(paper);
-    this.line2.createElement(paper);
+    this.element = paper.path(this.getPath());
+    this.element.attr({
+        "stroke" : this.drawColor,
+        "stroke-width" : this.lineWidth
+    });
 }
 
 
 Arraw.prototype.getWidth = function(){
-    return this.size;
+    return this.width;
 }
 
 Arraw.prototype.getHeight = function(){
-    return this.size;
-}
-
-Arraw.prototype.setSize = function(s){
-    this.size = s;
+    return this.height;
 }
 
 Arraw.prototype.setX = function(x){
@@ -118,45 +104,101 @@ Arraw.prototype.setY = function(y){
     this.y = y;
 }
 
+Arraw.prototype.setWidth = function(w){
+    this.width = w;
+}
+
+Arraw.prototype.setHeight = function(h){
+    this.height = h;
+}
 
 Arraw.prototype.setDrawColor = function(color){
     this.drawColor = color;
     
-    this.line1.setDrawColor(color);
-    this.line2.setDrawColor(color);
+    this.element.attr({
+        "stroke":color
+    });
 }
 
 Arraw.prototype.setLineWidth = function(w){
     this.lineWidth = w;
     
-    this.line1.setLineWidth(w);
-    this.line2.setLineWidth(w);
+    this.element.attr({
+        "stroke-width":w
+    });
 }
 
 Arraw.prototype.hide = function(){
-    this.line1.hide();
-    this.line2.hide();
+    this.element.hide();
 }
 
 Arraw.prototype.show = function(){
-    this.line1.show();
-    this.line2.show();
+    this.element.show();
+}
+
+Arraw.prototype.applyAttr = function(a){
+    this.element.attr(a);
+}
+
+Arraw.prototype.getAttr = function(a){
+    return this.element.attr(a);
+}
+
+Arraw.prototype.animate = function(anim,time){
+    
+    this.head.animate(anim,time);
+}
+
+Arraw.prototype.animate = function(anim,time,easing){
+    
+    this.element.animate(anim,time,easing);
+}
+
+Arraw.prototype.animate = function(anim,time,easing,callback){
+    
+    this.element.animate(anim,time,easing,callback);
 }
 
 Arraw.prototype.glow = function(attr){
-    this.line1.glow(attr);
-    this.line2.glow(attr);
+    this.lastGlowEffects.push(this.element.glow(attr));
 }
 
-Arraw.prototype.unglow = function(){  
-   this.line1.unglow();
-   this.line2.unglow();
+Arraw.prototype.unglow = function(){
+    
+    for (var i = 0; i < this.lastGlowEffects.length; i++) {
+    
+        if(this.lastGlowEffects[i] == null)
+            continue;
+    
+        for (var j  = 0; j < this.lastGlowEffects[i].length; j++) {
+            this.lastGlowEffects[i][j].remove();
+        }
+        
+    }
+    
+    this.lastGlowEffects.splice(0, this.lastGlowEffects.lenght);
 }
+
+Arraw.prototype.rotate = function(degree){
+    this.element.rotate(degree, this.x, this.y);
+}
+
+Arraw.prototype.rotate = function(degree,rx,ry){
+    this.element.rotate(degree, rx, ry);
+}
+
 
 Arraw.prototype.toSvg = function(){
-    var svg = '';
-    svg += this.line1.toSvg();
-    svg += this.line2.toSvg();
+    var svg = raphaelToSvg(this.element.node) + '\r\n';
 
     return svg;
+}
+
+Arraw.prototype.refresh = function(){
+    this.x = this.getAttr("x");
+    this.y = this.getAttr("y");
+    this.lineWidth = this.getAttr("stroke-width");
+    this.width = this.getAttr("width");
+    this.height = this.getAttr("height");
+    this.drawColor = this.getAttr("stroke");
 }

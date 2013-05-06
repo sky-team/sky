@@ -18,7 +18,6 @@ function Actor(){
     this.mouth_time = 0;
     this.head_shake = 0;
     this.associations = new ArrayList();
-    this.effects = new Array();
     
     this.width = 1;
     this.height = 1;
@@ -514,4 +513,14 @@ Actor.prototype.playAnimation = function(){
             "rx":mouth_size_w
         }, 1000,"",anim_mouth);
     }
+}
+
+Actor.prototype.refresh = function(){
+    this.head.refresh();
+    this.skeleton.refresh();
+    this.title.refresh();
+    this.eye1.refresh();
+    this.eye2.refresh();
+    this.mouth.refresh();
+    
 }

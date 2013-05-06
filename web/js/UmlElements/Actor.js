@@ -18,7 +18,6 @@ function Actor(){
     this.mouth_time = 0;
     this.head_shake = 0;
     this.associations = new ArrayList();
-    this.effects = new Array();
     
     this.width = 1;
     this.height = 1;
@@ -38,6 +37,19 @@ Actor.prototype = new Drawable();
 
 Actor.prototype.hasPoints = function(mx,my){
     return (mx >= this.x && mx < (this.x+this.width)) && (my >= this.y && my <= (this.y+this.height));
+}
+
+Actor.prototype.getAssociationsOfPoint = function(mx,my){
+    var selected = null;
+    var _this = this;
+    this.associations.forEachReversed(function(asso){
+       if(asso.hasPoints(mx, my)){
+           selected = asso;
+           _this.associations.doBreak();
+       } 
+    });
+    
+    return selected;
 }
 
 Actor.prototype.getSpotOfPoint = function(mx,my){
@@ -392,6 +404,7 @@ Actor.prototype.getType = function(){
 }
 
 Actor.prototype.playAnimation = function(){
+    //alert("doing animation");
     this.head_shake++;
     this.mouth_time ++;
     var close_size = this.eye1.getHeight() / 5;
@@ -507,11 +520,21 @@ Actor.prototype.playAnimation = function(){
         "ry":size
     }, 100,"",anim);
     
-    if(source.mouth_time == 30){
+    if(source.mouth_time == 10){
         source.mouth_time = 0;
         source.mouth.animate({
             "ry":mouth_size_h,
             "rx":mouth_size_w
         }, 1000,"",anim_mouth);
     }
+}
+
+Actor.prototype.refresh = function(){
+    this.head.refresh();
+    this.skeleton.refresh();
+    this.title.refresh();
+    this.eye1.refresh();
+    this.eye2.refresh();
+    this.mouth.refresh();
+    
 }

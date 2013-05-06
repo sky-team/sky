@@ -26,7 +26,18 @@ and open the template in the editor.
         <script type="text/javascript" src="js/UmlElements/ClassAttribute.js"></script>
         <script type="text/javascript" src="js/UmlElements/ClassMethod.js"></script>
         <script type="text/javascript" src="js/UmlElements/Ellipse.js"></script>
+        <script type="text/javascript" src="js/UmlElements/Diamond.js"></script>
+        <script type="text/javascript" src="js/WShandler/ChangeKeys.js"></script>
+        <script type="text/javascript" src="js/WShandler/ChangeObserver.js"></script>
+        <script type="text/javascript" src="js/WShandler/ServerCommunicator.js"></script>
         <script type="text/javascript" src="js/ElementsFactory.js"></script>
+        <style>
+            path {
+                /*fill: green;
+                fill-opacity : .7;
+                stroke : red;*/
+            }
+        </style>
         <script type="text/javascript">     
             var current_type = 'class';
             
@@ -74,9 +85,20 @@ and open the template in the editor.
                 shapes_arraylist.forEachReversed(function(value){
                     if(value.hasPoints(x,y)){
                         selected = value;
-                        return;
+                        shapes_arraylist.doBreak();
                     }
                 });
+                
+                if(selected == null){
+                    shapes_arraylist.forEachReversed(function(value){
+                        value.associations.forEach(function(asso){
+                            if(asso.association.hasPoints(x, y)){
+                                alert("Yep");
+                                cur_shape = asso.association;
+                            }
+                        });
+                    });
+                }
                 
                 return selected;
             }
@@ -143,19 +165,30 @@ and open the template in the editor.
                                 asso.connectToDown(con_source);
                                 break;
                         }
+
+                        var larg = asso.width > asso.height ? asso.width : asso.height;
+                        var small = asso.height == larg ? asso.width : asso.height;
                         
                         switch(con_dest.connectionSpots.getSpotDirection(cur_spot)){
                             case 1:
                                 asso.connectToLeft(con_dest);
+                                asso.setWidth(larg);
+                                asso.setHeight(small);
                                 break;
                             case 2:
                                 asso.connectToRight(con_dest);
+                                asso.setWidth(larg);
+                                asso.setHeight(small);
                                 break;                            
                             case 3:
                                 asso.connectToTop(con_dest);
+                                asso.setWidth(small);
+                                asso.setHeight(larg);
                                 break;                            
                             case 4:
                                 asso.connectToDown(con_dest);
+                                asso.setWidth(small);
+                                asso.setHeight(larg);
                                 break;
                         }
                         
@@ -174,7 +207,7 @@ and open the template in the editor.
                         //asso.setSize(5);
                         asso.source.update();
                         asso.destination.update();
-                        asso.update();
+                        //asso.update();
                     }
                     return;
                 }
@@ -240,7 +273,8 @@ and open the template in the editor.
             }
             
             function mouseUp() {
-                
+                if(cur_shape)
+                    cur_shape.update();
                 if(mode != "select"){
                     cur_shape = null;
                 }
@@ -317,9 +351,43 @@ and open the template in the editor.
                     asso.setTitle("Use");
                     asso.setFontSize(18);
                 });
-            
-
-                window.setInterval(doAnimation, 2000);
+                
+                var path = context.path("M100,100L130,100M130,100L130,150M130,150L100,150M100,150L100,100");
+                //path.attr({fill:"red","fill-opacity":1,"stroke":"green"});
+            /*
+                var ele = new Circle();
+                ele.createElement(context);
+                ele.setRadius(4);
+                var dia = new Arraw();
+                dia.createElement(context);
+                dia.setX(100);
+                dia.setY(100);
+                dia.setWidth(20);
+                dia.setHeight(20);
+                dia.update();
+                ele.setX(dia.conx);
+                ele.setY(dia.cony);
+                ele.update();
+                alert("Top");
+                dia.direction = 3;
+                dia.update();
+                ele.setX(dia.conx);
+                ele.setY(dia.cony);
+                ele.update();
+                alert("Right");
+                dia.direction = 2;
+                dia.update();
+                ele.setX(dia.conx);
+                ele.setY(dia.cony);
+                ele.update();                
+                alert("down");
+                dia.direction = 1;
+                dia.update();
+                ele.setX(dia.conx);
+                ele.setY(dia.cony);
+                ele.update();
+                */
+                window.setInterval(doAnimation, 9000);
                 
             }
             var actor2;
@@ -355,6 +423,14 @@ and open the template in the editor.
             }
             
             function noneMode(){
+                if(last_selected){
+                    alert("1");
+                    var obs = new ShapeChangesHandler("myTestDiagram", "ClassDiagram");
+                    alert("2");
+                    document.getElementById("svg").value = obs.LocationChanged(last_selected);
+                }
+                
+                return;
                 
                 if(last_selected){
                     var named = last_selected.element.node.attributes;
@@ -478,11 +554,6 @@ and open the template in the editor.
                 map.add("yazan", "Greate");
                 map.add("Sucks", "Sercos");
                 map.add("man", "Woman");
-                //map.add("super", 100);
-                
-                /*map.forEach(function(key,value){
-                    alert(key+" => "+value);
-                });*/
                 var sub = new HashMap();
                 
                 sub.add("What","Now");
@@ -527,6 +598,7 @@ and open the template in the editor.
                 list.add(1);
                 list.add(4);
                 list.add(7);
+                list.iter
                 var reps = "";
                 
                 for (var i = 0; i < list.size(); i++) {
@@ -546,8 +618,6 @@ and open the template in the editor.
                 }
                 
                 alert(reps);
-                
-                
             }
             var el;
             var size = 2;
@@ -713,8 +783,9 @@ and open the template in the editor.
             <input type="button" onclick="resizeMode();" value="resize" disabled="disabled"/>
             <input type="button" onclick="moveMode();" value="move" /> 
             <input type="button" onclick="connectMode('is-a1');" value="inherit" />
-            <input type="button" onclick="connectMode('has-a');" value="composed" />
             <input type="button" onclick="connectMode('is-a2');" value="implement" /> 
+            <input type="button" onclick="connectMode('has-a');" value="composed" />
+            <input type="button" onclick="connectMode('has-a2');" value="aggregation" />
             <input type="button" onclick="connectMode('use');" value="use" />
             <input type="button" onclick="connectMode('extend');" value="extend" />
             <input type="button" onclick="connectMode('include');" value="include" />

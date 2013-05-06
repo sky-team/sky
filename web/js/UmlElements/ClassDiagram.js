@@ -4,7 +4,7 @@
 
 function ClassDiagram(){
     
-    this.id = "";
+    this.id = "class_id";
     
     this.line1 = new Line();
     this.line2 = new Line();
@@ -46,6 +46,19 @@ ClassDiagram.prototype.hasPoints = function(mx,my){
     return (mx >= this.x && mx < (this.x+this.width)) && (my >= this.y && my <= (this.y+this.height));
 }
 
+ClassDiagram.prototype.getAssociationsOfPoint = function(mx,my){
+    var selected = null;
+    var _this = this;
+    this.associations.forEachReversed(function(asso){
+       if(asso.hasPoints(mx, my)){
+           selected = asso;
+           _this.associations.doBreak();
+       } 
+    });
+    
+    return selected;
+}
+
 ClassDiagram.prototype.getSpotOfPoint = function(mx,my){
     if(this.connectionSpots.leftHasPoint(mx, my))
     {
@@ -71,7 +84,7 @@ ClassDiagram.prototype.getSpotOfPoint = function(mx,my){
 }
 
 ClassDiagram.prototype.toStr = function(){
-    return "Class : [X:"+this.x+" , Y:"+this.y + " , Width:"+this.width+" , Height:"+this.height+"]";
+    return "Class [" +this.id+ "]  : [X:"+this.x+" , Y:"+this.y + " , Width:"+this.width+" , Height:"+this.height+"]";
 }
 
 ClassDiagram.prototype.updateLocations = function(x,y){
@@ -406,6 +419,20 @@ ClassDiagram.prototype.setFontSize = function(fontSize){
     
 }
 
+ClassDiagram.prototype.addMethod = function(method){
+    
+    if(!(method instanceof ClassMethod))
+        return;
+    
+    method.createElement(this.element.paper);
+    
+    method.setFontSize(this.fontSize);
+    method.setFontFamily(this.fontFamily);
+    method.setDrawColor(this.drawColor);
+
+    this.methods.push(method);
+}
+
 ClassDiagram.prototype.removeMethod = function(method){
     
     var index = -1;
@@ -419,24 +446,21 @@ ClassDiagram.prototype.removeMethod = function(method){
     
     if(index == -1)
         return;
-    
+    this.methods[index].destroyElement();
     this.methods.splice(index, 1);
 }
 
-ClassDiagram.prototype.addMethod = function(method){
-    
-    //if(!(method instanceof ClassMethod))
-    //    return;
-    
-    //var txt = new Text(method);
-    
-    method.createElement(this.element.paper);
-    
-    method.setFontSize(this.fontSize);
-    method.setFontFamily(this.fontFamily);
-    method.setDrawColor(this.drawColor);
+ClassDiagram.prototype.replaceMethod = function(old_method,new_method){
 
-    this.methods.push(method);
+    for (var i = 0; i < this.methods.length; i++) {
+        if(this.methods[i].toStr() == old_method.toStr()){
+           this.methods[i].name = new_method.name; 
+           this.methods[i].access = new_method.access;
+           this.methods[i].datatype = new_method.datatype; 
+           this.methods[i].params = new_method.params; 
+           break;
+        }
+    }
 }
 
 ClassDiagram.prototype.removeAllMethods = function(){
@@ -447,20 +471,10 @@ ClassDiagram.prototype.removeAllMethods = function(){
     this.methods = [];
 }
 
-ClassDiagram.prototype.removeAllAttributes = function(){
-    for (var i = 0; i < this.attributes.length; i++) {
-        this.attributes[i].destroyElement();
-    }
-    
-    this.attributes = [];
-}
-
 ClassDiagram.prototype.addAttribute = function(attribute){
     
     if(!(attribute instanceof ClassAttribute))
         return;
-    
-    //var txt = new Text(attribute);
     
     attribute.createElement(this.element.paper);
     
@@ -484,10 +498,30 @@ ClassDiagram.prototype.removeAttribute = function(attribute){
     
     if(index == -1)
         return;
-    
+    this.attributes[index].destroyElement();
     this.attributes.splice(index, 1);
 }
 
+ClassDiagram.prototype.replaceAttribute = function(old_attr,new_attr){
+
+    for (var i = 0; i < this.attributes.length; i++) {
+        if(this.attributes[i].toStr() == old_attr.toStr()){
+           this.attributes[i].name = new_attr.name; 
+           this.attributes[i].access = new_attr.access;
+           this.attributes[i].datatype = new_attr.datatype; 
+           this.attributes[i].id = new_attr.id; 
+            break;
+        }
+    }
+}
+
+ClassDiagram.prototype.removeAllAttributes = function(){
+    for (var i = 0; i < this.attributes.length; i++) {
+        this.attributes[i].destroyElement();
+    }
+    
+    this.attributes = [];
+}
 
 ClassDiagram.prototype.setTitle = function(title){
     this.title.setText(title);
@@ -620,7 +654,7 @@ ClassDiagram.prototype.addAssociation = function(dest){
     
     asso.createElement(this.element.paper);
     
-    asso.update();
+    //asso.update();
     this.associations.add(asso);
     dest.notifyAssociation(asso);
     
@@ -678,4 +712,17 @@ ClassDiagram.prototype.getType = function(){
 
 ClassDiagram.prototype.playAnimation = function(){
     
+}
+
+ClassDiagram.prototype.refresh = function(){
+    this.x = this.getAttr("x");
+    this.y = this.getAttr("y");
+    this.width = this.getAttr("width");
+    this.height = this.getAttr("height");
+    this.drawColor = this.getAttr("stroke");
+    this.lineWidth = this.getAttr("stroke-width");
+    
+    this.title.refresh();
+    this.line1.refresh();
+    this.line2.refresh();
 }

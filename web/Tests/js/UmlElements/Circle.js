@@ -7,8 +7,6 @@ function Circle(){
     this.radius = 0;
     this.lineWidth = 2;
     
-    this.effects = new Array();
-    
     this.element = null;
     
     this.lastGlowEffects = new Array();
@@ -160,4 +158,14 @@ Circle.prototype.unglow = function(){
 Circle.prototype.toSvg = function(){
     var svg = raphaelToSvg(this.element.node) + '\r\n';
     return svg;
+}
+
+Circle.prototype.refresh = function(){
+    this.x = this.getAttr("cx");
+    this.y = this.getAttr("cy");
+    this.lineWidth = this.getAttr("stroke-width");
+    this.width = this.getAttr("width");
+    this.height = this.getAttr("height");
+    this.radius = this.getAttr("r");
+    this.drawColor = this.getAttr("stroke");
 }

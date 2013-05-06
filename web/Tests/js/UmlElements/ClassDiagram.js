@@ -4,7 +4,7 @@
 
 function ClassDiagram(){
     
-    this.id = "";
+    this.id = "class_id";
     
     this.line1 = new Line();
     this.line2 = new Line();
@@ -620,7 +620,7 @@ ClassDiagram.prototype.addAssociation = function(dest){
     
     asso.createElement(this.element.paper);
     
-    asso.update();
+    //asso.update();
     this.associations.add(asso);
     dest.notifyAssociation(asso);
     
@@ -678,4 +678,17 @@ ClassDiagram.prototype.getType = function(){
 
 ClassDiagram.prototype.playAnimation = function(){
     
+}
+
+ClassDiagram.prototype.refresh = function(){
+    this.x = this.getAttr("x");
+    this.y = this.getAttr("y");
+    this.width = this.getAttr("width");
+    this.height = this.getAttr("height");
+    this.drawColor = this.getAttr("stroke");
+    this.lineWidth = this.getAttr("stroke-width");
+    
+    this.title.refresh();
+    this.line1.refresh();
+    this.line2.refresh();
 }

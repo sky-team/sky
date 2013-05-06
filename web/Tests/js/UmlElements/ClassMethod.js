@@ -132,9 +132,8 @@ ClassMethod.prototype.setDataType = function(data){
 
 ClassMethod.prototype.addParam = function(name,datatype){
     this.params.add(name+':'+datatype);
-    
     this.text.setText(this.toStr());
-}
+} 
 
 ClassMethod.prototype.removeParam = function(name,datatype){
     this.params.remove(name+':'+datatype);
@@ -178,3 +177,8 @@ ClassMethod.prototype.toSvg = function(){
     svg += this.text.toSvg();
     return svg;
 }
+
+ClassMethod.prototype.refresh = function(){
+    this.text.refresh();
+}
+

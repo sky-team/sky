@@ -25,6 +25,17 @@ ClassAttribute.prototype.hasPoints = function(mx,my){
     return this.element == null ? false : this.text.isPointInside(mx,my);
 }
 
+ClassAttribute.prototype.toFormat = function(){
+    return this.access+","+this.name+','+this.datatype;
+}
+
+ClassAttribute.prototype.fromFormat = function(format){
+    var strs = format.split(",");
+    this.access = strs[0];
+    this.name = strs[1];
+    this.datatype = strs[2];
+}
+
 ClassAttribute.prototype.toStr = function(){
     return this.access+this.name+':'+this.datatype;
 }
@@ -155,4 +166,8 @@ ClassAttribute.prototype.toSvg = function(){
     svg += this.text.toSvg();
 
     return svg;
+}
+
+ClassAttribute.prototype.refresh = function(){
+    this.text.refresh();
 }

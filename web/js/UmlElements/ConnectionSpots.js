@@ -75,6 +75,22 @@ ConnectionSpots.prototype.getSpotDirection = function(spot){
     return 0;
 }
 
+ConnectionSpots.prototype.getSpot = function(direction){
+    if(direction == 1)
+        return this.leftElement;
+
+    if(direction == 2)
+        return this.rightElement;
+
+    if(direction == 3)
+        return this.topElement;
+
+    if(direction == 4)
+        return this.downElement;
+    
+    return null;
+}
+
 ConnectionSpots.prototype.setXLeftSpot = function(x){
     this.XLeftSpot = x;
     this.leftElement.attr({"cx":x});
