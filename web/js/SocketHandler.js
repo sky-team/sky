@@ -1,8 +1,8 @@
 var ws;
 function startConnection() {
 
-    var ip = "192.168.3.113";
-    var port = "8080";
+    var ip = "localhost";
+    var port = "8084";
 
     var url = "ws://" + ip + ":" + port + "/SkyUML/main?id=4"
 
@@ -97,5 +97,11 @@ function createDiagram(){
             
 function removeDiagram(){
     var msg = '{"app-id":1,"request-info":{"project-name":"'+$("#projectName").val()+'","project-owner":'+$("#projectOwner").val()+',"request-type":-5,"diagram-name":"secDiagram"}}' ;
+    ws.send(msg);
+}
+
+function updateDiagramInfo(){
+    var msg = '{"app-id":1,"request-info":{"project-name":"'+$("#projectName").val()+'","project-owner":'+$("#projectOwner").val()+',"request-type":-3,"diagram-name":"firstDiagram//newFirstDiagram"}}' ;
+    alert(msg);
     ws.send(msg);
 }

@@ -54,17 +54,14 @@ public class MyProjects extends AuthenticateModel {
 
     @Override
     public boolean isAuthenticateAction(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try {
-            request.getSession(true).setAttribute(Keys.SessionAttribute.USER, User.selectByFirstname(DefaultDatabase.getInstance().getConnection(), "hasan").get(0));
-            /*if(RequestTools.isSessionEstablished(request)){
+
+            
+            if(RequestTools.isSessionEstablished(request)){
                 if(request.getSession().getAttribute(Keys.SessionAttribute.USER) != null)
                     return true;
             }
-            return false*/
-        } catch (SQLException ex) {
-            Logger.getLogger(MyProjects.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return true;
+            return false;
+        
     }
 
     @Override

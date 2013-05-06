@@ -6,6 +6,7 @@
 package com.skyuml.controller;
 
 
+import com.skyuml.logic.LoginModel;
 import com.skyuml.logic.ModelManager;
 import com.skyuml.logic.Modelable;
 import com.skyuml.logic.MyProjects;
@@ -36,7 +37,7 @@ public class SkyUMLRequestDispatcher extends HttpServlet {
         test();
         
         //here setup the models
-        manager.put(1, new SimpleLogin());
+        manager.put(1, new LoginModel());
         manager.put(2, new MyProjects());
         manager.put(3,new OpenProjectModel());
         manager.put(4, new OpenWSConnectionModel());

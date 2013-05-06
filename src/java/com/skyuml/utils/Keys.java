@@ -30,11 +30,20 @@ public final class Keys {
     public static final class RequestParams{
         private RequestParams(){}
         public static final String USER_ID = "USER_ID";
-        public static final String PROJECT_NAME = "PROJECT_NAME";
-        public static final String PROJECT_OWNER_ID = "PROJECT_OWNER_ID";
-        public static final String DIAGRAM_NAME = "DIAGRAM_NAME";
         public static final String USER_NAME = "username";
         public static final String PASSWORD = "password";
+        public static final String USER_EMAIL="EMAIL";
+        public static final String USER_PASSWORD = "PASSWORD";
+        public static final String USER_FIRST_NAME = "FIRST_NAME" ;
+        public static final String USER_LAST_NAME = "LAST_NAME" ;
+        
+        public static final String PROJECT_NAME = "PROJECT_NAME";
+        public static final String PROJECT_OWNER_ID = "PROJECT_OWNER_ID";
+        public static final String PROJECT_DESCRIPTION = "PROJECT_DESCRIPTION" ;
+        
+        public static final String DIAGRAM_NAME = "DIAGRAM_NAME";
+        
+        
     }
     public static final class SessionAttribute{
         private SessionAttribute(){}
@@ -50,6 +59,9 @@ public final class Keys {
     
     public static final class ViewMapping {
     private ViewMapping(){}
+    public static String LOGIN_VIEW = "/views/login.jsp";
+    public static String WELCOM_VIEW = "/views/Welcome.jsp" ;
+    public static String REGISTER_VIEW = "/views/login.jsp?#toregister" ;
     
     public static String INDEX_ERROR_VIEW = "/views/error.jsp";
     public static String OPEN_PROJECT_VIEW = "/views/openProject.jsp";
@@ -59,6 +71,18 @@ public final class Keys {
     public static String SIMPE_LOGIN = "/views/simplelogin.jsp";
     public static String MY_PROJECTS_VIEW = "/views/selectProject.jsp";
     
+    public static String RESET_PASSWORD_VIEW = "/views/reset/reset.jsp" ;
+    public static String CREATE_PROJECT_VIEW = "/views/CreateProject.jsp" ;
+    //
+    public static String EDIT_PROJECT = "/views/editprojectinformation/editprojectinformation.jsp" ;
+    public static String EDIT_PROFILE = "/views/editprofile/editprofile.jsp" ;
+    public static String CREATE_DIAGEAM = "/views/editProject.jsp" ;
+    //
+    public static String INVITE_VIEW = "/views/invite.jsp" ;
+    public static String JOIN_VIEW = "/views/join.jsp" ;
+    
+    public static String INVITE_DEAL_VIEW = "/views/invite_deal.jsp" ;
+    public static String JOIN_DEAL_VIEW = "/views/join_deal.jsp" ;
     }
     
     public static final class ServletMapping {

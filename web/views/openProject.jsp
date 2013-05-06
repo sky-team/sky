@@ -175,6 +175,7 @@
                 <button type="button"  onclick="addComp('<%= "firstDiagram" %>');">Add Comp</button>
                 <button type="button"  onclick="updateComp('<%= "firstDiagram" %>');">Update comp</button>
                 <button type="button"  onclick="removeComp('<%= "firstDiagram" %>');">remvoe comp</button>
+                <button type="button"  onclick="updateDiagramInfo();">update Diagram</button>
         </div>
 
         <!-- Include jQuery -->
