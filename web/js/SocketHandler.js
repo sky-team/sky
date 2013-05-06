@@ -3,7 +3,6 @@ function startConnection() {
 
     var ip = "localhost";
     var port = "8080";
-
     var url = "ws://" + ip + ":" + port + "/SkyUML/main?id=4"
 
     if ('WebSocket' in window)
@@ -107,4 +106,10 @@ function createDiagram(){
 function removeDiagram(){
     //var msg = '{"app-id":1,"request-info":{"project-name":"'+$("#projectName").val()+'","project-owner":'+$("#projectOwner").val()+',"request-type":-5,"diagram-name":"secDiagram"}}' ;
     //ws.send(msg);
+}
+
+function updateDiagramInfo(){
+    var msg = '{"app-id":1,"request-info":{"project-name":"'+$("#projectName").val()+'","project-owner":'+$("#projectOwner").val()+',"request-type":-3,"diagram-name":"firstDiagram//newFirstDiagram"}}' ;
+    alert(msg);
+    ws.send(msg);
 }
