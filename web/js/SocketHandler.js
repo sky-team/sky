@@ -113,3 +113,4 @@ function updateDiagramInfo(){
     alert(msg);
     ws.send(msg);
 }
+
