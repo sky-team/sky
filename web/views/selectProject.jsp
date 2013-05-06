@@ -68,7 +68,7 @@
 				<article>
                                     <form method="POST" action="main?id=3" id="<%= "f"+formConter %>">
                                         <input type="hidden" name="<%= Keys.RequestParams.PROJECT_NAME %>" value="<%= item.getProjectName() %>" />
-                                        <input type="hidden" name="<%= Keys.RequestParams.PROJECT_OWNER_ID %>" value="<%= item.getUserId() %>" />
+                                        <input type="hidden" name="<%= Keys.RequestParams.PROJECT_OWNER_ID %>" value="<%= item.getOwnerId() %>" />
 					<header>
 						<h3><a target="_blank" href="javascript:document.getElementById('<%= "f"+formConter %>').submit()"><%= item.getProjectName() %></a></h3>
                                                 <span>Project Owner : <%= item.getUserId() %> </span>
