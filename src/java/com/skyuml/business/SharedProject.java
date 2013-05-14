@@ -134,7 +134,7 @@ public class SharedProject implements Serializable{
         ArrayList<SharedProject> prs = new ArrayList<SharedProject>();  
         
         Statement st = connection.createStatement();
-        ResultSet set = st.executeQuery(String.format(Utils.Formats.SELECT_CONDITION_FORMAT, Utils.Formats.STAR, userTableName,userIdColumnName+ "=" + owner_id));
+        ResultSet set = st.executeQuery(String.format(Utils.Formats.SELECT_CONDITION_FORMAT, Utils.Formats.STAR, userTableName,ownerIdColumnName+ "=" + owner_id));
         
         
         while(set.next()){
@@ -159,6 +159,27 @@ public class SharedProject implements Serializable{
         ResultSet set = st.executeQuery(String.format(Utils.Formats.SELECT_CONDITION_FORMAT, Utils.Formats.STAR, userTableName,projectNameColumnName+ "='" + project_name+"'"));
         
         
+        while(set.next()){
+            SharedProject pr = new SharedProject();
+            pr.userId = set.getInt(userIdColumnName);
+            pr.projectName = set.getString(projectNameColumnName);
+            pr.ownerId = set.getInt(ownerIdColumnName);
+            
+            prs.add(pr);
+        }
+        
+        set.close();
+        st.close();
+        
+        return prs;
+    }
+    
+    public static ArrayList<SharedProject> selectByOwnerIdAndProjectName(Connection connection ,int owner_id , String project_name)throws SQLException{
+        ArrayList<SharedProject> prs = new ArrayList<SharedProject>();  
+        
+        Statement st = connection.createStatement();
+        ResultSet set = st.executeQuery(String.format(Utils.Formats.SELECT_CONDITION_FORMAT, Utils.Formats.STAR, userTableName,ownerIdColumnName + "="+owner_id+" and " +projectNameColumnName+ "='" + project_name+"'"));
+
         while(set.next()){
             SharedProject pr = new SharedProject();
             pr.userId = set.getInt(userIdColumnName);

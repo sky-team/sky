@@ -151,10 +151,14 @@ Line.prototype.setFontFamily = function(fontFamily){
 
 Line.prototype.hide = function(){
     this.element.hide();
+    this.title.hide();
+    this.unglow();
 }
 
 Line.prototype.show = function(){
     this.element.show();
+    this.title.show();
+    
 }
 
 Line.prototype.applyAttr = function(a){
@@ -214,4 +218,8 @@ Line.prototype.refresh = function(){
     this.drawColor = this.getAttr("stroke");
     
     this.text.refresh();
+}
+
+Line.prototype.getTitle = function(){
+    return this.title.getText();
 }

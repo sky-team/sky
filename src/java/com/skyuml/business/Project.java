@@ -31,7 +31,7 @@ public class Project {
     public static String descriptionColumeName = "project_description";
     public static String userIdColumnName = "user_id";
     public static String projectNameColumnName = "projectName";
-    public static String userTableName = "projects";
+    public static String projectsTableName = "projects";
     
     public Project(){
     }
@@ -101,7 +101,7 @@ public class Project {
         Project pr = null;
         
         Statement st = connection.createStatement();
-        ResultSet set = st.executeQuery(String.format(Utils.Formats.SELECT_CONDITION_FORMAT, Utils.Formats.STAR, userTableName,
+        ResultSet set = st.executeQuery(String.format(Utils.Formats.SELECT_CONDITION_FORMAT, Utils.Formats.STAR, projectsTableName,
                 userIdColumnName+ "=" + user_id + " and " + projectNameColumnName+ "='" + project_name+"'"));
         
         while(set.next()){
@@ -115,7 +115,8 @@ public class Project {
         st.close();
         
         //get all the diagrams in this project
-        pr.diagrams = Diagram.selectProjectDiagrams(connection, user_id, project_name);
+        if(pr != null)
+            pr.diagrams = Diagram.selectProjectDiagrams(connection, user_id, project_name);
         
         return pr;
     }
@@ -124,7 +125,7 @@ public class Project {
         ArrayList<Project> prs = new ArrayList<Project>();  
         
         Statement st = connection.createStatement();
-        ResultSet set = st.executeQuery(String.format(Utils.Formats.SELECT_CONDITION_FORMAT, Utils.Formats.STAR, userTableName,userIdColumnName+ "=" + user_id));
+        ResultSet set = st.executeQuery(String.format(Utils.Formats.SELECT_CONDITION_FORMAT, Utils.Formats.STAR, projectsTableName,userIdColumnName+ "=" + user_id));
         
         
         while(set.next()){
@@ -145,7 +146,7 @@ public class Project {
         ArrayList<Project> prs = new ArrayList<Project>();  
         
         Statement st = connection.createStatement();
-        ResultSet set = st.executeQuery(String.format(Utils.Formats.SELECT_CONDITION_FORMAT, Utils.Formats.STAR, userTableName,projectNameColumnName+ "='" + project_name+"'"));
+        ResultSet set = st.executeQuery(String.format(Utils.Formats.SELECT_CONDITION_FORMAT, Utils.Formats.STAR, projectsTableName,projectNameColumnName+ "='" + project_name+"'"));
         
         
         while(set.next()){
@@ -166,7 +167,7 @@ public class Project {
         ArrayList<Project> prs = new ArrayList<Project>();
         
         Statement st = connection.createStatement();
-        ResultSet set = st.executeQuery(String.format(Utils.Formats.SELECT_NO_CONDITION_FORMAT, Utils.Formats.STAR, userTableName));
+        ResultSet set = st.executeQuery(String.format(Utils.Formats.SELECT_NO_CONDITION_FORMAT, Utils.Formats.STAR, projectsTableName));
         
         
         while(set.next()){
@@ -195,7 +196,7 @@ public class Project {
         
         String values = project.userId + ", '"+project.projectName + "' ,'" + project.description+"'";
         
-        res = st.executeUpdate(String.format(Utils.Formats.INSERT_FORMAT,userTableName,cols,values));
+        res = st.executeUpdate(String.format(Utils.Formats.INSERT_FORMAT,projectsTableName,cols,values));
         
         st.close();
         
@@ -211,9 +212,11 @@ public class Project {
         
         String prName = projectNameColumnName + " = '" + project.projectName + "'";
         
-        String values = user_id + " , "+prName;
+        String deName = descriptionColumeName + " = '" + project.description + "'";
         
-        res = st.executeUpdate(String.format(Utils.Formats.UPDATE_FORMAT,userTableName,values,user_id + " and " + prName));
+        String values = user_id + " , "+prName+ " , " + deName;
+        
+        res = st.executeUpdate(String.format(Utils.Formats.UPDATE_FORMAT,projectsTableName,values,user_id + " and " + prName));
         
         st.close();
         
@@ -229,11 +232,57 @@ public class Project {
         
         String prName = projectNameColumnName + " = '" + project.projectName + "'";
         
-        res = st.executeUpdate(String.format(Utils.Formats.DELETE_FORMAT,userTableName,user_id + " and " + prName));
+        res = st.executeUpdate(String.format(Utils.Formats.DELETE_FORMAT,projectsTableName,user_id + " and " + prName));
         
         st.close();
         
         return res;
+    }
+    
+    public static ArrayList<Project> selectStarByCondition(Connection connection,String condition)throws SQLException{
+        ArrayList<Project> prs = new ArrayList<Project>();
+        
+        Statement st = connection.createStatement();
+        ResultSet set = st.executeQuery(String.format(Utils.Formats.SELECT_CONDITION_FORMAT, Utils.Formats.STAR, projectsTableName,condition));
+        
+        
+        while(set.next()){
+            Project pr = new Project();
+            
+            pr.userId = set.getInt(userIdColumnName);
+            pr.projectName = set.getString(projectNameColumnName);
+            pr.description = set.getString(descriptionColumeName);
+            
+            prs.add(pr);
+        }
+        
+        set.close();
+        st.close();
+        
+        return prs;
+    }
+    
+    public static ArrayList<Project> selectByUserIdWithCondition(Connection connection,int user_id,String condition)throws SQLException{
+        ArrayList<Project> prs = new ArrayList<Project>();
+        
+        Statement st = connection.createStatement();
+        ResultSet set = st.executeQuery(String.format(Utils.Formats.SELECT_CONDITION_FORMAT, Utils.Formats.STAR, projectsTableName,userIdColumnName + "=" + user_id+ " and " +condition));
+        
+        
+        while(set.next()){
+            Project pr = new Project();
+            
+            pr.userId = set.getInt(userIdColumnName);
+            pr.projectName = set.getString(projectNameColumnName);
+            pr.description = set.getString(descriptionColumeName);
+            
+            prs.add(pr);
+        }
+        
+        set.close();
+        st.close();
+        
+        return prs;
     }
     
     @Override

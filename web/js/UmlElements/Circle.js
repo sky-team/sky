@@ -106,6 +106,7 @@ Circle.prototype.setLineWidth = function(w){
 
 Circle.prototype.hide = function(){
     this.element.hide();
+    this.unglow();
 }
 
 Circle.prototype.show = function(){

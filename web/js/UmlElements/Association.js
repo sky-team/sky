@@ -288,9 +288,10 @@ Association.prototype.setLineWidth = function(w){
 }
 
 Association.prototype.hide = function(){
-    
     this.line.hide();
     this.association.hide();
+    
+//    this.unglow();
 }
 
 Association.prototype.show = function(){
@@ -342,4 +343,20 @@ Association.prototype.getId = function(){
 Association.prototype.refresh = function(){
     this.association.refresh();
     this.line.refresh();
+}
+
+Association.prototype.getTitle = function(){
+    return this.line.getTitle();
+}
+
+Association.prototype.glow = function(attr){
+    this.line.glow(attr);
+    this.title.glow(attr);
+    this.association.glow(attr);
+}
+
+Association.prototype.unglow = function(){
+    this.line.unglow();
+    this.title.unglow();
+    this.association.unglow();
 }

@@ -669,18 +669,64 @@ ClassDiagram.prototype.removeAssociation = function(association){
 }
 
 ClassDiagram.prototype.showConnections = function(){
+    this.connectionSpots.createElement(this.element.paper);
     this.connectionSpots.show();
-    this.restartAnimation();
+    //this.restartAnimation();
 }
 
 ClassDiagram.prototype.restartAnimation = function(){
-    this.connectionSpots.animate({"transform":"r45r45r45r45r45"},10000,"",this.restartAnimation);
-    this.connectionSpots.resume();
+    _this = this;
+    var callback;
+    this.startOver = function (){
+        _this.connectionSpots.animate({"transform":"r45r45r45r45r45"},10000,"",callback);
+    };
+    
+    callback = this.startOver;
+    this.connectionSpots.animate({"transform":"r45r45r45r45r45"},10000,"",callback);
 }
 
 ClassDiagram.prototype.hideConnections = function(){
     this.connectionSpots.stop();
     this.connectionSpots.hide();
+    this.connectionSpots.destroyElement();
+}
+
+ClassDiagram.prototype.hide = function(){
+    this.connectionSpots.stop();
+    this.connectionSpots.hide();    
+    this.element.hide();
+    this.line1.hide();
+    this.line2.hide();
+    this.title.hide();
+    for (var i = 0; i < this.methods.length; i++) {
+         this.methods[i].hide();
+    }
+    for (var i = 0; i < this.attributes.length; i++) {
+         this.attributes[i].hide();
+    }
+
+    this.associations.forEach(function(asso){
+        asso.hide();
+    });
+    
+    this.unglow();
+}
+
+ClassDiagram.prototype.show = function(){
+    this.element.show();
+    this.line1.show();
+    this.line2.show();
+    this.title.show();
+    for (var i = 0; i < this.methods.length; i++) {
+         this.methods[i].show();
+    }
+    for (var i = 0; i < this.attributes.length; i++) {
+         this.attributes[i].show();
+    }
+    
+    this.associations.forEach(function(asso){
+        asso.show();
+    });
 }
 
 ClassDiagram.prototype.toSvg = function(){

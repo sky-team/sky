@@ -187,3 +187,20 @@ ActorSkeleton.prototype.refresh = function(){
     this.lleg.refresh();
     this.rleg.refresh();
 }
+
+ActorSkeleton.prototype.hide = function(){
+    this.unglow();
+    this.lleg.hide();
+    this.rleg.hide();
+    this.body.hide();
+    this.hand.hide();
+    
+}
+
+ActorSkeleton.prototype.show = function(){
+    this.lleg.show();
+    this.rleg.show();
+    this.body.show();
+    this.hand.show();
+    
+}

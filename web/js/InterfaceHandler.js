@@ -1,5 +1,5 @@
 var diagrams_manager;
-
+var chat_handler;
 var current_type = 'class';
 
 var diagram = new Diagram("", "", null);
@@ -27,6 +27,8 @@ var shown = false;
             
 var asso_type = "c-3";
 
+var generation_seed = "";
+
 var glowEffects = {
     "width":4,
     "fill":true,
@@ -36,6 +38,9 @@ var glowEffects = {
     "color":"blue"
 };
 var selected = null;
+var selected_association = null;
+
+var move_times = 0;
 function mouseDown(e) {
     if(diagrams_manager == null)
         return;
@@ -43,137 +48,182 @@ function mouseDown(e) {
         return;
     if(diagrams_manager.selectedDiagram.isDeallocate())
         return;
+    
+    console.log("   MouseDown : Mode:> " + mode);
     diagram = diagrams_manager.selectedDiagram;
     var x = (e.pageX - this.offsetLeft);
     var y = (e.pageY - this.offsetTop);
     var cur_spot = null;
-   
+    console.log("   MouseDown : At:> "+x+","+y);
     if(mode == "connect" && shown){
+        console.log("   MouseDown : Get Spot");
+        try{
         diagram.selectSpotFromPoints(x, y);
-        
+        }catch (e){
+            console.log("   MouseDown : Error :> "+e);
+        }
         selected = diagram.selectedShape;
         cur_spot = diagram.selectedSpot;
         
-        if(!cur_spot)
+        if(cur_spot == null || selected == null)
             return;
-                    
+        console.log("   MouseDown : A Spot Selected");  
+        try{
         cur_spot.animate({
             "fill": "red"
         }, 300);
+        }catch (e){
+            console.log("   MouseDown : EXC :> "+e);
+            cur_spot.attr({"fill":"red"});
+        }
         spot = null;
                     
         if(con_source == null){
+            console.log("   MouseDown : Take It As Source");
+            
             con_source_spot = cur_spot;
             con_source = selected;
         }
         else{          
             if(con_source == selected)
                 return;
+            console.log("   MouseDown : Take it As Destiantion");
             con_dest = selected;
+            try{
+                console.log("   MouseDown : Adding The Association");
             diagram.addAssociation(con_source, con_dest, con_source_spot, cur_spot, asso_type);
+            }catch (e){
+                console.log("   MouseDown : Exception :> "+e);
+            }
             con_source = null;
             con_dest = null;
             cur_spot = null;
             con_source_spot = null;
+            console.log("   MouseDown : Reset The Connect Mode");
         }
         return;
     }
                 
    diagram.selectShapeFromPoints(x, y);
    //selected = diagram.selectedShape;
-
-    if(mode == "resize" || mode == "move"){
+   
+    if(mode == "move"){
+        console.log("   MouseDown : Move Mode");
         cur_shape = diagram.selectedShape;
     }else{
         if(mode == "place"){
+            console.log("   MouseDown : Place Mode");
+            try{
             diagram.createShape(current_type, x, y);
+            }catch (e){
+                console.log("   MouseDown : Error Creating :> "+e);
+            }
         }else
         if(mode == "select"){
+            console.log("   MouseDown : Selecting");
             if(diagram.selectedShape == null)
                 return;
-            if(diagram.selectedShape == selected)
+            if(diagram.isGlowed(diagram.selectedShape))
                 return;
-            if(selected != null)
-                selected.unglow();
             
-            /*if(diagram.selectedShape != null){
-                diagram.selectedShape.unglow();
-            }*/
-                   
-            diagram.selectedShape.glow(glowEffects);
+            diagram.unglowShape();
+
+            diagram.glowShape(diagram.selectedShape,glowEffects);
             selected = diagram.selectedShape;
         }else
-        if(mode == "remove"){        
+        if(mode == "remove"){      
+            console.log("   MouseDown : Remove Mode");
             var asso = diagram.getAssociationOfPoints(x, y);
             if(asso == null){
+                console.log("   MouseDown : No Association Selected");
                 if(diagram.selectedShape == null)
                     return;
+                console.log("   MouseDown : Removing shape");
+                try{
                 diagram.removeShape(diagram.selectedShape, remove_animations[anim_index]);
+                }catch (e){
+                    console.log("   MouseDown : Error Removing :> "+e);
+                }
                 anim_index++;
                 if(anim_index == remove_animations.length)
                     anim_index = 0;
             }else{
+                console.log("   MouseDown : Assocaition selected");
+                try{
                 diagram.removeAssociation(asso);
+                }catch (e){
+                    console.log("   MouseDown : Error Removing Association :>" + e);
+                }
             }
-        
         }
     }
 }
             
 function mouseUp() {
-    if(mode == "move"){
+    
+    if(cur_shape != null){
         diagrams_manager.selectedDiagram.changeLocation(cur_shape, cur_shape.x, cur_shape.y);
-        return;
-    }
-    if(cur_shape)
         cur_shape.update();
+    }
     if(mode != "select"){
         cur_shape = null;
     }
 }
             
 function mouseMove(e) {
+    move_times ++;
     var x = (e.pageX - this.offsetLeft);
     var y = (e.pageY - this.offsetTop);
-    diagram = diagrams_manager.selectedDiagram;            
-    if(mode == "connect" && shown){
-        var cur_spot = null;
-        diagram.shapes.forEachReversed(function(shape){
-                        
-            cur_spot = shape.getSpotOfPoint(x,y);
-            if(cur_spot){
-                if(cur_spot != spot && cur_spot != con_source_spot){
-                    cur_spot.animate({
-                        "fill": "white"
-                    }, 300);
-                    if(spot != null){
-                        spot.animate({
-                            "fill": "green"
-                        }, 300);
-                    }
-                    spot = cur_spot;
-                }
-                return;
-            }
-        });
+    
+    if(move_times == 2){
+        move_times = 0;
+        sendCursorMessage(x,y);
     }
-
-    xy_label.value = "{"+x+","+y+"}";
+ 
     if (e.which == 1) {
-        if(mode == "move" && cur_shape != null){
+        if (mode == "move" && cur_shape != null) {
             cur_shape.setLocation(x, y);
+        }
+    } else {
+        if (diagrams_manager.selectedDiagram == null)
+            return;
+
+        diagram = diagrams_manager.selectedDiagram;
+        if (mode == "connect" && shown) {
+            var cur_spot = null;
+            diagram.shapes.forEachReversed(function(shape) {
+
+                cur_spot = shape.getSpotOfPoint(x, y);
+                if (cur_spot) {
+                    if (cur_spot != spot && cur_spot != con_source_spot) {
+                        cur_spot.animate({
+                            "fill": "white"
+                        }, 300);
+                        if (spot != null) {
+                            spot.animate({
+                                "fill": "green"
+                            }, 300);
+                        }
+                        spot = cur_spot;
+                    }
+                    return;
+                }
+            });
         }
     }
 }
-            
-function init(){
-    drawCanvas = document.getElementById("holder");
-           
-    drawCanvas.addEventListener('mousedown', mouseDown, false);
-    drawCanvas.addEventListener('mouseup', mouseUp, false);
-    drawCanvas.addEventListener('mousemove', mouseMove, false);
 
+function init_socket(){
+
+}
+  
+function init(){
+    console.log("Start initializtion");
+    
+    drawCanvas = document.getElementById("holder");
+    
     context = new Raphael(drawCanvas);
+    
     xy_label = document.getElementById("xylabel");
     mode_label = document.getElementById("modelabel");
     
@@ -194,49 +244,44 @@ function init(){
     diagram_type_select = document.getElementById("diagram_type_select");
     diagrams_select = document.getElementById("diagrams_select");
     menu_content_viewer = document.getElementById("menu_content_viewer");
-   //... alert("starting manager");
+  
+    
+    generation_seed = document.getElementById("currentUser").value;
+    
+    console.log("initializing manager . . . . . ");
     diagrams_manager = new DiagramsManager(context);
-    diagrams_manager.setWebSocketHandler(ws);
     diagrams_manager.setAppId(1);
     diagrams_manager.setProjectName(document.getElementById("projectName").value);
     diagrams_manager.setProjectOwner(document.getElementById("projectOwner").value);
     diagrams_manager.setUserId(0);
     diagrams_manager.setSelectElement(document.getElementById("diagrams_select"));
+    console.log("end initializing manager . . . . . ");
 
-   //... alert("manager done");
+    
+    console.log("init chat . . . . . ");
+    chat_handler = new ChatHandler();
+    chat_handler.setProjectName(document.getElementById("projectName").value);
+    chat_handler.setProjectOwner(document.getElementById("projectOwner").value);
+    chat_handler.updater = document.getElementById("chatlist");
+    chat_handler.messages_viewer = document.getElementById("messages");
+    console.log("end init chat . . . . . ");
 
+    drawCanvas.addEventListener('mousedown', mouseDown, false);
+    drawCanvas.addEventListener('mouseup', mouseUp, false);
+    drawCanvas.addEventListener('mousemove', mouseMove, false);
+    
     diagram = null;
-            
+    
     window.setInterval(doAnimation, 7000);
+    
+    startConnection();
 }
             
 function doAnimation(){
-    diagram.doAnimation();
+    if(diagrams_manager.selectDiagram != null)
+        diagrams_manager.selectDiagram.doAnimation(); 
 }
 
-function doted(){
-    var spacing = 10;
-    var symbol = ".";
-    var spacing_text = "";
-    for (var i = 0; i < spacing - symbol.length; i++) {
-        spacing_text += " ";
-    }
-                
-    spacing_text = symbol + spacing_text;
-                
-    for(var i = 0 ; i < drawCanvas.height ; i+=spacing){
-        var line = new Line();
-        line.createElement(context);
-        line.setY1(i);
-        line.setX1(0);
-        line.setY2(i);
-        line.setX2(drawCanvas.width);
-        line.applyAttr({
-            "stroke-dasharray":spacing_text
-        });
-        line.update();
-    }
-}
             
 function removeConns(){
     diagram = diagrams_manager.selectedDiagram;
@@ -244,8 +289,9 @@ function removeConns(){
        //... alert("no opened daigram");
         return;
     }
-    if(diagram.selectedShape != null)
-        diagram.selectedShape.unglow();
+    
+    diagram.unglowShape();
+    
     diagram.selectedShape = null;
     if(mode != "connect")
         return;
@@ -254,7 +300,6 @@ function removeConns(){
 }
             
 function noneMode(){
-    
     removeConns();
     mode = "none";
     mode_label.value = mode;
@@ -287,11 +332,6 @@ function mapViewer(map){
 }
 
 function placeMode(type){
-    /*var obs = new ChangeParser(null);
-    var map = obs.parseJson('{"app-id":2,"request-info":{"project-name":"a","diagram-name":"b","project-owner":1,"request-type":2,"message":"Shoot"},"yazan_extras":["what","put","tut"]}');
-    
-    mapViewer(map);
-    return;*/
     removeConns();
     drawCanvas.style.cursor = "text";
     mode = "place";
@@ -313,8 +353,8 @@ function removeMode(){
 }
             
 function moveMode(){   
-    if(diagram.selectedShape)
-        diagram.selectedShape.unglow();
+    if(diagram != null)
+        diagram.unglowShape();
     removeConns();
     drawCanvas.style.cursor = "move";
     mode = "move";
@@ -335,30 +375,53 @@ function connectMode(type){
 }
             
 function selectMode(){  
-    
-   /* var manager = new DiagramsManager(context);
-    
-    var message = '{"app-id":1,"request-info":{"diagram-content":{"associations":[{"title":"is a relationship","component-type":"c-3","source-spot":1,"destination-spot":2,"component-id":"105","association-source":"101","association-destination":"102"}],' + 
-        '"components":[{"methods":["+,getName,String;shoot:boot","+,getAge,int;no:x"],"title":"Class1","component-type":"c-1","y-location":10,"component-id":"101","members":["-,name,String","-,age,int"],"x-location":10},'+
-        '{"methods":["+,getGender,String;jk:rre","+,toString,String;jki:ewer"],"title":"Class2","component-type":"c-1","y-location":350,"component-id":"102","members":["-,gender,String"],"x-location":260}'+
-        ']} , "project-name":"hello","owner-id" :223,"request-type":1,"diagram-name":"dia1","diagram-type":"c-1"}}';
-    
-    manager.setAppId(1);
-    manager.setProjectName("hellow");
-    manager.setProjectOwner(1001);
-    manager.setTokenId("xxff");
-    manager.setUserId(12213);
-    manager.setWebSocketHandler(ws);
-    alert(message);
-    
-    var papa = new ChangeParser("sss");
-    
-    manager.messageReceived(papa.parseJson(message));
-    
-   //... alert("done");
-    return;*/
     removeConns();
     drawCanvas.style.cursor = "pointer";
     mode = "select";
     mode_label.value = mode;
+}
+
+var users = new HashMap();
+function handleCursor(parsed_json){
+    var user_id = parsed_json.get("user-id");
+    var color = parsed_json.get("color");
+    var location = parsed_json.get("location");
+    
+    if(!users.containsKey(user_id)){
+        var element = new Circle();
+        element.createElement(context);
+        var loc_s = location.split("_");
+        var x = parseInt(loc_s[0]);
+        var y = parseInt(loc_s[1]);
+        
+        element.setLocation(x,y);
+        element.setDrawColor("black");
+        element.applyAttr({"opacity":.7,"fill":color});
+        element.setRadius(5);
+        users.add(user_id,element);
+    }else{
+        var element = users.get(user_id);
+        var loc_s = location.split("_");
+        var x = parseInt(loc_s[0]);
+        var y = parseInt(loc_s[1]);
+        
+        element.setLocation(x,y);
+        element.setDrawColor(color);
+    }
+}
+
+function sendCursorMessage(x,y){
+    if(diagrams_manager.selectedDiagram == null)
+        return;
+    var map = new HashMap();
+    
+    map.add("app-id",5);
+    map.add("location",x+"_"+y);
+    map.add("project-name",document.getElementById("projectName"));
+    map.add("project-owner",document.getElementById("projectOwener"));
+    map.add("diagram-name",diagrams_manager.selectedDiagram.name);
+    
+    var json = map.toJson();
+    
+    ws.send(json);
 }

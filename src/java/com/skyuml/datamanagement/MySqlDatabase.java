@@ -50,7 +50,10 @@ public class MySqlDatabase extends Database{
 
     @Override
     public void shutdown() throws SQLException {
+       
         connection.close();
+        
+        
     }
 
     @Override
@@ -61,5 +64,6 @@ public class MySqlDatabase extends Database{
     @Override
     public void commit() throws SQLException {
         connection.commit();
-    }    
+    }
+    
 }

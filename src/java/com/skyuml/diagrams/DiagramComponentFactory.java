@@ -117,7 +117,7 @@ public class DiagramComponentFactory {
         
         GenericContainer classcmp = null;
         String title=null,id =null;
-        System.out.println("Trying to Craete Class Diagram");
+        System.out.println(DiagramComponentFactory.class.getSimpleName()+ " : "+ "Trying to Craete Class Component");
         AssociationType asstype;
         ArrayList<String> meth = new ArrayList<String>(),mem = new ArrayList<String>();
         int x= 0,y =0;

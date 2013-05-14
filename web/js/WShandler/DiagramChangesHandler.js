@@ -101,3 +101,38 @@ DiagramChangesHandler.prototype.openDiagram = function(name){
     var json = map.toJson();
     this.communicator.send(json);
 }
+
+DiagramChangesHandler.prototype.deleteDiagram = function(name){
+    var map = new HashMap();
+    
+    map.add("app-id", this.appId);
+    map.add("token-id", this.tokenId);
+
+    var request_info = new HashMap();
+    request_info.add("user-id", this.userId);
+    request_info.add("project-name", this.projectName);
+    request_info.add("project-owner", this.projectOwner);
+    request_info.add("diagram-name", name);
+    request_info.add("request-type", -5);
+    
+    map.add("request-info", request_info);
+    var json = map.toJson();
+    this.communicator.send(json);
+}
+
+DiagramChangesHandler.prototype.openProject = function(){
+    var map = new HashMap();
+    
+    map.add("app-id", this.appId);
+    map.add("token-id", this.tokenId);
+
+    var request_info = new HashMap();
+    request_info.add("user-id", this.userId);
+    request_info.add("project-name", this.projectName);
+    request_info.add("project-owner", this.projectOwner);
+    request_info.add("request-type", 0);
+    
+    map.add("request-info", request_info);
+    var json = map.toJson();
+    this.communicator.send(json);
+}

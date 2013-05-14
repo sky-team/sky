@@ -48,12 +48,14 @@ function clearAll(){
 }
 
 function fillEditMenuForDiagrams(){
+    console.log("fill edit for diagrams");
     clearAll();
-
+    console.log("fields cleared");
+    console.log("filling options");
     for (var i = 0; i < diagrams_select.options.length; i++) {
         addToList(edit_diagrams_select, diagrams_select.options[i].text, diagrams_select.options[i].value, 'old',diagrams_select.options[i].text);
     }
-       
+    console.log("all diagrams filled");
 }
 
 function createSelectedDiagram(){
@@ -64,9 +66,11 @@ function createSelectedDiagram(){
         return;
     }
     
-    id(!diagrams_manager.createDiagram(diagram_name, type))
+    if(!diagrams_manager.createDiagram(diagram_name, type))
     {
         alert("Unable to create diagram sorry :(");
+    }else{
+        addToList(edit_diagrams_select,diagram_name,"","","");
     }
 }
 
@@ -84,9 +88,11 @@ function renameSelectedDiagram(){
     
     var old_name = diagrams_select.options[diagrams_select.selectedIndex].text;
     
-    id(!diagrams_manager.renameDiagram(old_name, diagram_name))
+    if(!diagrams_manager.renameDiagram(old_name, diagram_name))
     {
         alert("Unable to rename diagram sorry :(");
+    }else{
+        edit_diagrams_select.options[edit_diagrams_select.selectedIndex].text = diagram_name;
     }
 }
 
@@ -98,9 +104,31 @@ function closeSelectedDiagram(){
     
     var name = diagrams_select.options[diagrams_select.selectedIndex].text;
     
-    id(!diagrams_manager.closeDiagram(name))
+    if(!diagrams_manager.closeDiagram(name))
     {
         alert("Unable to close diagram sorry :(");
+    }else{
+        //edit_diagrams_select.remove(edit_diagrams_select.selectedIndex);
+    }
+}
+
+function deleteSelectedDiagram(){
+    if(diagrams_select.selectedIndex < 0){
+        alert("Please Select Diagram First");
+        return;
+    }
+    
+    if(!window.confirm("Are you sure you want to delete the diagram?")){
+        return ;
+    }
+    
+    var name = diagrams_select.options[diagrams_select.selectedIndex].text;
+    
+    if(!diagrams_manager.deleteDiagram(name))
+    {
+        alert("Unable to delete diagram sorry :(");
+    }else{
+        edit_diagrams_select.remove(edit_diagrams_select.selectedIndex);
     }
 }
 
@@ -110,12 +138,20 @@ function selectedDiagramChanged(){
 
 function fillEditMenu(){
     clearAll();
-    if(diagram.selectedShape == null )//|| !is_editor_shown
+    
+    if(diagrams_manager.selectedDiagram == null )//|| !is_editor_shown
         return;
-    document.getElementById("element_title").value = diagram.selectedShape.getTitle();
-    if(diagram.selectedShape instanceof ClassDiagram){
-        for (var i = 0; i < diagram.selectedShape.methods.length; i++) {
-            var method = diagram.selectedShape.methods[i];
+    
+    var selected_shape = diagrams_manager.selectedDiagram.getGlowed();
+    diagram = diagrams_manager.selectedDiagram;
+    
+    if(selected_shape == null)
+        return ;
+    
+    document.getElementById("element_title").value = selected_shape.getTitle();
+    if(selected_shape instanceof ClassDiagram){
+        for (var i = 0; i < selected_shape.methods.length; i++) {
+            var method = selected_shape.methods[i];
                                 
             var id = "method"+i;
             addToList(methods_select, method.access+method.name+'():'+method.datatype, 
@@ -131,8 +167,8 @@ function fillEditMenu(){
             methods_params.add(method.toFormat(), list);
         }
                 
-        for (var i = 0; i < diagram.selectedShape.attributes.length; i++) {
-            var attribute = diagram.selectedShape.attributes[i];
+        for (var i = 0; i < selected_shape.attributes.length; i++) {
+            var attribute = selected_shape.attributes[i];
                                 
             addToList(attributes_select, attribute.access+attribute.name+':'+attribute.datatype,
                 attribute.name+','+attribute.datatype+','+attribute.access, 'old',attribute.toFormat());
@@ -144,15 +180,20 @@ function fillEditMenu(){
 }    
 function confirmClassChanges(){
     
-    if(diagram.selectedShape == null){
+    if(diagrams_manager.selectedDiagram == null )//|| !is_editor_shown
         return;
+    
+    var selected_shape = diagrams_manager.selectedDiagram.getGlowed();
+    diagram = diagrams_manager.selectedDiagram;
+    if(selected_shape == null)
+        return ;
+    
+    diagrams_manager.selectedDiagram.unglowShape();
+    if(selected_shape.getTitle() != document.getElementById("element_title").value){
+        diagram.changeTitle(selected_shape,document.getElementById("element_title").value);
     }
     
-    diagram.selectedShape.unglow();
-    if(diagram.selectedShape.getTitle() != document.getElementById("element_title").value){
-        diagram.changeTitle(diagram.selectedShape,document.getElementById("element_title").value);
-    }
-    if(diagram.selectedShape instanceof ClassDiagram){
+    if(selected_shape instanceof ClassDiagram){
             
         var attrs_updates = new ArrayList();
         var attrs_new = new ArrayList();
@@ -173,6 +214,7 @@ function confirmClassChanges(){
                 attrs_new.add(attribute.toFormat());
             }
         }
+        
         var methods_updates = new ArrayList();
         var methods_new = new ArrayList();
         for (var i = 0; i < methods_select.options.length; i++) {    
@@ -223,26 +265,26 @@ function confirmClassChanges(){
             }
         });
         if(methods_new.size() > 0)
-            diagram.addMethodsList(diagram.selectedShape, methods_new);
+            diagram.addMethodsList(selected_shape, methods_new);
             
         if(attrs_new.size() > 0)
-            diagram.addAttributesList(diagram.selectedShape, attrs_new);
+            diagram.addAttributesList(selected_shape, attrs_new);
             
         if(methods_updates.size() > 0)
-            diagram.renameMethodsList(diagram.selectedShape, methods_updates);
+            diagram.renameMethodsList(selected_shape, methods_updates);
             
         if(attrs_updates.size() > 0)
-            diagram.renameAttributesList(diagram.selectedShape, attrs_updates);
+            diagram.renameAttributesList(selected_shape, attrs_updates);
             
         if(methods_delete.size() > 0)
-            diagram.removeMethodsList(diagram.selectedShape, methods_delete);
+            diagram.removeMethodsList(selected_shape, methods_delete);
             
         if(attrs_delete.size() > 0)
-            diagram.removeAttributesList(diagram.selectedShape, attrs_delete);
+            diagram.removeAttributesList(selected_shape, attrs_delete);
     }
                 
-    diagram.selectedShape.update();
-    diagram.selectedShape.glow(glowEffects);
+    selected_shape.update();
+    diagram.unglowShape();
     
 }
         
@@ -408,6 +450,7 @@ function updateSelectedAttribute(){
         alert("Please Select Attribute First");
         return;
     }
+    
     var option = attributes_select.options[attributes_select.selectedIndex];
             
     var class_info_name = document.getElementById("class_info_name").value;
@@ -495,4 +538,26 @@ function selectedParamChanged(){
     document.getElementById("class_info_mp_name").value = splits[0];
     document.getElementById("class_info_mp_datatype").value = splits[1];
   
+}
+
+function tryExportDiagram(){
+    var width = drawCanvas.offsetWidth;
+    var height = drawCanvas.offsetHeight;
+
+    diagrams_manager.selectedDiagram.tryExport(width, height);
+}
+
+function handlerExportResult(json_map){ 
+    console.log("main?id="+document.getElementById("exporterID").value+"&"+document.getElementById("exportParamKey").value+"="+json_map.get("result"));
+    var win = window.open("main?id="+document.getElementById("exporterID").value+"&"+document.getElementById("exportParamKey").value+"="+json_map.get("result"), '_blank');
+    win.focus();
+}
+
+function handlerChatMessage(json_map){
+    chat_handler.messageReceived(json_map);
+}
+
+function sendChatMessage(){//
+    //alert("Sending : " + document.getElementById("usermsg").value)
+    chat_handler.sendMessage(document.getElementById("usermsg").value);
 }

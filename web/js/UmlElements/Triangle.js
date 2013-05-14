@@ -133,6 +133,7 @@ Triangle.prototype.setLineWidth = function(w){
 
 Triangle.prototype.hide = function(){
     this.element.hide();
+    this.unglow();
 }
 
 Triangle.prototype.show = function(){

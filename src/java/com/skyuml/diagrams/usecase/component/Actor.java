@@ -60,10 +60,10 @@ public class Actor implements DiagramComponentOperation{
     }
     
     @Override
-    public void update(JSONObject jo) {
+    public void update(JSONObject digramcontent) {
         try {
-            JSONObject reqeustInfo = jo.getJSONObject(Keys.JSONMapping.REQUEST_INFO);
-            JSONObject digramcontent = reqeustInfo.getJSONObject(Keys.JSONMapping.RequestInfo.DIAGRAM_CONTENT);
+            //JSONObject reqeustInfo = jo.getJSONObject(Keys.JSONMapping.REQUEST_INFO);
+            //JSONObject digramcontent = reqeustInfo.getJSONObject(Keys.JSONMapping.RequestInfo.DIAGRAM_CONTENT);
             
             if(!digramcontent.isNull(Keys.JSONMapping.RequestInfo.DiagramContent.TITLE)){
                 setTitle(digramcontent.getString(Keys.JSONMapping.RequestInfo.DiagramContent.TITLE));

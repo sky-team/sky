@@ -15,7 +15,9 @@
 
         <link rel="stylesheet" href="css/bg.css">
         <link rel="stylesheet" href="css/layout.css">
-
+        <link rel="stylesheet" type="text/css" href="css/dlmenu_default.css" />
+	<link rel="stylesheet" type="text/css" href="css/dlmenu_component.css" />
+                
         <link rel="stylesheet" href="js/sidr/stylesheets/jquery.sidr.light.css">
         <!--<link rel="stylesheet" href="js/sidr/stylesheets/jquery.sidr.dark.css"/>-->
         <script type="text/javascript" src="js/Utils/Utils.js"></script>
@@ -46,33 +48,48 @@
         <script type="text/javascript" src="js/WShandler/Diagram.js"></script>
         <script type="text/javascript" src="js/WShandler/DiagramsManager.js"></script>
         <script type="text/javascript" src="js/WShandler/DiagramChangesHandler.js"></script>
+        <script type="text/javascript" src="js/WShandler/ChatHandler.js"></script>
         <script type="text/javascript" src="js/SocketHandler.js"></script>
         <script type="text/javascript" src="js/InterfaceHandler.js"></script>
         <script type="text/javascript" src="js/EditPropertysForm.js"></script>
-        <script type="text/javascript"> 
-            
-        </script>
+
+        <script src="js/modernizr.custom.111.js"></script>
+        
     </head>
 
-    <body onload="init();">
+    <body onload="init();" onunload="releaseAll();" >
 
-        <div class="divHeader mertoFont" style="-webkit-user-select: none;" onselectstart="return false;">
-            <img src="images/skyuml.png"style="width:200px;height:125px;position: absolute;"/>
+        <div class="divHeader mertoFont" style="-webkit-user-select: none;">
+            <a><img src="images/skyuml.png"style="width:200px;height:125px;position: absolute;"/></a>
             <div class="divider"></div>
-            <div class="headerItem metroIcon"><img src="images/header/home.png"/><h2>home</h2></div>
-            <div class="headerItem metroIcon"><img src="images/header/settings.png"/><h2>setting</h2></div>
-            <div class="headerItem metroIcon"><img src="images/header/info.png"/><h2>about us</h2></div>
-            <div class="headerUserinfo" >
-                <div class="userFName"> <%= ((User)request.getSession().getAttribute(Keys.SessionAttribute.USER)).getFirstName() %></div>
-                <div class="userLName"> <%= ((User)request.getSession().getAttribute(Keys.SessionAttribute.USER)).getLastName() %></div>
+            <a onclick="releaseAll();" href="main?id=<%= Keys.ViewID.LOGIN_ID%>"><div class="headerItem metroIcon"><img src="images/header/home.png"/><h2>home</h2></div></a>
+            <a onclick="releaseAll();" href="main?id=<%= Keys.ViewID.SEARCH_PROJECT %>"><div class="headerItem metroIcon"><img src="images/header/search.png"/><h2>search</h2></div></a>
+            <a onclick="releaseAll();" href="main?id=<%= Keys.ViewID.MY_PROJECTS_ID%>"><div class="headerItem metroIcon"><img src="images/header/sell.png"/><h2>projects</h2></div></a>
+            <a onclick="releaseAll();" href="main?id=<%= Keys.ViewID.SHARED_WITH_ME_PROJECTS_ID%>"><div class="headerItem metroIcon"><img src="images/header/handshake.png"/><h2>shared</h2></div></a>
+            <a onclick="releaseAll();" href="main?id=<%= Keys.ViewID.MY_INVITATIONS_VIEW_ID%>"><div class="headerItem metroIcon"><img src="images/header/my_topic.png"/><h2>invites</h2></div></a>
+            <a onclick="releaseAll();" href="main?id=<%= Keys.ViewID.MY_JOINS_VIEW_ID%>"><div class="headerItem metroIcon"><img src="images/header/street_view.png"/><h2>requests</h2></div></a>
+            <div class="headerUserinfo">
+                <div class="userFName"> <%= ((User) request.getSession().getAttribute(Keys.SessionAttribute.USER)).getFirstName()%></div>
+                <div class="userLName"> <%= ((User) request.getSession().getAttribute(Keys.SessionAttribute.USER)).getLastName()%></div>
                 <div class="userPic"></div>
                 <div class="userInfoDivider"></div>
-                <a class="settingBTN metroIcon"></a>
+                <div class="container demo-4">	
+                    <a id="right-menu" style="z-index:3;" href="#right-menu" class="chatButton metroIcon" >1</a>
+                    <a  onclick="fillEditMenu();" id="right-menu-att" href="#right-menu-att" class="chatButton metroIcon" style="background:url(images/uml_icons/edit.jpg);right:80px; width: 32;height: 30;z-index: 3;"></a>
+
+                    <div class="column">
+                        <div id="dl-menu" style="z-index: 4;left: 135px;top: 8px;" class="dl-menuwrapper">
+                            <button>Open Menu</button>
+                            <ul style="z-index: 4" class="dl-menu">
+                                <li><a onclick="releaseAll();" href="main?id=<%= Keys.ViewID.EDIT_PROFILE%>">profile</a></li>
+                                <li><a onclick="releaseAll();" href="main?id=<%= Keys.ViewID.LOGOUT_ID%>">logout</a></li>	
+
+                            </ul>
+                        </div>
+                    </div>
+                </div>
 
             </div>
-            <a id="right-menu" href="#right-menu" class="chatButton metroIcon" >1</a>
-            <a onclick="fillEditMenu();" id="right-menu-att" href="#right-menu-att" class="chatButton metroIcon" style="background:url(images/uml_icons/edit.jpg);right:80px; width: 32;height: 30;"></a>
-            
         </div>
 
         <div class="leftslide mertoFont"  style="-webkit-user-select: none;" onselectstart="return false;">
@@ -81,16 +98,16 @@
                     <li>
                         <a href="#">Diagrams<span class="st-arrow">Open or Close</span></a>
                         <div class="st-content">
-                            <a type="submit" id="right-menu-diag" onclick="fillEditMenuForDiagrams();javascript:$('#right-menu-diag').click();" class="addDiagramBTN"></a>                            
-                             <br>
-                        <select class="mertoFont" style="width: 95%;background-color: rgb(200,200,200);color: rgb(55,55,55);;" id="diagrams_select" size="5" onchange="openDiagram();">
-                            <%Project project = (Project)request.getAttribute(Keys.AttributeNames.PROJECT_ATTRIBUTE_NAME);
-                              ArrayList<String> diag = project.getProjectDiagrams();
-                              for(int i = 0 ; i < diag.size() ;i++){
-                            %>
-                            <option value="<%= diag.get(i)%>"><%= diag.get(i)%></option>
-                            <%}%>
-                        </select>
+                            <a type="submit" id="right-menu-diag" onclick="fillEditMenuForDiagrams();" class="addDiagramBTN"></a>                       
+                            <br>
+                            <select class="mertoFont" style="width: 95%;background-color: rgb(200,200,200);color: rgb(55,55,55);;" id="diagrams_select" size="5" onchange="openDiagram();">
+                                <%Project project = (Project) request.getAttribute(Keys.AttributeNames.PROJECT_ATTRIBUTE_NAME);
+                                    ArrayList<String> diag = project.getProjectDiagrams();
+                                    for (int i = 0; i < diag.size(); i++) {
+                                %>
+                                <option value="<%= diag.get(i)%>"><%= diag.get(i)%></option>
+                                <%}%>
+                            </select>
                         </div>
                     </li>
                     <li>
@@ -112,19 +129,13 @@
             <h2>Online</h2>
 
             <ul id="chatlist" class="chatOnlineMember">
-                <li><a href="#">Hamza</a></li>
-                <li><a href="#">Jack</a></li>
-                <li><a href="#">Hasan</a></li>
             </ul>
             <h2>Messages</h2>						
             <form action="javascript:return false;">
                 <textarea id="messages" rows="15" cols="50" readonly>
-				Hamza : Hello People.
-				Jack  : Welcome abu alkofahi.
-				Hassan: Welcome 8araba.
                 </textarea>
                 <input id="usermsg" type="text" placeholder="Say Something..."/>
-                <input type="submit"  onclick="javascript:sendMessage();" value="Send" style="width:50px;float:right"/>
+                <input type="submit"  onclick="sendChatMessage();" value="Send" style="width:50px;float:right"/>
                 <input  type="submit" onclick="javascript:$('#right-menu').click();" value="Close" style="width:50px;"/>
             </form>
         </div>
@@ -133,14 +144,15 @@
             <form action="javascript:return false;">
                 <input  type="submit" onclick="javascript:$('#right-menu-att').click();" value="Close" style="width:60px;"/>
                 <input type="button" id="refreshButton" onclick="fillEditMenu();" value="refresh" style="width:60px;float: left;"/>
-                <input type="button" id="confirmButton" value="Confirm" onclick="confirmClassChanges();javascript:$('#right-menu-att').click();" style="width:60px;float: left;"/>
-                
+                <input type="button" id="confirmButton" value="Confirm" onclick="confirmClassChanges();
+                javascript:$('#right-menu-att').click();" style="width:60px;float: left;"/>
+
                 <br>
                 <div id="edit_title">
-                <label id="title_lable">Title</label><input type="text" id="element_title"/>
+                    <label id="title_lable">Title</label><input type="text" id="element_title"/>
                 </div>
                 <div id="edit_class">  
-                     <fieldset title="Access">
+                    <fieldset title="Access">
                         <legend>Access</legend>
                         <input type="radio" value="+" name="class_access" checked="true" id="class_public_access"/>public<br>
                         <input type="radio" value="-" name="class_access" id="class_private_access"/>private<br>
@@ -175,18 +187,19 @@
             </form>
         </div>
 
-                        
+
         <div id="sidr-right-diag" class="sidr right">
             <form action="javascript:return false;">
-                <input  type="submit" onclick="javascript:$('#right-menu-diag').click();" value="Close" style="width:60px;"/>
-                
+                <input  type="button" onclick="$('#right-menu-diag').click();" value="Close" style="width:60px;"/>
+                <input  type="button" onclick="tryExportDiagram();" value="Export" style="width:60px;"/>
+
                 <div id="edit_diagram">
                     <fieldset title="Create Diagram">
                         <legend>Create Diagram</legend>
                         Name<input type="text" id="create_new_diagram_name"/>
                         Type<select id="diagram_type_select" style="color: black;background-color: white;">
-                            <option value="class">Class Diagram</option>
-                            <option value="usecase">Usecase Diagram</option>
+                            <option value="Class">Class Diagram</option>
+                            <option value="Usecase">Usecase Diagram</option>
                         </select>
                         <input type="button" onclick="createSelectedDiagram();" value="Create"/>
                     </fieldset>
@@ -198,24 +211,24 @@
                     <fieldset title="Close Diagram">
                         <legend>Close Diagram</legend>
                         <input type="button" onclick="closeSelectedDiagram();" value="Close"/>
+                        <input type="button" onclick="deleteSelectedDiagram();" value="Remove" disabled="<%= project.getUserId() != ((User)request.getSession().getAttribute(Keys.SessionAttribute.USER)).getUserId() %>"/>
                     </fieldset>
                     Diagrams
                     <select id="edit_diagrams_select" size="5" onchange="selectedDiagramChanged();"></select>
                 </div>
             </form>
         </div>
-                        
+
         <label id="xylabel" style="visibility: hidden;"></label><label id="modelabel" style="visibility: hidden;"></label>
-                            
-        <div id ="holder" class="drawingArea metroIcon" style="-webkit-user-select: none;" onselectstart="return false;">
+
+        <div id ="holder" class="drawingArea" style="z-index: 3;-webkit-user-select: none;" onselectstart="return false;">
             <form>
-                <input type="hidden" name="projectName" id="projectName" value="<%=project.getProjectName() %>"/>
-                <input type="hidden" name="projectOwner" id="projectOwner" value="<%=project.getUserId() %>"/>
+                <input type="hidden" name="projectName" id="projectName" value="<%=project.getProjectName()%>"/>
+                <input type="hidden" name="projectOwner" id="projectOwner" value="<%=project.getUserId()%>"/>
+                <input type="hidden" name="exporterID" id="exporterID" value="<%=Keys.ViewID.EXPORTED_VIEWER_ID %>"/>
+                <input type="hidden" name="exportParamKey" id="exportParamKey" value="<%=Keys.RequestParams.EXOPRTED_IMAGE_LOCATION %>"/>
+                <input type="hidden" name="currentUser" id="currentUser" value="<%=((User)request.getSession().getAttribute(Keys.SessionAttribute.USER)).getUserId()%>"/>
             </form>
-                <button type="button"  onclick="addComp('<%= "firstDiagram" %>');">Add Comp</button>
-                <button type="button"  onclick="updateComp('<%= "firstDiagram" %>');">Update comp</button>
-                <button type="button"  onclick="removeComp('<%= "firstDiagram" %>');">remvoe comp</button>
-                <button type="button"  onclick="updateDiagramInfo();">update Diagram</button>
         </div>
 
         <!-- Include jQuery -->
@@ -225,7 +238,14 @@
         <!-- Include auto menu -->
         <script type="text/javascript" src="js/jquery.accordion.js"></script>
         <script type="text/javascript" src="js/jquery.easing.1.3.js"></script>
-
+        <script src="js/jquery.dlmenu.js"></script>
+        <script>
+            $(function() {
+                $('#dl-menu').dlmenu({
+                    animationClasses: {in: 'dl-animate-in-3', out: 'dl-animate-out-3'}
+                });
+            });
+        </script>
 
         <script>
             $(function() {
@@ -241,16 +261,14 @@
             $('#right-menu-att').sidr({
                 name: 'sidr-right-att',
                 side: 'right',
-                body:'#drawing'
+                body: '#drawing'
             });
 
             $('#right-menu-diag').sidr({
                 name: 'sidr-right-diag',
                 side: 'right',
-                body:'#drawing'
+                body: '#drawing'
             });
-
-            startConnection();
         </script>
 
     </body>

@@ -12,8 +12,12 @@ function Diagram(name,type,paper){
     this.selectedShape = null;
     this.selectedSpot = null;
     this.connectionsVisiable = false;
-    this.generator = new IdsGenerator(name);
+    this.generator = new IdsGenerator(generation_seed+"X");
     this.shapes_generator = new HashMap();
+    this.last_glowed_shape = null;
+    this.remove_animations = new Array("s.1,.1r45r45r45r45r45r45r45r45","s1.1,1.1s.1,.1s.1,.1s.1,.1s.1,.1s.1,.1s2,2s.5,.5",
+        "t10,0t20,0t30,0t40,0t50,0t60,0t1000,0","s2.1,2.1r45r45r45r45r45r45r45r45");
+    this.current_animation_index = 0;
 }
 
 Diagram.prototype.setName = function(name){
@@ -48,6 +52,14 @@ Diagram.prototype.setAppId = function(id){
 
 Diagram.prototype.setWebSocketHandler = function(handle){
     this.changeObserver.communicator = handle;
+}
+
+
+Diagram.prototype.getNextRemoveAnimation = function(){
+    if(this.current_animation_index >= this.remove_animations.length)
+        this.current_animation_index = -1;
+    this.current_animation_index ++;
+    return this.remove_animations[this.current_animation_index];
 }
 
 Diagram.prototype.selectShape = function (id){
@@ -114,6 +126,29 @@ Diagram.prototype.selectSpotFromPoints = function (x,y){
     }
 }
 
+Diagram.prototype.glowShape = function (shape,effects){
+    if(this.last_glowed_shape != null)
+        this.last_glowed_shape.unglow();
+    this.last_glowed_shape = shape;
+    this.last_glowed_shape.glow(effects);
+}
+
+Diagram.prototype.unglowShape = function (){
+    if(this.last_glowed_shape != null)
+        this.last_glowed_shape.unglow();
+    this.last_glowed_shape = null;
+}
+
+Diagram.prototype.isGlowed = function (shape){
+    if(this.last_glowed_shape == null || shape == null)
+        return false;
+    
+    return  this.last_glowed_shape.id == shape.id;
+}
+
+Diagram.prototype.getGlowed = function (){
+    return  this.last_glowed_shape;
+}
 
 Diagram.prototype.createShape = function(type,x,y){
     var shape = ElementsFactory(type);
@@ -136,7 +171,7 @@ Diagram.prototype.createShape = function(type,x,y){
     
     shape.id = this.generator.nextId();
     
-    var generator = new IdsGenerator(shape.id);
+    var generator = new IdsGenerator(shape.id+"_"+generation_seed+"Y");
     this.shapes_generator.add(shape.id,generator);
     
     this.shapes.add(shape);    
@@ -145,9 +180,10 @@ Diagram.prototype.createShape = function(type,x,y){
 }
 
 Diagram.prototype.putShape = function(type,x,y,title,id){
+    //alert("1");
     var shape = ElementsFactory(type);
     shape.createElement(this.paper);
-    
+//    shape.hide();
     shape.setX(x);
     shape.setY(y);
     shape.setWidth(100);
@@ -164,9 +200,11 @@ Diagram.prototype.putShape = function(type,x,y,title,id){
     
     shape.update();
     shape.id = id;
-    var generator = new IdsGenerator(shape.id);
-    this.shapes_generator.add(shape.id,generator);
-
+    var xcgenerator = new IdsGenerator(shape.id+"_"+generation_seed+"Y");
+    this.shapes_generator.add(shape.id,xcgenerator);
+    //alert("x");
+    //alert("GEN : " + (this.generator == null) + " , " + id);
+    this.generator.reserveId(id);
     
     this.shapes.add(shape);
     this.selectedShape = shape;
@@ -192,9 +230,9 @@ Diagram.prototype.removeShape = function(shape,animation){
     this.changeObserver.elementRemoved(shape);
 }
 
-Diagram.prototype.deallocateShape = function(shape){
+Diagram.prototype.animatedDeallocateShape = function(shape){
     
-    var animation = "s.1,.1r45r45r45r45r45r45r45r45";
+    var animation = this.getNextRemoveAnimation();
     var remover;
     var _this = this;
     this.performRemove = function(){
@@ -208,6 +246,14 @@ Diagram.prototype.deallocateShape = function(shape){
     remover = this.performRemove;
     shape.animate({"transform":animation},300,"",remover);
 
+}
+
+Diagram.prototype.deallocateShape = function(shape){
+    
+    shape.destroyElement();
+    this.shapes.remove(shape);
+    this.shapes_generator.remove(shape.id);
+    this.generator.unreserveId(shape.id);
 }
 
 Diagram.prototype.removeSelected = function(animation){
@@ -261,7 +307,7 @@ Diagram.prototype.addAssociation = function(source,dest,source_spot,dest_spot,co
             asso.setHeight(larg);
             break;
     }
-
+try{
     dest_spot.animate({
         "fill": "green"
     }, 300);
@@ -269,7 +315,7 @@ Diagram.prototype.addAssociation = function(source,dest,source_spot,dest_spot,co
     source_spot.animate({
         "fill": "green"
     }, 300);
-
+}catch (t){console.log("ERROR : T >>> "+t);}
     asso.source.update();
     asso.destination.update();
     asso.id = this.shapes_generator.get(source.id).nextId();
@@ -278,12 +324,12 @@ Diagram.prototype.addAssociation = function(source,dest,source_spot,dest_spot,co
 }
 
 Diagram.prototype.deallocatAssociation = function(source,dest,id){
-    
     for (var i = 0; i < source.associations.size(); i++) {
         var asso = source.associations.get(i);
         if(asso.id == id)
         {
             source.removeAssociation(asso);
+            try{asso.destroyElement();}catch(e){console.log("Error :>"+e);}
         }
     }
 
@@ -292,6 +338,7 @@ Diagram.prototype.deallocatAssociation = function(source,dest,id){
         if(asso.id == id)
         {
             dest.removeAssociation(asso);
+            try{asso.destroyElement();}catch(e){console.log("Error :>"+e);}
         }
     }
     
@@ -308,8 +355,8 @@ Diagram.prototype.putAssociation = function(source,dest,source_spot,dest_spot,co
     var larg = asso.width > asso.height ? asso.width : asso.height;
     var small = asso.height == larg ? asso.width : asso.height;
     
-    var source_spot_object = source.connectionSpots.getSpot(source_spot);
-    var dest_spot_object = dest.connectionSpots.getSpot(dest_spot);
+    //var source_spot_object = source.connectionSpots.getSpot(source_spot);
+    //var dest_spot_object = dest.connectionSpots.getSpot(dest_spot);
     
     switch(source_spot){
         case 1:
@@ -374,7 +421,6 @@ Diagram.prototype.removeAssociation = function(association){
     association.destination.removeAssociation(association);
     
     association.destroyElement();
-    
     this.shapes_generator.get(association.source.id).unreserveId(association.id);
     
     association.source.update();
@@ -388,7 +434,7 @@ Diagram.prototype.changeLocation = function(shape,x,y){
     shape.setX(x);
     shape.setY(y);
     
-    shape.update();
+    //shape.update();
     
     this.changeObserver.locationChanged(shape);
 }
@@ -441,10 +487,6 @@ Diagram.prototype.renameAttribute = function(shape,old_attr,new_attr){
     shape.replaceAttribute(old_attr, new_attr);
     this.changeObserver.attributeUpdated(shape, old_attr.toStr(), new_attr.toStr());
 }
-
-
-
-
 
 Diagram.prototype.addMethodsList = function(shape,list){
     list.forEach(function(format){
@@ -590,7 +632,7 @@ Diagram.prototype.renameAttributesList = function(shape,list){
         var obj2 = new ClassAttribute("", "", "");
         obj2.fromFormat(split[1]);
         
-        shape.replaceMethod(obj,obj2);
+        shape.replaceAttribute(obj,obj2);
     });
     
     shape.update();
@@ -599,7 +641,9 @@ Diagram.prototype.renameAttributesList = function(shape,list){
 }
 
 Diagram.prototype.updateAttributesList = function(shape,list){ 
+    console.log("Updating Attributes List");
     list.forEach(function(format){
+        
         var split = format.split("//");
         
         var obj = new ClassAttribute("", "", "");
@@ -607,6 +651,8 @@ Diagram.prototype.updateAttributesList = function(shape,list){
         
         var obj2 = new ClassAttribute("", "", "");
         obj2.fromFormat(split[1]);
+        
+        console.log("rename from["+split[0]+"],["+split[1]+"]");
         
         shape.replaceAttribute(obj,obj2);
     });
@@ -627,6 +673,7 @@ Diagram.prototype.showConnectionSpots = function(){
 }
 
 Diagram.prototype.hideConnectionSpots = function(){
+    
     this.shapes.forEach(function(element){
         element.hideConnections();
     });
@@ -645,25 +692,84 @@ Diagram.prototype.restState = function(){
 Diagram.prototype.deallocate = function(){
     this.shapes.forEach(function(shape){
         shape.destroyElement();
+        //_this.deallocateShape(shape);
     });
    
     this.shapes.clear();
     this.shapes_generator.clear();
-    this.generator = null;
-    this.changeObserver = null;   
-    this.hideConnectionSpots();
+    this.generator.clear();
+//    this.changeObserver = null; 
+try{
+    this.hideConnectionSpots();}catch (fg){}
 }
 
-Diagram.prototype.isDeallocate = function(){
+Diagram.prototype.isDeallocate = function(){ 
     return this.generator == null;
+}
+
+
+Diagram.prototype.animatedHideElements = function(){
+    this.hideConnectionSpots();
+    this.shapes.forEach(function(shape){
+        var _shape = shape;
+        var _callback = null;
+        this.hidder = function (){
+            _shape.setLocation(-(1000+_shape.x),-(1000+_shape.y));
+            _shape.update();
+            _shape.hide();
+        };
+        _callback = this.hidder;
+        shape.animate({"transform":"t10,0t20,0t30,0t40,0t50,0t60,0t1000,0"},300,"",_callback);
+    });
+   
+}
+
+
+
+Diagram.prototype.hideElementsWith = function(callback){
+    this.shapes.forEach(function(shape){
+        shape.hide();
+    });
+   
+    this.hideConnectionSpots();
+    
+    if(callback != null)
+        callback();
 }
 
 Diagram.prototype.hideElements = function(){
     this.shapes.forEach(function(shape){
         shape.hide();
     });
+   try{
+    this.hideConnectionSpots();}catch (x){}
+}
+
+Diagram.prototype.animatedShowElements = function(){
+    
+    this.shapes.forEach(function(shape){
+        var _shape = shape;
+        var _callback = null;
+        this.shower = function (){
+            _shape.setLocation(-(1000+_shape.x),_shape.y);
+            _shape.update();
+            
+        };
+        
+        _shape.show();
+        _callback = this.hidder;
+        shape.animate({"transform":"t1000,0"},300,"",_callback);
+    });
    
-    this.hideConnectionSpots();
+}
+
+Diagram.prototype.showElementsWith = function(callback){
+    this.shapes.forEach(function(shape){
+        shape.show();
+    });
+       
+    if(callback != null)
+        callback();
 }
 
 Diagram.prototype.showElements = function(){
@@ -671,5 +777,51 @@ Diagram.prototype.showElements = function(){
         shape.show();
         shape.update();
     });
-   
+}
+
+Diagram.prototype.tryExport = function(width,height){
+    console.log("Trying Export");
+    
+    var text = '';
+    this.shapes.forEach(function(e){
+        text += e.toSvg();
+    });
+    if(text == '')
+        return;
+    
+    text = replacer(text,":","&colon");
+    text = replacer(text,"\"","&qout");
+    text = replacer(text,"<","&less");
+    text = replacer(text,">","&larg");
+    text = replacer(text,"#","&hash");
+    text = replacer(text,"/","&slash");
+    text = replacer(text,";","&sime");
+    text = replacer(text,",","&comma");
+    text = replacer(text," ","&space");
+    text = replacer(text,"{","&obrace");
+    text = replacer(text,"}","&cbrace");
+    text = replacer(text,"\r\n","");
+    
+    console.log("Constructing hash map");
+    var map = new HashMap();
+    map.add("app-id", 4);
+    map.add("width", width);
+    map.add("height", height);
+    map.add("content", text);
+    console.log("Done Constructing");
+    var json = map.toJson();
+    //console.log("Sending Json : " + json);
+    //var obj = JSON && JSON.parse(json) || $.parseJSON(json);
+    this.changeObserver.communicator.send(json);
+}
+
+Diagram.prototype.tryCursor = function (x,y){
+    var map = new HashMap();
+    
+    map.add("app-id",5);
+    map.add("location",x+"_"+y);
+    
+    var json = map.toJson();
+    
+    this.changeObserver.communicator.send(json);
 }

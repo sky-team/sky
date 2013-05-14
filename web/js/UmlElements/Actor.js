@@ -3,7 +3,6 @@
  */
 
 function Actor(){
-    
     this.id = "";
     
     this.skeleton = new ActorSkeleton();
@@ -83,12 +82,10 @@ Actor.prototype.toStr = function(){
 }
 
 Actor.prototype.updateLocations = function(x,y){
-    if(this.onchange != null){
-    }
-    
+    console.log("   Actor :>Update Locations ");
     var difx = x - this.x;
     var dify = y - this.y;
-    
+    console.log("   Actor :> Diff "+difx+","+dify);
     this.title.setLocation(this.title.x + difx, this.title.y + dify);
     
     this.head.setLocation(this.head.x + difx, this.head.y + dify);
@@ -96,10 +93,11 @@ Actor.prototype.updateLocations = function(x,y){
     this.eye1.setLocation(this.eye1.x + difx, this.eye1.y + dify);
     this.eye2.setLocation(this.eye2.x + difx, this.eye2.y + dify);
     this.mouth.setLocation(this.mouth.x + difx, this.mouth.y + dify);
-    
+    console.log("   Actor :>Update The skeleton Location");
     this.skeleton.setLocation(this.skeleton.x + difx, this.skeleton.y + dify);
     this.skeleton.update();
     
+    console.log("   Actor :>Update Connections");
     this.connectionSpots.setXRightSpot(this.connectionSpots.XRightSpot + difx);
     this.connectionSpots.setYRightSpot(this.connectionSpots.YRightSpot + dify);
     
@@ -112,6 +110,8 @@ Actor.prototype.updateLocations = function(x,y){
     this.connectionSpots.setXDownSpot(this.connectionSpots.XDownSpot + difx);
     this.connectionSpots.setYDownSpot(this.connectionSpots.YDownSpot + dify);
     
+    console.log("   Actor :> Update Accociations");
+    
     this.associations.forEach(function(asso){
         asso.update();
     });
@@ -119,23 +119,29 @@ Actor.prototype.updateLocations = function(x,y){
 
 Actor.prototype.update = function(){
      
+    console.log("   Actor :> Update whole");
     this.title.setX(this.x + ( (this.width - this.title.getWidth()) / 2 ));
     this.title.setY(this.y - this.fontSize);
     
+    console.log("   Actor :> Set Head");
     this.head.setX(this.x + this.width / 2);
     this.head.setY(this.y + this.height/4);
     this.head.setRadius(this.height/4);
     
+    console.log("   Actor :> Set Head width");
     var sub_width = this.head.getWidth() / 2;
     var sub_height = this.head.getHeight() / 3;
     
+    console.log("   Actor :> Set eye");
     this.eye1.setLineWidth(1);
     this.eye2.setLineWidth(1);
     this.mouth.setLineWidth(1);
     
+    console.log("   Actor :> Width Eye");
     this.eye1.setWidth(sub_width/2.5);
     this.eye1.setHeight(sub_width/4);
     
+    console.log("   Actor :> eye2");
     this.eye2.setWidth(sub_width/2.5);
     this.eye2.setHeight(sub_width/4);
     
@@ -145,12 +151,14 @@ Actor.prototype.update = function(){
     this.eye1.setY(this.head.y - sub_height);
     this.eye2.setY(this.head.y - sub_height);
     
+    console.log("   Actor :> mouth");
     this.mouth.setWidth(sub_width / 1.5);
     this.mouth.setHeight(sub_height / 4);
     
     this.mouth.setX(this.head.x);
     this.mouth.setY(this.head.y + sub_height + sub_height * .2);
     
+    console.log("   Actor :> skelltion");
     this.skeleton.setWidth(this.width);
     this.skeleton.setHeight(this.height / 2 + this.height / 3);
     
@@ -159,6 +167,7 @@ Actor.prototype.update = function(){
     
     this.skeleton.update();
     
+    console.log("   Actor :> Connections");
     this.connectionSpots.setXRightSpot(this.skeleton.hand.x2);
     this.connectionSpots.setYRightSpot(this.skeleton.hand.y2);
     
@@ -368,18 +377,54 @@ Actor.prototype.removeAssociation = function(association){
 }
 
 Actor.prototype.showConnections = function(){
+    this.connectionSpots.createElement(this.head.element.paper);
     this.connectionSpots.show();
-    this.restartAnimation();
+    //this.restartAnimation();
 }
 
 Actor.prototype.restartAnimation = function(){
-    this.connectionSpots.animate({"transform":"r45r45r45r45r45"},10000,"",this.restartAnimation);
-    this.connectionSpots.resume();
+    _this = this;
+    var callback;
+    this.startOver = function (){
+        _this.connectionSpots.animate({"transform":"r45r45r45r45r45"},10000,"",callback);
+    };
+    
+    callback = this.startOver;
+    this.connectionSpots.animate({"transform":"r45r45r45r45r45"},10000,"",callback);
 }
 
 Actor.prototype.hideConnections = function(){
     this.connectionSpots.stop();
     this.connectionSpots.hide();
+    this.connectionSpots.destroyElement();
+}
+    
+
+Actor.prototype.hide = function(){
+    this.unglow();
+    this.connectionSpots.stop();
+    this.connectionSpots.hide();
+    this.title.hide();
+    this.skeleton.hide();
+    this.head.hide();
+    this.eye1.hide();
+    this.eye2.hide();
+    this.mouth.hide();
+    this.associations.forEach(function(asso){
+        asso.hide();
+    });
+}
+
+Actor.prototype.show = function(){
+    this.skeleton.show();
+    this.title.show();
+    this.head.show();
+    this.eye1.show();
+    this.eye2.show();
+    this.mouth.show();
+    this.associations.forEach(function(asso){
+        asso.show();
+    });
 }
 
 Actor.prototype.toSvg = function(){
@@ -493,7 +538,7 @@ Actor.prototype.playAnimation = function(){
     }
     
     this.mouth_animator = function(){
-        time_mouth++;
+        /*time_mouth++;
         mouth_size_w = mouth_size_w == close_size_mouth_w ? open_size_mouth_w : close_size_mouth_w;
         mouth_size_h = mouth_size_h == close_size_mouth_h ? open_size_mouth_h : close_size_mouth_h;
         for (var i = 0; i < 1000000000; i++) {
@@ -507,7 +552,7 @@ Actor.prototype.playAnimation = function(){
         source.mouth.animate({
             "ry":mouth_size_h,
             "rx":mouth_size_w
-        }, 200);
+        }, 200);*/
     }
     
     anim_mouth = this.mouth_animator;
@@ -520,13 +565,13 @@ Actor.prototype.playAnimation = function(){
         "ry":size
     }, 100,"",anim);
     
-    if(source.mouth_time == 10){
+    /*if(source.mouth_time == 10){
         source.mouth_time = 0;
         source.mouth.animate({
             "ry":mouth_size_h,
             "rx":mouth_size_w
         }, 1000,"",anim_mouth);
-    }
+    }*/
 }
 
 Actor.prototype.refresh = function(){
@@ -537,4 +582,7 @@ Actor.prototype.refresh = function(){
     this.eye2.refresh();
     this.mouth.refresh();
     
+}
+Actor.prototype.getTitle = function(){
+    return this.title.getText();
 }

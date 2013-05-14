@@ -60,22 +60,21 @@ public class Oval implements DiagramComponentOperation{
         this.title = title;
     }
     @Override
-    public void update(JSONObject jo) {
+    public void update(JSONObject dc) {
         try {
-            JSONObject reqeustInfo = jo.getJSONObject(Keys.JSONMapping.REQUEST_INFO);
-            JSONObject digramcontent = reqeustInfo.getJSONObject(Keys.JSONMapping.RequestInfo.DIAGRAM_CONTENT);
             
-            if(!digramcontent.isNull(Keys.JSONMapping.RequestInfo.DiagramContent.TITLE)){
-                setTitle(digramcontent.getString(Keys.JSONMapping.RequestInfo.DiagramContent.TITLE));
+            
+            if(!dc.isNull(Keys.JSONMapping.RequestInfo.DiagramContent.TITLE)){
+                setTitle(dc.getString(Keys.JSONMapping.RequestInfo.DiagramContent.TITLE));
             }
             
             
-            if(!digramcontent.isNull(Keys.JSONMapping.RequestInfo.DiagramContent.X_LOCATION)){
-                setX(digramcontent.getInt(Keys.JSONMapping.RequestInfo.DiagramContent.X_LOCATION));
+            if(!dc.isNull(Keys.JSONMapping.RequestInfo.DiagramContent.X_LOCATION)){
+                setX(dc.getInt(Keys.JSONMapping.RequestInfo.DiagramContent.X_LOCATION));
             }
             
-            if(!digramcontent.isNull(Keys.JSONMapping.RequestInfo.DiagramContent.Y_LOCATION)){
-                setY(digramcontent.getInt(Keys.JSONMapping.RequestInfo.DiagramContent.Y_LOCATION));
+            if(!dc.isNull(Keys.JSONMapping.RequestInfo.DiagramContent.Y_LOCATION)){
+                setY(dc.getInt(Keys.JSONMapping.RequestInfo.DiagramContent.Y_LOCATION));
             }
         } catch (JSONException ex) {
             Logger.getLogger(Oval.class.getName()).log(Level.SEVERE, null, ex);

@@ -49,24 +49,23 @@ public class MyProjects extends AuthenticateModel {
 
     @Override
     public void performPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean isAuthenticateAction(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-            
-            if(RequestTools.isSessionEstablished(request)){
-                if(request.getSession().getAttribute(Keys.SessionAttribute.USER) != null)
-                    return true;
-            }
-            return false;
         
     }
 
     @Override
+    public boolean isAuthenticateAction(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+     
+        if (RequestTools.isSessionEstablished(request)) {
+            if (request.getSession().getAttribute(Keys.SessionAttribute.USER) != null) {
+                return true;
+            }
+        }
+        return false;        
+    }
+
+    @Override
     public void onUnAuthenticateAction(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher(Keys.ViewMapping.SIMPE_LOGIN).forward(request, response);
+        request.getRequestDispatcher(Keys.ViewMapping.WELCOME_VIEW).forward(request, response);
     }
 
     

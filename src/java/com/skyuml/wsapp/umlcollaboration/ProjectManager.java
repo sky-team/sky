@@ -29,12 +29,12 @@ public class ProjectManager {
     private String projectsPath = "/SkyUML/Data/Projects/";
     boolean saveEnabled;
     final int TIME_BETWEEN_EACH_SAVE = 10000;//every 10 sec
-    
+
     public ProjectManager() {
         projects = new HashMap<Project, DiagramManager>();
 
         saveEnabled = true;
-        
+
         new File(projectsPath).mkdirs(); // create dirctory of project if it's not exist.
 
         Thread autoSave = new Thread(new Runnable() {
@@ -43,12 +43,12 @@ public class ProjectManager {
                 while (saveEnabled) {
                     if (!projects.isEmpty()) {
                         for (Iterator<Project> it = projects.keySet().iterator(); it.hasNext();) {
-                            
+
                             try {
-                                
+
                                 Project project = it.next();
                                 projects.get(project).saveAllDiagams();
-                                
+
                             } catch (IOException ex) {
                                 Logger.getLogger(ProjectManager.class.getName()).log(Level.SEVERE, null, ex);
                             }
@@ -62,7 +62,7 @@ public class ProjectManager {
                 }
             }
         });
-        
+
         autoSave.start();
     }
 
@@ -82,31 +82,39 @@ public class ProjectManager {
         Project prog = getProject(prog_name, owner_id);
 
         if (prog == null) {
+            System.out.println("Class ProjectMamager :Project " + prog_name + " is not opened  i will try to open it");
             try {
-                 prog = Project.select(DefaultDatabase.getInstance().getConnection(), owner_id, prog_name);
-                 ArrayList<String> diams  = prog.getProjectDiagrams();
-                 
-                 projects.put(prog, new DiagramManager(projectsPath+"/"+prog_name+"_"+owner_id+"/"
-                         ,prog_name,owner_id,diams.toArray(new String[diams.size()])));
-                 
+                prog = Project.select(DefaultDatabase.getInstance().getConnection(), owner_id, prog_name);
+                if (prog != null) {
+                    
+                    System.out.println("Class ProjectMamager :Project " + prog_name + " Exist and i will open it");
+                    
+                    ArrayList<String> diams = prog.getProjectDiagrams();
+
+                    String path = projectsPath + "/" + prog_name + "_" + owner_id + "/";
+
+                    projects.put(prog, new DiagramManager(path, prog_name, owner_id, diams.toArray(new String[diams.size()])));
+                }else{
+                    System.out.println("Class ProjectMamager :Project " + prog_name + " is not exist fail to open it");
+                }
             } catch (SQLException ex) {
                 Logger.getLogger(ProjectManager.class.getName()).log(Level.SEVERE, null, ex);
             }
-           
-           
+
+
         }
 
         return prog;
     }
-    
-    public void startProject(JSONObject jo,WSUser sender)throws JSONException {
+
+    public void startProject(JSONObject jo, WSUser sender) throws JSONException {
         JSONObject reqeustInfo = jo.getJSONObject(Keys.JSONMapping.REQUEST_INFO);
         String progName = reqeustInfo.getString(Keys.JSONMapping.RequestInfo.PROJECT_NAME);
         int progOwnerId = reqeustInfo.getInt(Keys.JSONMapping.RequestInfo.PROJECT_OWNER);
-        
+
         Project proj = openProject(progName, progOwnerId);
-        if(proj != null){
-            System.out.println("Start Project");
+        if (proj != null) {
+            System.out.println("Class ProjectMamager :Project " + progName + " Started");
             projects.get(proj).registerProjectMember(sender);
         }
     }
@@ -120,8 +128,8 @@ public class ProjectManager {
 
         if (proj != null) {
             System.out.println("Project Project");
-            String path = projectsPath+"/"+proj.getProjectName()+"_"+proj.getUserId()+"/";
-            projects.get(proj).openDiagram(path,jo, sender);
+            String path = projectsPath + "/" + proj.getProjectName() + "_" + proj.getUserId() + "/";
+            projects.get(proj).openDiagram(path, jo, sender);
 
         } else {
             System.out.println("Error Try to open project : Project Not Exist");
@@ -132,7 +140,7 @@ public class ProjectManager {
         String progName = requestInfo.getString(Keys.JSONMapping.RequestInfo.PROJECT_NAME);
         String diaName = requestInfo.getString(Keys.JSONMapping.RequestInfo.DIAGRAM_NAME);
         int progOwnerId = requestInfo.getInt(Keys.JSONMapping.RequestInfo.PROJECT_OWNER);
-        System.out.println("Close f step");
+        System.out.println(sender.getFullName() + "Trying to Close Diagram : " + diaName);
         Project prog = getProject(progName, progOwnerId);
 
         if (prog != null) {
@@ -227,8 +235,8 @@ public class ProjectManager {
 
     }
 
-    public void removeDiagram(JSONObject jo, WSUser sender) throws JSONException{
-        
+    public void removeDiagram(JSONObject jo, WSUser sender) throws JSONException {
+
         JSONObject reqeustInfo = jo.getJSONObject(Keys.JSONMapping.REQUEST_INFO);
 
         String progN = reqeustInfo.getString(Keys.JSONMapping.RequestInfo.PROJECT_NAME);

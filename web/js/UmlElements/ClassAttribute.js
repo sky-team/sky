@@ -132,6 +132,7 @@ ClassAttribute.prototype.setDataType = function(data){
 
 ClassAttribute.prototype.hide = function(){
     this.text.hide();
+    this.unglow();
 }
 
 ClassAttribute.prototype.show = function(){

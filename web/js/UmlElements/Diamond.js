@@ -136,6 +136,7 @@ Diamond.prototype.setLineWidth = function(w){
 
 Diamond.prototype.hide = function(){
     this.element.hide();
+    this.unglow();
 }
 
 Diamond.prototype.show = function(){

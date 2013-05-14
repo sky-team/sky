@@ -90,7 +90,7 @@ public class DiagramManager {
             if (di == null) {
                 return false;
             }
-            System.out.println("Remove : " + user.toString());
+            System.out.println("DiagramManager : Remove : " + user.getFullName());
             diagrams.get(di).removeMember(user);
         }
         return true;
@@ -114,7 +114,7 @@ public class DiagramManager {
     }
 
     public void registerProjectMember(WSUser sender) {
-        System.out.println("Register User in project : # of members " + (members.numberOfMembers() + 1));
+        System.out.println("Trying to register new member , # of members " + (members.numberOfMembers()));
         members.addMember(sender);
     }
 
@@ -250,8 +250,8 @@ public class DiagramManager {
             Diagram dia = null;
             try {
                 dia = Diagram.Load(path + diaName);
-                System.out.println("Diagram : " + dia.toJSON());
-            } catch (Exception ex) {
+                System.out.println("Diagram  Loaded successfully : " + dia.toJSON());
+            } catch (FileNotFoundException ex) {
                 Logger.getLogger(DiagramManager.class.getName()).log(Level.SEVERE, null, ex);
             }
 
@@ -286,10 +286,12 @@ public class DiagramManager {
 
     // when so one leave diagram notify other users in the same diagram
     public boolean closeDiagram(String diagram_name, WSUser user) {
-        System.out.println("Try to close : " + user.toString());
+        System.out.println("Try to close : " + user.getFullName());
         if (isDiagramOpened(diagram_name)) {
+            System.out.println("Diagram is opened, i will reomve the sernder from observer list: ");
             return removeObserver(diagram_name, user);
         } else {
+            System.out.println("Fail  to close diagaram : Diagram is not opened");
             return false;
         }
     }
@@ -324,12 +326,12 @@ public class DiagramManager {
 
             if (isDiagramExist(diaName) && !isDiagramExist(newName)) {
                 try {
-                    
+
                     //rename the diagram file on harddisk
                     File oldn = new File(projectPath + diaName);
                     File newn = new File(projectPath + newName);
                     oldn.renameTo(newn);
-                    
+
                     if (dia == null) {
                         try {
                             dia = Diagram.Load(projectPath + newName);
@@ -338,19 +340,21 @@ public class DiagramManager {
                         } catch (FileNotFoundException ex) {
                             Logger.getLogger(DiagramManager.class.getName()).log(Level.SEVERE, null, ex);
                         }
+                    } else {
+                        dia.setId(newName);
                     }
-                    
-                    
-                   
-                    
+
+
+
+
 
                     synchronized (diagramsName) {
                         //remvoe old name
                         diagramsName.remove(diaName);
-                        
+
                         diagramsName.put(newName, 1);
 
-                        
+
                     }
 
 

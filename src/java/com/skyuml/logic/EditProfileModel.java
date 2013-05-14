@@ -5,11 +5,11 @@
 package com.skyuml.logic;
 
 import com.skyuml.business.User;
+import com.skyuml.datamanagement.DefaultDatabase;
+import com.skyuml.utils.Encryption;
+import com.skyuml.utils.Keys;
+import com.skyuml.utils.RequestTools;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,55 +19,81 @@ import javax.servlet.http.HttpSession;
  *
  * @author Yazan
  */
-public class EditProfileModel extends AuthenticateModel{
+public class EditProfileModel extends AuthenticateModel {
 
     @Override
     public void performGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-                int user_id = Integer.parseInt(request.getParameter(com.skyuml.utils.Keys.RequestParams.USER_ID));
-        try {
-            User user = User.selectByUserId(com.skyuml.datamanagement.DefaultDatabase.getInstance().getConnection(), user_id);
-            request.setAttribute(com.skyuml.utils.Keys.AttributeNames.USER_ATTRIBUTE_NAME, user);
-        } catch (SQLException ex) {
-            Logger.getLogger(EditProfileModel.class.getName()).log(Level.SEVERE, null, ex);
-             //TODO : Error Handle Machanisem
-        }
-        
-        RequestDispatcher dispatcher = request.getRequestDispatcher("/views/editProfile.jsp");
-        dispatcher.forward(request, response);
+        request.getRequestDispatcher(Keys.ViewMapping.EDIT_PROFILE).forward(request, response);
     }
 
     @Override
     public void performPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-                
-               
-        HttpSession session = request.getSession(false);
-        
-        if(session == null){
-            //        RequestDispatcher dispatcher = request.getRequestDispatcher("/login.jsp");
-            //        dispatcher.forward(request, response);
-            //
-            
-             //TODO : No Exist Session Go To Login
-            return;
-        }
-        
-        User editedData = (User)session.getAttribute(com.skyuml.utils.Keys.AttributeNames.USER_ATTRIBUTE_NAME);
+
+
+        User user = (User) request.getSession(true).getAttribute(Keys.SessionAttribute.USER);
+
+
         try {
-            User.insert(com.skyuml.datamanagement.DefaultDatabase.getInstance().getConnection(), editedData);
-        } catch (SQLException ex) {
-            Logger.getLogger(EditProfileModel.class.getName()).log(Level.SEVERE, null, ex);
-             //TODO : Error Handle Machanisem
+            boolean makechange = false;
+
+
+
+            if (!request.getParameter(Keys.RequestParams.USER_FIRST_NAME).equals("") && !request.getParameter(Keys.RequestParams.USER_FIRST_NAME).equals(user.getFirstName())) {
+                user.setFirstName(request.getParameter(Keys.RequestParams.USER_FIRST_NAME));
+                makechange = true;
+            }
+
+            if (!request.getParameter(Keys.RequestParams.USER_LAST_NAME).equals("") && !request.getParameter(Keys.RequestParams.USER_LAST_NAME).equals(user.getLastName())) {
+                user.setLastName(request.getParameter(Keys.RequestParams.USER_LAST_NAME));
+                makechange = true;
+            }
+
+            if (!request.getParameter(Keys.RequestParams.USER_PASSWORD).equals("") && !request.getParameter(Keys.RequestParams.USER_PASSWORD).equals(user.getPassword())) {
+                if (user.getPassword().equals(request.getParameter(Keys.RequestParams.USER_OLD_PASSWORD))) {
+                    if (request.getParameter(Keys.RequestParams.USER_PASSWORD).equals(request.getParameter(Keys.RequestParams.USER_CONFIRM_PASSWORD))) {
+
+                        user.setPassword(request.getParameter(Keys.RequestParams.USER_PASSWORD));
+                        makechange = true;
+                    } else {
+                        request.setAttribute("Message", "<h3 style='color:red'>Password Dosen't match</h3>");
+                        request.getRequestDispatcher(Keys.ViewMapping.EDIT_PROFILE).forward(request, response);
+                        return;
+                    }
+                }else{
+                     request.setAttribute("Message", "<h3 style='color:red'>Old Password is incorrect</h3>");
+                     request.getRequestDispatcher(Keys.ViewMapping.EDIT_PROFILE).forward(request, response);
+                        return;
+                }
+            }
+
+                if (makechange) {
+                    User.update(DefaultDatabase.getInstance().getConnection(), user);
+                    request.setAttribute("Message", "<h3 style='color:green'>Information Updated Successfuly<br></h3>");
+                    request.getRequestDispatcher(Keys.ViewMapping.EDIT_PROFILE).forward(request, response);
+                } else {
+                    request.setAttribute("Message", "<h3 style='color:green'>No update operation done<br></h3>");
+                    request.getRequestDispatcher(Keys.ViewMapping.EDIT_PROFILE).forward(request, response);
+                }
+            } catch (Exception e) {
+            request.setAttribute("Message", "<h3 style='color:red'>An error ouccer</h3>");
+            request.getRequestDispatcher(Keys.ViewMapping.EDIT_PROFILE).forward(request, response);
         }
+    
+}
+@Override
+        public boolean isAuthenticateAction(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        if(RequestTools.isSessionEstablished(request))
+        {
+            if(((User)session.getAttribute(Keys.SessionAttribute.USER)) != null)
+                return true;
+        }
+        return  false;
     }
 
     @Override
-    public boolean isAuthenticateAction(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        return request.getSession(false) != null;
-    }
-
-    @Override
-    public void onUnAuthenticateAction(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
+        public void onUnAuthenticateAction(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.getRequestDispatcher(Keys.ViewMapping.WELCOME_VIEW).forward(request, response);
     }
     
 }

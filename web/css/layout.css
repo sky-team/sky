@@ -13,16 +13,18 @@ body{
 	font-weight: 100;
 }
 
-
+a {
+color: #333;
+text-decoration: none;
+}
 
 .divHeader{
 	width:99%;
-	height:20%;
+	height:130px;
 	background: #2d89ef;
 	margin-left: 5px;
 	margin-bottom : 5px;
 	padding-right: 7px;
-	margin-top:-8px;
 }
 
 .textHeader{

@@ -183,6 +183,7 @@ ClassMethod.prototype.removeParam = function(name,datatype){
 
 ClassMethod.prototype.hide = function(){
     this.text.hide();
+    this.unglow();
 }
 
 ClassMethod.prototype.show = function(){

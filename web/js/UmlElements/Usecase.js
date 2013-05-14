@@ -329,19 +329,28 @@ Usercase.prototype.removeAssociation = function(association){
 }
 
 Usercase.prototype.showConnections = function(){
+    this.connectionSpots.createElement(this.element.paper);
     this.connectionSpots.show();
-    this.restartAnimation();
+    //this.restartAnimation();
 }
 
 Usercase.prototype.restartAnimation = function(){
-    this.connectionSpots.animate({"transform":"r45r45r45r45r45"},10000,"",this.restartAnimation);
-    this.connectionSpots.resume();
+    _this = this;
+    var callback;
+    this.startOver = function (){
+        _this.connectionSpots.animate({"transform":"r45r45r45r45r45"},10000,"",callback);
+    };
+    
+    callback = this.startOver;
+    this.connectionSpots.animate({"transform":"r45r45r45r45r45"},10000,"",callback);
 }
 
 Usercase.prototype.hideConnections = function(){
     this.connectionSpots.stop();
     this.connectionSpots.hide();
+    this.connectionSpots.destroyElement();
 }
+
 
 Usercase.prototype.getType = function(){
     return "u-2";
@@ -372,4 +381,30 @@ Usercase.prototype.refresh = function(){
 
 Usercase.prototype.playAnimation = function(){
     
+}
+
+Usercase.prototype.hide = function(){
+    this.connectionSpots.stop();
+    this.connectionSpots.hide();
+    this.element.hide();
+    this.title.hide();
+
+    this.associations.forEach(function(asso){
+        asso.hide();
+    });
+    
+    this.unglow();
+}
+
+Usercase.prototype.show = function(){
+    this.element.show();
+    this.title.show();
+
+    this.associations.forEach(function(asso){
+        asso.show();
+    });
+}
+
+Usercase.prototype.getTitle = function(){
+    return this.title.getText();
 }

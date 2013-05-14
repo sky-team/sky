@@ -115,6 +115,7 @@ Ellipse.prototype.setLineWidth = function(w){
 
 Ellipse.prototype.hide = function(){
     this.element.hide();
+    this.unglow();
 }
 
 Ellipse.prototype.show = function(){

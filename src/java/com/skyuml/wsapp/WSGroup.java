@@ -86,7 +86,7 @@ public class WSGroup {
         boolean fla = false;
         synchronized (lock) {
             for (int i = 0; i < members.size(); i++) {
-                if (members.get(i).equals(user)) {
+                if (members.get(i).getUserId() == user.getUserId()) {
                     fla = true;
                     break;
                 }
@@ -95,20 +95,58 @@ public class WSGroup {
         return fla;
     }
 
+    public WSUser getWSUserById(int id) {
+        for (WSUser user : members) {
+            if (user.getUserId() == id) {
+                return user;
+            }
+        }
+        return null;
+    }
+
     public void addMember(WSUser member) {
         synchronized (lock) {
-            if (members.indexOf(member) == -1) {
-                members.add(member);
-                System.out.println("Register new memebr in project " + member.getFullName());
-            }else{
-                System.out.println("Fail to Register new memebr in project ,, member already exist." + member.getFullName());
+
+            ArrayList<WSUser> temp = new ArrayList<WSUser>();
+            for (WSUser wSUser : members) {
+                if (wSUser.getUserId() == member.getUserId()) {
+                    temp.add(wSUser);
+                }
             }
+
+            if (!temp.isEmpty()) {
+                System.out.println("Class WSGroup : Member already exist. i will remove any match and add the new one");
+                for (WSUser wSUser : temp) {
+                    System.out.println("Class WSGroup : Remove member name : " + wSUser.getFullName());
+                    members.remove(wSUser);
+                }
+
+            } else {
+                System.out.println("Class WSGroup : Member already NOT exist. i will add him :" + member.getFullName());
+            }
+
+            members.add(member);
+
+
         }
     }
 
     public void removeMember(WSUser member) {
         synchronized (lock) {
-            members.remove(member);
+            ArrayList<WSUser> temp = new ArrayList<WSUser>();
+            for (WSUser wSUser : members) {
+                if (wSUser.getUserId() == member.getUserId()) {
+                    temp.add(wSUser);
+                }
+            }
+            if (!temp.isEmpty()) {
+                for (WSUser wSUser : temp) {
+                    System.out.println("Class WSGroup : Remove member name : " + wSUser.getFullName());
+                    members.remove(wSUser);
+                }
+            }else{
+                 System.out.println("Class WSGroup :User Not Exist, Fial to Remove member name : " + member.getFullName());
+            }
         }
     }
 
@@ -162,10 +200,10 @@ public class WSGroup {
                     } catch (IOException ex) {
                         if (removeUserOnIOException) {
                             tempToDelete.add(members.get(i));
-                            logError(members.get(i).getFullName() +" : Not responding, i'm going to remove him");
+                            logError(members.get(i).getFullName() + " : Not responding, i'm going to remove him");
                         }
                         if (onIOException != null) {
-                            onIOException.boradcastProblem(members, members.get(i).getFullName());
+                            onIOException.boradcastProblem(members, members.get(i).getUserId());
                         }
                     }
                 }
@@ -189,10 +227,10 @@ public class WSGroup {
                         } catch (IOException ex) {
                             if (removeUserOnIOException) {
                                 tempToDelete.add(members.get(i));
-                                logError(members.get(i).getFullName() +" : Not responding, i'm going to remove him");
+                                logError(members.get(i).getFullName() + " : Not responding, i'm going to remove him");
                             }
                             if (onIOException != null) {
-                                onIOException.boradcastProblem(members, members.get(i).getFullName());
+                                onIOException.boradcastProblem(members, members.get(i).getUserId());
                             }
                         }
                     }
@@ -216,40 +254,40 @@ public class WSGroup {
     }
 
     private void broadcastBinatyMessage(ByteBuffer buf, WSUser sender) {
-         throw new UnsupportedOperationException("Not supported yet. Come and fix me 'Hamza' !!");
+        throw new UnsupportedOperationException("Not supported yet. Come and fix me 'Hamza' !!");
         /*
-        synchronized (lock) {
-            if (members.size() <= 0) {
-                return;
-            }
+         synchronized (lock) {
+         if (members.size() <= 0) {
+         return;
+         }
 
-            if (includeSender) {
-                for (WSUser user : members) {
-                    try {
+         if (includeSender) {
+         for (WSUser user : members) {
+         try {
 
-                        synchronized (user) {
-                            user.sendBinaryMessage(buf);
-                        }
-                    } catch (IOException exp) {
+         synchronized (user) {
+         user.sendBinaryMessage(buf);
+         }
+         } catch (IOException exp) {
 
-                        exp.printStackTrace();
-                    }
-                }
-            } else {
-                for (WSUser user : members) {
-                    try {
-                        if (user.getUserId() != sender.getUserId()) {
+         exp.printStackTrace();
+         }
+         }
+         } else {
+         for (WSUser user : members) {
+         try {
+         if (user.getUserId() != sender.getUserId()) {
 
-                            synchronized (user) {
-                                user.sendBinaryMessage(buf);
-                            }
-                        }
-                    } catch (IOException exp) {
-                        exp.printStackTrace();
-                    }
-                }
-            }
-        }*/
+         synchronized (user) {
+         user.sendBinaryMessage(buf);
+         }
+         }
+         } catch (IOException exp) {
+         exp.printStackTrace();
+         }
+         }
+         }
+         }*/
     }
 
     public void setOnUserIOExceptionHandler(UserIOExceptionHandler ex) {
@@ -265,9 +303,9 @@ public class WSGroup {
         public UserIOExceptionHandler() {
         }
 
-        public void boradcastProblem(ArrayList<WSUser> members, String userName) {
+        public void boradcastProblem(ArrayList<WSUser> members, int userId) {
             String msg = "{\"" + Keys.JSONMapping.APP_ID + "\":2,\"" + Keys.JSONMapping.REQUEST_INFO + "\":{"
-                    + "\"" + Keys.JSONMapping.RequestInfo.USER_FULL_NAME + "\":\"" + userName + "\",\"" + Keys.JSONMapping.RequestInfo.REQUEST_TYPE + "\":-1}}";
+                    + "\"" + Keys.JSONMapping.RequestInfo.USER_ID + "\":" + userId + ",\"" + Keys.JSONMapping.RequestInfo.REQUEST_TYPE + "\":-1}}";
             for (WSUser wSUser : members) {
                 try {
                     wSUser.sendTextMessage(msg);

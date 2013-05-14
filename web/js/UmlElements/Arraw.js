@@ -131,6 +131,7 @@ Arraw.prototype.setLineWidth = function(w){
 }
 
 Arraw.prototype.hide = function(){
+    this.unglow();
     this.element.hide();
 }
 

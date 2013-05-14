@@ -361,6 +361,7 @@ ShapeChangesHandler.prototype.elementCreated = function(element){
     diagram_content.add("component-type", element.getType());
     diagram_content.add("x-location", element.x);
     diagram_content.add("y-location", element.y);
+    diagram_content.add("title", "Swan");
     
     request_info.add("diagram-content", diagram_content);
     

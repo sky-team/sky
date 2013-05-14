@@ -29,7 +29,7 @@ public class SimpleLogin extends AuthenticateModel {
 
     @Override
     public void performGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-       request.getRequestDispatcher("/views/login.jsp").forward(request, response);
+       request.getRequestDispatcher(Keys.ViewMapping.SIMPE_LOGIN).forward(request, response);
     }
 
     @Override

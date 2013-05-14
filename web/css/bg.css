@@ -1,11 +1,7 @@
 /*header*/
 
 /*Body*/
-a{
-	color:#ffffff;
-	text-decoration:none;
-	
-}
+
 
 ul {
 
@@ -15,11 +11,16 @@ ul {
 
 .leftSlide {
 	width: 19%;
-	height: 79%;
+	height: 78%;
 	margin-left: 5px;
 	background: #00a300 ;
 	position: absolute;
 	overflow: auto;
+}
+.leftSlide a{
+	color:#ffffff;
+	text-decoration:none;
+	
 }
 
 .addDiagramBTN{
@@ -106,11 +107,17 @@ ul {
 	position: absolute;
 	/*background: transparent url(../images/dot.png) repeat top left;*/
 	background-color: rgb(255, 255, 182);
-	height: 79%;
-	width: 79%;
+	height: 78%;
+	width: 79.4%;
 	left: 20%;
-	margin-left: 5px;
 }
+
+svg{
+	/*background: transparent url(../images/dot.png) repeat top left;*/
+        height: 100%;
+	width: 100%;
+}
+
 /*Right Side*/
 .chatButton{
 	background: url(../images/icon/009.png);

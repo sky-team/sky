@@ -152,6 +152,7 @@ Text.prototype.setText = function(text){
 
 Text.prototype.hide = function(){
     this.element.hide();
+    this.unglow();
 }
 
 Text.prototype.show = function(){

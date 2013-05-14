@@ -16,6 +16,14 @@ function isJsonObject(json){
     return str.length > 0 ? str.charAt(0) == '{' : false;
 }
 
+function replacer(text,old_str,new_str){
+    while(text.indexOf(old_str, 0) > -1){
+        text = text.replace(old_str,new_str);
+    }
+
+    return text;
+}
+
 function hasAttributes(node){
     try{
         if(node.attributes){

@@ -1,5 +1,6 @@
 
 function DiagramsManager(paper){
+    console.log("   start diagram manager const . . . . . ");
     this.diagrams = new HashMap();
     this.paper = paper;
     this.communicator = null;
@@ -11,6 +12,7 @@ function DiagramsManager(paper){
     this.changesHandler = new DiagramChangesHandler();
     this.listAdapter = new ListAdapter(null);
     this.selectedDiagram = null;
+    console.log("   end dioagram manager const . . . . . ");
 }
 
 DiagramsManager.prototype.isDiagramOpened = function(name){
@@ -18,7 +20,9 @@ DiagramsManager.prototype.isDiagramOpened = function(name){
 }
 
 DiagramsManager.prototype.switchToDiagram = function(name){
-    if(!this.selectedDiagram){
+    console.log("Going to diagram : " + name);
+    if(this.selectedDiagram == null){
+        this.selectedDiagram.unglowShape();
         this.selectDiagram = this.getDiagram(name);
         this.selectedDiagram.showElements();
         return;
@@ -27,9 +31,14 @@ DiagramsManager.prototype.switchToDiagram = function(name){
     if(this.selectedDiagram.name == name)
         return;
     
+    console.log("Going From diagram : " + this.selectedDiagram.name);
+    try{
+    this.selectDiagram.unglowShape();
     this.selectedDiagram.hideElements();
     this.selectedDiagram = this.getDiagram(name);
     this.selectedDiagram.showElements();
+    }catch (ex){console.log("ERORORRRRRR : <> : "+ex);}
+
 }
 
 DiagramsManager.prototype.setSelectElement = function(select){
@@ -40,6 +49,7 @@ DiagramsManager.prototype.setProjectName = function(name){
     this.diagrams.forEach(function(k,v){
         v.setProjectName(name);
     });
+    
     this.projectName = name;
     this.changesHandler.projectName = name;
 }
@@ -53,9 +63,11 @@ DiagramsManager.prototype.setProjectOwner = function(owner){
 }
 
 DiagramsManager.prototype.setUserId = function(id){
+    
     this.diagrams.forEach(function(k,v){
         v.setUserId(id);
     });
+    
     this.userId = id;
     this.changesHandler.userId = id;
 }
@@ -72,6 +84,7 @@ DiagramsManager.prototype.setAppId = function(id){
     this.diagrams.forEach(function(k,v){
         v.setAppId(id);
     });
+    
     this.appId = id;
     this.changesHandler.appId = id;
 }
@@ -114,7 +127,7 @@ DiagramsManager.prototype.renameDiagram = function(old_name,new_name){
     
     if(old_name == new_name)
         return true;
-    
+    this.getDiagram(old_name).setName(new_name);
     this.diagrams.replaceKey(old_name, new_name);
     this.listAdapter.replaceText(old_name, new_name);
     this.changesHandler.renameDiagram(old_name, new_name);
@@ -129,14 +142,39 @@ DiagramsManager.prototype.closeDiagram = function(name){
     
     var diagram = this.getDiagram(name);
     
-    diagram.deallocate();
     this.diagrams.remove(name);
-    this.listAdapter.remove(name);
+    diagram.unglowShape();
+    diagram.deallocate();
     this.changesHandler.closeDiagram(name);
+    
+    return true;
 }
+
+DiagramsManager.prototype.deleteDiagram = function(name){
+    
+    if(!this.diagrams.containsKey(name)){
+        return false;
+    }
+    
+    var diagram = this.getDiagram(name);
+    
+    this.diagrams.remove(name);
+    diagram.unglowShape();
+    diagram.deallocate();
+    this.listAdapter.remove(name);
+    this.changesHandler.deleteDiagram(name);
+    
+    return true;
+    //this.changesHandler.d
+}
+
 
 DiagramsManager.prototype.openDiagram = function(name){
     this.changesHandler.openDiagram(name);
+}
+
+DiagramsManager.prototype.openProject = function(){
+    this.changesHandler.openProject();
 }
 
 DiagramsManager.prototype.getDiagram = function(name){
@@ -152,10 +190,18 @@ DiagramsManager.prototype.getDiagram = function(name){
 }
 
 DiagramsManager.prototype.createRequestDiagram = function(request_info){
-    //diagram_header = new HashMap();
+
     var name = request_info.get("diagram-name");
     var type = request_info.get("diagram-type");
-    var diagram = new Diagram(name, type, this.paper);
+    var diagram;
+    if(this.diagrams.containsKey(name))
+    {
+        diagram = this.getDiagram(name);
+        diagram.name = name;
+        diagram.type = type;
+    }else{
+        diagram = new Diagram(name, type, this.paper);
+    }
     
     diagram.setAppId(this.appId);
     diagram.setProjectName(this.projectName);
@@ -169,10 +215,12 @@ DiagramsManager.prototype.createRequestDiagram = function(request_info){
 
 DiagramsManager.prototype.executeCloseDiagram = function(diagram){
     
+    
     this.diagrams.remove(diagram.name);
     var index = this.listAdapter.indexOfText(diagram.name);
     this.listAdapter.removeAt(index);
     
+    diagram.unglowShape();
     diagram.deallocate();
 }
 
@@ -199,17 +247,21 @@ DiagramsManager.prototype.executeUpdateDiagram = function(name){
 }
 
 DiagramsManager.prototype.executeDeleteDiagram = function(diagram){
-    
+    console.log("executing delete diagram");
     this.diagrams.remove(diagram.name);
-    var index = this.listAdapter.indexOfText(diagram.name);
-    this.listAdapter.removeAt(index);
+    this.listAdapter.remove(diagram.name);
     
+    diagram.unglowShape();
     diagram.deallocate();
+    if(this.selectedDiagram == diagram)
+        this.selectedDiagram = null;
+    alert("The diagram [" + diagram.name + "] is deleted by it's owner");
 }
 
 DiagramsManager.prototype.executeCloseProject = function(){
     
     this.diagrams.forEach(function(k,dia){
+        dia.unglowShape();
         dia.deallocate();
     });
     
@@ -220,7 +272,8 @@ DiagramsManager.prototype.executeCloseProject = function(){
 }
 
 DiagramsManager.prototype.executeAddComponent = function(component,diagram){
-
+    console.log("DM : execute add component");
+    
     var methods = null;
     var attributes = null;
     var type = component.get("component-type");
@@ -236,6 +289,7 @@ DiagramsManager.prototype.executeAddComponent = function(component,diagram){
     var y = component.get("y-location");
     var id = component.get("component-id");
     var title = component.get("title");
+    console.log("Adding Components of id : "+id);
     
     var shape = diagram.putShape(type, x, y, title, id);   
     if(methods){
@@ -258,41 +312,49 @@ DiagramsManager.prototype.executeAddComponent = function(component,diagram){
 }
 
 DiagramsManager.prototype.executeAddAssociation = function(association,diagram){
+    console.log("DM : execute add add assocaition");
     if(association == null || diagram == null)
         return;
     if(association.size() == 0)
         return;
+    
     var source_id = association.get("association-source");
     var dest_id = association.get("association-destination");
     var type = association.get("component-type");
     var id = association.get("component-id");
+    console.log("DM : Association -> "+source_id+";"+dest_id+" : "+id+";"+type);
     var source_spot_dec = parseInt(association.get("source-spot"));
     var dest_spot_dec = parseInt(association.get("destination-spot"));
+    console.log("DM : Spots : "+source_spot_dec + " ; "+dest_spot_dec);
     diagram.selectShape(source_id);
     var source = diagram.selectedShape;
-    diagram.selectShape(dest_id);
+    console.log("DM : Seletcting source : "+(source == null));
+    diagram.selectShape(dest_id );
     var dest = diagram.selectedShape;
-    
+    console.log("DM : Selecting dest : "+(dest == null));
     if(source == null || dest == null)
         return;
     
-    var source_spot = source.connectionSpots.getSpot(source_spot_dec);
-    var dest_spot = dest.connectionSpots.getSpot(dest_spot_dec);
-
-    diagram.putAssociation(source, dest, source_spot, dest_spot, type, id);
+    //var source_spot = source.connectionSpots.getSpot(source_spot_dec);
+    //var dest_spot = dest.connectionSpots.getSpot(dest_spot_dec);
+    
+    //console.log("DM : Source Spot : " + source_spot);
+    //console.log("DM : Dest spot : " + dest_spot);
+    diagram.putAssociation(source, dest, source_spot_dec, dest_spot_dec, type, id);
 }
 
 DiagramsManager.prototype.executeDiagramComponents = function(diagram_components,diagram){
 //    diagram_components = ArrayList();
     
     var _this = this;
+    console.log("Adding start adding components");
     diagram_components.forEach(function(component){
         _this.executeAddComponent(component, diagram);
     });
 }
 
 DiagramsManager.prototype.executeDiagramAssociations = function(diagram_associations,diagram){
-//    diagram_attributes = ArrayList();
+
     var _this = this;
     diagram_associations.forEach(function(association){
         _this.executeAddAssociation(association, diagram);
@@ -303,15 +365,18 @@ DiagramsManager.prototype.executeOpenDiagram = function(diagram_content,diagram)
     
     var diagram_components = diagram_content.get("components");
     var diagram_associations = diagram_content.get("associations");
-    
+    console.log("Adding Components");
     this.executeDiagramComponents(diagram_components, diagram);
+    console.log("Adding Associations");
     this.executeDiagramAssociations(diagram_associations, diagram); 
     
 }
 
 DiagramsManager.prototype.executeCreateComponent = function(diagram_content,diagram){
+    console.log(" DM : Executing Create Diagram");
     var id = diagram_content.get("component-id");
     var type = diagram_content.get("component-type");
+    console.log(" DM : Diagram of id " + id + " , "+type);
     if(diagram_content.containsKey("association-source")){//add remove
         diagram.selectShape(diagram_content.get("association-source"));
         var source = diagram.selectedShape;
@@ -325,12 +390,14 @@ DiagramsManager.prototype.executeCreateComponent = function(diagram_content,diag
     }else{
         var x = diagram_content.get("x-location");
         var y = diagram_content.get("y-location");
-
+        
         diagram.putShape(type, x, y, "SkySwan", id);
-        if(diagram != this.selectedDiagram){
+        /*if(diagram != this.selectedDiagram){
             diagram.hideElements();
-        }
+        }*/
     }
+    
+    console.log(" DM : Done Creating element");
 }
 
 
@@ -340,7 +407,8 @@ DiagramsManager.prototype.executeDeleteComponent = function(diagram_content,diag
     
     diagram.selectShape(id);
     var shape = diagram.selectedShape;
-    
+    if(diagram.isGlowed(shape))
+        diagram.unglowShape();
     /*8if(diagram_content.containsKey("association-source")){//add remove
         var source = diagram_content.get("association-source");
         var destination = diagram_content.get("association-destination");
@@ -373,6 +441,9 @@ DiagramsManager.prototype.executeUpdateComponent = function(diagram_content,diag
         
     diagram.selectShape(id);
     var shape = diagram.selectedShape;
+    var glowed = diagram.isGlowed(shape);
+    if(glowed)
+        diagram.unglowShape();
     if(diagram_content.containsKey("x-location")){
         var x = parseInt(diagram_content.get("x-location"));
         var y = parseInt(diagram_content.get("y-location"));
@@ -461,9 +532,17 @@ DiagramsManager.prototype.executeUpdateComponent = function(diagram_content,diag
     }
     
     shape.update();
+    
+    try{
+    if(glowed)
+        diagram.glowShape(shape,glowEffects);
+    }catch(e){
+        console.log("DM : Glow Error :> "+e);
+    }
 }
 
 DiagramsManager.prototype.executeRequestInfo = function(request_info){
+    
     var diagram = null;
     if(!request_info.containsKey("request-type"))
         return;
@@ -472,16 +551,20 @@ DiagramsManager.prototype.executeRequestInfo = function(request_info){
     
     switch(request_type){
         case 1://diagram opened
-            if(this.selectedDiagram){
+            console.log(" DM : Opening Diagram");
+            if(this.selectedDiagram != null){
+                console.log(" DM : Hide current elements");
                 this.selectedDiagram.hideElements();
             }
             
             diagram = this.createRequestDiagram(request_info);
+            
             try{
                 this.executeOpenDiagram(request_info.get("diagram-content"),diagram);
             }catch(e){
                 alert("Error : " + e);
             }
+            console.log(" DM : Adding Diagram");
             this.diagrams.add(diagram.name,diagram);
             if(!this.listAdapter.containesText(diagram.name))
                 this.listAdapter.addElement(diagram.name, diagram.name, diagram.type, "");
@@ -489,6 +572,7 @@ DiagramsManager.prototype.executeRequestInfo = function(request_info){
             break;
         
         case 2: //close diagram
+            console.log(" DM : Closing Diagram");
             diagram = this.getDiagram(request_info.get("diagram-name"));
             this.executeCloseDiagram(diagram);
             break;
@@ -504,10 +588,12 @@ DiagramsManager.prototype.executeRequestInfo = function(request_info){
             this.executeUpdateDiagram(request_info.get("diagram-name"));
             break;
         case 4: //create component
+            console.log(" DM : Create component");
             diagram = this.getDiagram(request_info.get("diagram-name"));
             this.executeCreateComponent(request_info.get("diagram-content"), diagram);
             break;
         case -4:
+     
             this.executeCreateDiagram(request_info);
             break;
         case 5: //update component
@@ -519,15 +605,26 @@ DiagramsManager.prototype.executeRequestInfo = function(request_info){
             this.executeDeleteDiagram(diagram);
             break;
     }
+    
+    console.log(" DM : Ending Last Request");
 }
 
 DiagramsManager.prototype.messageReceived = function(parsed_json){
+    console.log("   DM : Message recived. . . . . ");
+    
     if(parsed_json.containsKey("app-id")){
+        console.log(" DM : Check app id");
         if(parseInt(parsed_json.get("app-id")) != this.appId)
             return;
     }
-
+    
+    console.log(" DM : Correct App id");
+    try{
     if(parsed_json.containsKey("request-info")){
+        console.log(" DM : Getting request info");
         this.executeRequestInfo(parsed_json.get("request-info"));
+    }
+    }catch (e){
+        console.log(" DM : Exception Occures :> "+e);
     }
 }

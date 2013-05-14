@@ -96,13 +96,38 @@ public abstract class Diagram implements DiagramOperation {
             try {
                 JSONObject ri = jo.getJSONObject(Keys.JSONMapping.REQUEST_INFO);
                 ri = ri.getJSONObject(Keys.JSONMapping.RequestInfo.DIAGRAM_CONTENT);
-
+                boolean flag = false;
                 DiagramComponentOperation com = DiagramComponentFactory.createComponent(ri);
                 if (com != null) {
                     if (com instanceof Association) {
-                        associations.put(com.getId(), com);
+                        for (DiagramComponentOperation asso : associations.values()) {
+                            if(asso.getId().equals(com.getId())){
+                                flag = true;
+                                break;
+                            }
+                        }
+                        if(!flag){
+                            associations.put(com.getId(), com);
+                            System.out.println("Class Diagram : Component added successfully... ID : " +com.getId());
+                        }else{
+                            System.out.println("Class Diagram :this component already exist !!!!!!!!!!!!!!!!!!! ID : "+com.getId() );
+                        }
                     } else {
-                        components.put(com.getId(), com);
+                        flag = false;
+                        for (DiagramComponentOperation comm : components.values()) {
+                            if(comm.getId().equals(com.getId())){
+                                flag = true;
+                                break;
+                            }
+                        }
+                        
+                        if(!flag){
+                            components.put(com.getId(), com);
+                            System.out.println("Class Diagram : Component added successfully... ID : " +com.getId());
+                        }else{
+                            System.out.println("Class Diagram : this component already exist !!!!!!!!!!!!!!!!!!! ID : "+com.getId() );
+                        }
+                       
                     }
                 }
             } catch (JSONException ex) {
@@ -179,7 +204,7 @@ public abstract class Diagram implements DiagramOperation {
     public JSONObject toJSON() {
         JSONObject json = new JSONObject();
         try {
-
+            System.out.println("Calling toJsonArray() in " + Diagram.class.getSimpleName());
             JSONArray comp = new JSONArray();
             for (DiagramComponentOperation object : components.values()) {
                 comp.put(object.toJSON());
@@ -188,7 +213,6 @@ public abstract class Diagram implements DiagramOperation {
             JSONArray asso = new JSONArray();
             for (DiagramComponentOperation object : associations.values()) {
                 asso.put(object.toJSON());
-                System.out.println("From asso loop json" +object.getId());
             }
 
             json.put(Keys.JSONMapping.RequestInfo.DiagramContent.ASSOCIATIONS, asso);
